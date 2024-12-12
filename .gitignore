@@ -1,0 +1,9 @@
+.git
+.venv
+.vscode
+__pycache__
+data
+downloads
+temp
+
+Ξtestfile.ipynb

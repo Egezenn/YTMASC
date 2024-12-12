@@ -1,0 +1,14 @@
+beautifulsoup4
+eyed3
+ffmpeg-python
+fuzzywuzzy
+keyboard
+mutagen
+pandas
+pillow
+prettytable
+pyautogui
+PyYAML
+yt-dlp
+# selenium
+# opencv-python

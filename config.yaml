@@ -1,0 +1,16 @@
+fetcherArgs:
+  closingDelay: 3
+  dialogWaitDelay: 0.5
+  inbetweenDelay: 0.2
+  openingDelay: 6
+  resendAmount: 60
+  savePageAsIndexOnRightClick: 5
+parser:
+  delete_library_page_files_afterwards: 0
+  parse_library_page: 0
+  parse_ri_music_db: 0
+  run_fetcher: 0
+tasks:
+  convert: 1
+  download: 1
+  tag: 1
