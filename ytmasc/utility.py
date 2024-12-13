@@ -4,6 +4,7 @@ from inspect import getframeinfo
 from json import dump as jdump
 from json import load as jload
 from os import getcwd, makedirs, path
+from shutil import copyfile
 
 from pandas import read_csv as pread_csv
 from pandas import read_json as pread_json
@@ -23,6 +24,7 @@ fail_log = r"fails.txt"
 library_data = r"library.json"
 library_page = r"libraryPage.htm"
 yaml_config = r"config.yaml"
+yaml_default_config = r"defaultConfig.yaml"
 
 audio_conversion_ext = r".mp3"
 possible_audio_ext = [r".webm", r".m4a", r".mp3"]
@@ -209,3 +211,8 @@ def count_files(directory: str, extensions: list[str]) -> int:
         files = glob(pattern)
         count += len(files)
     return count
+
+
+def check_if_file_exists_copy_if_not(src: str, dest: str):
+    if not path.isfile(dest):
+        copyfile(src, dest)

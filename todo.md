@@ -69,6 +69,10 @@
 
 ## IV Lowest Importance
 
+- [ ] Allow the library file to have no artist & no title specified
+  - Tell `yt-dlp` to automatically tag it
+  - Make a function to fetch missing metadata?
+
 - [x] Handle cover and music seperately in `downloader.py`
   - [ ] Better `return` values
 
@@ -124,5 +128,7 @@ Current TK GUI will be replaced with something like ImGui.
 ## Latest Implementations & Fixes
 
 NOTE: These will be removed after a while.
+
+- [x] Ignore user config, copy the `defaultConfig.yaml` if there isn't a config file yet.
 
 - [x] Write intermediate functions, i.e functions that are chained together in `tkgui.py` right now to use them both in CLI&GUI
