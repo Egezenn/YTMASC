@@ -317,6 +317,15 @@ def download(key: str) -> list[str]:
                 path.join(download_path, key + source_cover_ext),
             )
 
+            debug_print(
+                current_file,
+                current_function,
+                "i",
+                f"Successfully moved files to {download_path}.",
+            )
+
+        return 0, 0
+
     except FileExistsError:
         remove(path.join(temp_path, key + source_cover_ext))
         debug_print(
@@ -345,11 +354,3 @@ def download(key: str) -> list[str]:
             error_type="PermissionError",
         )
         # TODO wait a little then retry?
-
-    debug_print(
-        current_file,
-        current_function,
-        "i",
-        f"Successfully moved files to {download_path}.",
-    )
-    return 0, 0
