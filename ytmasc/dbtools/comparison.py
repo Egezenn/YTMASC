@@ -1,11 +1,12 @@
 "Imports an old database and compares each file with new ones."
-import os
-import time
+from os import path, mkdir, system, rename
+from time import sleep
+from inspect import currentframe
 
 from fuzzywuzzy import fuzz
 from keyboard import read_key
 
-from ytmasc.dbtools.matcher_utils import (
+from .comparison_utils import (
     NEW_music_library,
     OLD_music_library,
     create_new_database,
@@ -17,16 +18,36 @@ from ytmasc.dbtools.matcher_utils import (
     insert_rows,
     sort_based_on_score,
 )
+from ..utility import debug_print, get_current_file, get_current_function
 
-if __name__ == "__main__":
+current_file = get_current_file(__file__)
+
+
+def compare():
+    """
+    Compares each file in the old database with the ones that are downloaded
+    with a CLI that handles keypresses.
+    """
+
+    if not path.isdir(OLD_music_library):
+        current_function = get_current_function(currentframe())
+
+        debug_print(
+            current_file,
+            current_function,
+            "w",
+            f"Directory `{OLD_music_library}` doesn't exist, creating directory. Put your old music files here and rerun the command.",
+        )
+        mkdir(OLD_music_library)
+        exit()
+
     for directory in [
-        OLD_music_library,
         NEW_music_library,
         files_to_keep,
         files_to_remove,
     ]:
-        if not os.path.isdir(directory):
-            os.mkdir(directory)
+        if not path.isdir(directory):
+            mkdir(directory)
 
     # database to be replaced
     OLD_DATABASE, old_file_amt = create_old_database()
@@ -35,7 +56,7 @@ if __name__ == "__main__":
     NEW_DATABASE = create_new_database()
 
     # comparisons
-    os.system("clear")
+    system("clear")
     for i, data_OLD in enumerate(OLD_DATABASE, start=1):
         scores = []
         OLD_title = list(data_OLD.items())[0][0]
@@ -56,7 +77,7 @@ if __name__ == "__main__":
                 }
             )
 
-        file = os.path.join(OLD_music_library, f"{OLD_title}.mp3")
+        file = path.join(OLD_music_library, f"{OLD_title}.mp3")
         sorted_data_title = sort_based_on_score(scores, "title_score")
         sorted_data_artist = sort_based_on_score(scores, "artist_score")
 
@@ -65,11 +86,11 @@ if __name__ == "__main__":
             next(iter(sorted_data_title[0])) == 100
             and sorted_data_title[0][next(iter(sorted_data_title[0]))]["ツ"] == 100
         ):
-            os.system("clear")
+            system("clear")
             print(
                 f"{str(i).zfill(len(str(old_file_amt)))}/{old_file_amt}\nremove: {file}\n"
             )
-            os.rename(file, os.path.join("!removal", f"{OLD_title}.mp3"))
+            rename(file, path.join("!removal", f"{OLD_title}.mp3"))
 
         # user decisions
         else:
@@ -84,28 +105,28 @@ if __name__ == "__main__":
             input_key = ""
             while input_key not in ["r", "k", "i"]:
                 input_key = read_key()
-                time.sleep(0.5)  # temp solution before wait for key up
+                sleep(0.5)  # temp solution before wait for key up
                 # if input_key not in ["r", "k", "i"]:
                 #     input_key = ""
-                #     os.system("clear")
+                #     system("clear")
                 #     print("press h to continue..")
                 #     while input_key != "h":
                 #         input_key = read_key()
                 #         time.sleep(0.5)
                 if input_key == "r":
-                    os.system("clear")
+                    system("clear")
                     print(
                         f"{str(i).zfill(len(str(old_file_amt)))}/{old_file_amt}\nremove: {file}\n"
                     )
-                    os.rename(file, os.path.join("!remove", f"{OLD_title}.mp3"))
+                    rename(file, path.join("!remove", f"{OLD_title}.mp3"))
                 elif input_key == "k":
-                    os.system("clear")
+                    system("clear")
                     print(
                         f"{str(i).zfill(len(str(old_file_amt)))}/{old_file_amt}\nkeep: {file}\n"
                     )
-                    os.rename(file, os.path.join("!keep", f"{OLD_title}.mp3"))
+                    rename(file, path.join("!keep", f"{OLD_title}.mp3"))
                 elif input_key == "i":
-                    os.system("clear")
+                    system("clear")
                     print(
                         f"{str(i).zfill(len(str(old_file_amt)))}/{old_file_amt}\nignore: {file}\n"
                     )

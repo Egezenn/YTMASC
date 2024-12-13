@@ -8,6 +8,7 @@ pandas
 pillow
 prettytable
 pyautogui
+python-Levenshtein
 PyYAML
 yt-dlp
 # selenium

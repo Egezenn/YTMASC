@@ -1,8 +1,12 @@
 "Provides chained functions for CLI"
 
 from argparse import ArgumentParser
-from inspect import currentframe
 
+from ytmasc.downloader import download
+
+
+from .dbtools.comparison import compare
+from .dbtools.find_unpaired import find_unpaired_files
 from .intermediates import update_library_with_manual_changes_on_files, run_tasks
 from .tk_gui import create_gui
 from .parser import parse_library_page, parse_ri_music_db
@@ -10,7 +14,7 @@ from .utility import (
     convert_csv_to_json,
     convert_json_to_csv,
     csv_library_data_path,
-    get_current_function,
+    download_path,
     library_data_path,
     read_txt,
     read_yaml,
@@ -21,7 +25,6 @@ from .utility import (
 
 def get_cli_args():
     parser = ArgumentParser()
-    # entry point
     parser.add_argument("positional_arg", nargs="?", type=str, help="gui|run|set")
 
     # yaml config settings
@@ -41,50 +44,61 @@ def get_cli_args():
         help="parser -> inbetweenDelay, dialogWaitDelay == float, else == boolean | byte",
     )
 
-    # add these to entry point rather than an option? they're not really configuring anything but rather are utility
     parser.add_argument(
         "--update_library_with_manual_changes_on_files", action="store_true", help=""
     )
     parser.add_argument("--export_library_as_csv", action="store_true", help="")
     parser.add_argument("--import_csv_to_library", action="store_true", help="")
     parser.add_argument("--update_tags", action="store_true", help="")
+    parser.add_argument("--db_compare", action="store_true", help="")
+    parser.add_argument("--db_find_unpaired", action="store_true", help="")
 
     return parser.parse_args()
 
 
 def handle_cli(args: classmethod):
-    # launch gui
     if args.positional_arg == "gui" or args.positional_arg == "g":
         create_gui()
 
-    # run according to the configuration
     elif args.positional_arg == "run" or args.positional_arg == "r":
-        handle_run(args)
+        handle_run()
 
-    # show settings if index 2 is empty or invalid, otherwise set values
     elif args.positional_arg == "set" or args.positional_arg == "s":
         handle_settings(args)
 
-    elif args.update_library_with_manual_changes_on_files:
+    else:
+        if not (
+            args.update_library_with_manual_changes_on_files
+            or args.export_library_as_csv
+            or args.import_csv_to_library
+            or args.update_tags
+            or args.db_compare
+        ):
+            print(
+                "no args given, type -h to see what is available"
+            )  # replace this later on
+
+    if args.update_library_with_manual_changes_on_files:
         update_library_with_manual_changes_on_files()
 
-    elif args.export_library_as_csv:
+    if args.export_library_as_csv:
         convert_json_to_csv(library_data_path, csv_library_data_path)
 
-    elif args.import_csv_to_library:
+    if args.import_csv_to_library:
         convert_csv_to_json(csv_library_data_path, library_data_path)
         # should work properly now with fillna()
 
-    elif args.update_tags:
+    if args.update_tags:
         pass
 
-    else:
-        print(
-            "no args given, type -h to see what is available"
-        )  # replace this later on
+    if args.db_compare:
+        compare()
+
+    if args.db_find_unpaired:
+        find_unpaired_files(download_path)
 
 
-def handle_settings(args):
+def handle_settings(args: classmethod):
     "Handles user input for configuring the config.yaml"
     config = read_yaml(yaml_config)
 
@@ -108,8 +122,7 @@ def handle_settings(args):
     update_yaml(yaml_config, config)
 
 
-def handle_run(args):
-    current_function = get_current_function(currentframe())
+def handle_run():
     config = read_yaml(yaml_config)
     if config["parser"]["parse_library_page"]:
         parse_library_page(

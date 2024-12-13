@@ -266,7 +266,7 @@ def check_if_data_exists_and_set_checkbutton(checkbutton: tk.Checkbutton):
         debug_print(
             current_file,
             current_function,
-            "e",
+            "i",
             f"Data doesn't exist, setting `lpo_rf_state` as true and disabling `lpo_rf`",
             error_type="FileNotFoundError",
         )

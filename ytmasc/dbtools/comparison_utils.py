@@ -3,31 +3,41 @@ import os
 from mutagen.easyid3 import EasyID3
 from prettytable import PrettyTable
 
+from ..utility import source_audio_ext
+
 OLD_music_library = r"old"
-NEW_music_library = r"new"  # or downloads
+NEW_music_library = r"downloads"
 files_to_keep = r"!keep"
 files_to_remove = r"!remove"
 
 
-def create_old_database():
-    OLD_FILES = os.listdir(OLD_music_library)
+def list_mp3(dir: str) -> list:
+    filtered = [f for f in os.listdir(dir) if f.endswith(".mp3")]
+
+    return filtered
+
+
+def create_old_database(title_filename_fallback=False):
+    OLD_FILES = list_mp3(OLD_music_library)
     OLD_DATABASE = []
     for OLD_song in OLD_FILES:
         data = EasyID3(os.path.join(OLD_music_library, OLD_song))
-        title = OLD_song.split(".")[0]  # make a switch based on an user input
-        # title = data.get("Title")[0]
+        if title_filename_fallback:
+            title = OLD_song.split(".")[0]  # make a switch based on an user input
+        else:
+            title = data.get("Title")[0]
         artist = data.get("Artist")[0]
         OLD_DATABASE.append({title: artist})
 
     old_file_amt = 0
-    for file in OLD_FILES:
+    for _ in OLD_FILES:
         old_file_amt += 1
 
     return OLD_DATABASE, old_file_amt
 
 
 def create_new_database():
-    NEW_FILES = os.listdir(NEW_music_library)
+    NEW_FILES = list_mp3(NEW_music_library)
     NEW_DATABASE = []
     for NEW_song in NEW_FILES:
         data = EasyID3(os.path.join(NEW_music_library, NEW_song))

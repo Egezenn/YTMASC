@@ -93,7 +93,7 @@ def convert(key: str):
             debug_print(
                 current_file,
                 current_function,
-                "e",
+                "w",
                 f"{output_audio_file} doesn't exist.",
                 error_type="FileNotFoundError",
             )
@@ -102,7 +102,7 @@ def convert(key: str):
         debug_print(
             current_file,
             current_function,
-            "e",
+            "w",
             f"{output_audio_file} already exists, skipping conversion.",
             error_type="FileExistsError",
         )

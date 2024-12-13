@@ -94,7 +94,7 @@ def tag(key, value, digit_amount, num):
         debug_print(
             current_file,
             current_function,
-            "e",
+            "w",
             f"{audio_file} doesn't exist, skipping tagging.",
             error_type="FileNotFoundError",
         )
@@ -103,7 +103,7 @@ def tag(key, value, digit_amount, num):
         debug_print(
             current_file,
             current_function,
-            "e",
+            "w",
             f"{audio_file} doesn't exist, skipping tagging. Might be related to YouTube key updates?",
             error_type="OSError",
         )

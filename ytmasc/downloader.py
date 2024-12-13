@@ -105,7 +105,7 @@ def download(key: str) -> list[str]:
                 debug_print(
                     current_file,
                     current_function,
-                    "e",
+                    "i",
                     f"{key + ext} already exists, skipping download.",
                     error_type="FileExistsError",
                 )
@@ -143,7 +143,7 @@ def download(key: str) -> list[str]:
                 debug_print(
                     current_file,
                     current_function,
-                    "e",
+                    "i",
                     f"{key + download_ext} already exists, skipping download.",
                     error_type="FileExistsError",
                 )
@@ -154,7 +154,7 @@ def download(key: str) -> list[str]:
                     debug_print(
                         current_file,
                         current_function,
-                        "e",
+                        "w",
                         f"{url} is not available, skipping.",
                         error_type="JustYouTubeThings",
                     )
@@ -162,7 +162,7 @@ def download(key: str) -> list[str]:
                     debug_print(
                         current_file,
                         current_function,
-                        "e",
+                        "w",
                         f"Classified as bot, unable to download {url}.",
                         error_type="JustYouTubeThings",
                     )
@@ -170,7 +170,7 @@ def download(key: str) -> list[str]:
                     debug_print(
                         current_file,
                         current_function,
-                        "e",
+                        "w",
                         f"Classified as bot, unable to download {url}.",
                         error_type="JustYouTubeThings",
                     )
@@ -178,7 +178,7 @@ def download(key: str) -> list[str]:
                     debug_print(
                         current_file,
                         current_function,
-                        "e",
+                        "w",
                         f"Some other error on downloading {url}.",
                         error_type="JustYouTubeThings",
                     )
@@ -188,7 +188,7 @@ def download(key: str) -> list[str]:
         debug_print(
             current_file,
             current_function,
-            "e",
+            "i",
             f"{key + source_cover_ext} already exists, skipping download.",
             error_type="FileExistsError",
         )
@@ -257,7 +257,7 @@ def download(key: str) -> list[str]:
             debug_print(
                 current_file,
                 current_function,
-                "e",
+                "i",
                 f"{key + source_cover_ext} already exists, skipping download.",
                 error_type="FileExistsError",
             )
@@ -280,7 +280,7 @@ def download(key: str) -> list[str]:
         debug_print(
             current_file,
             current_function,
-            "e",
+            "w",
             f"{key + download_ext} already exists!",
             error_type="FileExistsError",
         )
@@ -289,7 +289,7 @@ def download(key: str) -> list[str]:
         debug_print(
             current_file,
             current_function,
-            "e",
+            "w",
             f"{key + download_ext} doesn't exist!",
             error_type="FileNotFoundError",
         )
@@ -322,7 +322,7 @@ def download(key: str) -> list[str]:
         debug_print(
             current_file,
             current_function,
-            "e",
+            "w",
             f"{key + source_cover_ext} file already exists!",
             error_type="FileExistsError",
         )
@@ -331,7 +331,7 @@ def download(key: str) -> list[str]:
         debug_print(
             current_file,
             current_function,
-            "e",
+            "w",
             f"{key + source_cover_ext} file doesn't exist!",
             error_type="FileNotFoundError",
         )

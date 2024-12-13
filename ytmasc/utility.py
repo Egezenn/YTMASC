@@ -84,10 +84,14 @@ def debug_print(
                 message_type = "INFO"
                 formatting_string += Formatting.CYAN
             elif message_type == "e":
-                message_type = f"ERROR-{kwargs.get('error_type')}"
+                message_type = f"ERROR"
+                formatting_string += Formatting.RED
+            elif message_type == "w":
+                message_type = f"WARNING"
                 formatting_string += Formatting.YELLOW
-            elif message_type == "w":  # unused
-                message_type = "WARNING"
+
+            if "error_type" in kwargs:
+                message_type += f"-{kwargs.get('error_type')}"
 
             if kwargs.get("purple"):
                 formatting_string += Formatting.PURPLE
