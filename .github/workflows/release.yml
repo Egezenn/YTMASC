@@ -31,7 +31,7 @@ jobs:
           ren __main__.exe ytmasc.exe
           zip -q -r ..\..\test.zip .
           cd ..\..
-          echo "RELEASE_NAME=$(Get-Date -Format 'yyyy-MM-dd').Xi" | Out-File -FilePath $Env:GITHUB_ENV -Append
+          echo "RELEASE_NAME=$(Get-Date -Format 'yyyy-MM-dd').alpha" | Out-File -FilePath $Env:GITHUB_ENV -Append
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
