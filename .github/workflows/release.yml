@@ -3,9 +3,6 @@ name: Release
 on:
   workflow_dispatch:
 
-env:
-  RELEASE_NAME: $(date +'%Y-%m-%d').Xi
-
 permissions:
   contents: write
 
@@ -30,6 +27,7 @@ jobs:
 
       - name: Release preparations
         run: |
+          echo "RELEASE_NAME=$(date +'%Y-%m-%d').Xi" >> $GITHUB_ENV
           move dist\__main__\__main__.exe .
           ren __main__.exe ytmasc.exe
 
