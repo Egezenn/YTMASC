@@ -30,7 +30,8 @@ jobs:
 
       - name: Release preparations
         run: |
-          ren dist\__main__\__main__.exe ytmasc.exe
+          move dist\__main__\__main__.exe .
+          ren __main__.exe ytmasc.exe
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
