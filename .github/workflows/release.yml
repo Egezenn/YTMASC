@@ -3,6 +3,9 @@ name: Release
 on:
   workflow_dispatch:
 
+env:
+  RELEASE_NAME: $(date +'%Y-%m-%d').Xi
+
 permissions:
   contents: write
 
@@ -27,8 +30,7 @@ jobs:
 
       - name: Release preparations
         run: |
-          mv dist\__main__\__main__.exe ytmasc.exe
-          echo "RELEASE_NAME=$(date +'%Y-%m-%d').Xi" >> $GITHUB_ENV
+          ren dist\__main__\__main__.exe ytmasc.exe
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
