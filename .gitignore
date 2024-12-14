@@ -16,7 +16,8 @@ old
 # misc
 Ξtestfile.ipynb
 
-# PyInstaller directories
+# PyInstaller directories & files
 build
 dist
 *.spec
+*.exe
