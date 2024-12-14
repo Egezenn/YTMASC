@@ -9,9 +9,9 @@ It's features are:
 - Maintaining a data file for your music for an easily reproducible collection
 - Automatic downloading, converting and tagging
 - Some helper functions to modify your data file easier and for easy migration
-- A GUI and a CLI (no executable, yet)
+- A GUI and a CLI (shipped as a binary for Windows!)
 
-The project just keeps expanding as I learn more stuff and want to implement niche things. So it's currently in.. *alpha*? *beta*? no it's in Xi (`Ξ`), because why not. However it's pretty much usable with the state it's in, don't mind the lenghty `todo.md` :D
+The project just keeps expanding as I learn more stuff and want to implement niche things. So it's currently in Alpha stages, you may see new features come and go every now and then.
 
 ## I Requirements and notes
 

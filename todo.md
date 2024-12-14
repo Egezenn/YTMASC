@@ -19,6 +19,8 @@
 
 ## II Highest Importance
 
+- [ ] Make an executable for Linux aswell
+
 - [ ] Addition of `database_tools`
   - [x] Write a utility script to check if there are missing pairs
   - [x] `matcher.py`, helper script to make the switch from your old archive.
@@ -52,9 +54,7 @@
 
 ## III Requires Research
 
-- [ ] Make the entire project an executable that is usable with command line input with defaults if parameters aren't changed
-  - [ ] PyInstaller?
-  - [ ] Find out if there is a better way to structure the logic or make it more maintainable in general [click](https://click.palletsprojects.com/en/8.1.x/)?
+- [ ] Find out if there is a better way to structure the CLI logic or make it more maintainable in general [click](https://click.palletsprojects.com/en/8.1.x/)?
 
 - [ ] Do async downloading
 
@@ -128,6 +128,9 @@ Current TK GUI will be replaced with something like ImGui.
 ## Latest Implementations & Fixes
 
 NOTE: These will be removed after a while.
+
+- [x] Make the entire project an executable that is usable with command line input with defaults if parameters aren't changed
+  - [x] PyInstaller
 
 - [x] Ignore user config, copy the `defaultConfig.yaml` if there isn't a config file yet.
 
