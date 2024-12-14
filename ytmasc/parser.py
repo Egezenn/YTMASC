@@ -6,9 +6,9 @@ from time import sleep
 
 from bs4 import BeautifulSoup
 
-from .fetcher import fetch
-from .intermediates import delete_library_page_files, find_newest_ri_music_export
-from .utility import (
+from ytmasc.fetcher import fetch
+from ytmasc.intermediates import delete_library_page_files, find_newest_ri_music_export
+from ytmasc.utility import (
     debug_print,
     get_current_file,
     get_current_function,

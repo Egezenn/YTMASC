@@ -6,7 +6,7 @@ from inspect import currentframe
 from fuzzywuzzy import fuzz
 from keyboard import read_key
 
-from .comparison_utils import (
+from ytmasc.dbtools.comparison_utils import (
     NEW_music_library,
     OLD_music_library,
     create_new_database,
@@ -18,7 +18,7 @@ from .comparison_utils import (
     insert_rows,
     sort_based_on_score,
 )
-from ..utility import debug_print, get_current_file, get_current_function
+from ytmasc.utility import debug_print, get_current_file, get_current_function
 
 current_file = get_current_file(__file__)
 

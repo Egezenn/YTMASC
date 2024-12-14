@@ -4,7 +4,7 @@ from os import path
 
 from eyed3 import load as loadmp3
 
-from .utility import (
+from ytmasc.utility import (
     audio_conversion_ext,
     count_files,
     debug_print,

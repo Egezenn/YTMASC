@@ -2,10 +2,21 @@
 .venv
 .vscode
 __pycache__
+
+# project files
+config.yaml
 data
 downloads
 temp
+# db folders
+!keep
+!remove
+old
 
-config.yaml
-
+# misc
 Ξtestfile.ipynb
+
+# PyInstaller directories
+build
+dist
+*.spec

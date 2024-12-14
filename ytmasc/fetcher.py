@@ -10,7 +10,7 @@ from platform import system
 from pyautogui import click, hotkey, moveTo, press, sleep, typewrite
 from pygetwindow import getWindowsWithTitle
 
-from .utility import (
+from ytmasc.utility import (
     current_path,
     debug_print,
     get_current_file,

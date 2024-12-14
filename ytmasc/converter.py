@@ -4,7 +4,7 @@ from os import path, remove
 
 from ffmpeg import input as finput
 
-from .utility import (
+from ytmasc.utility import (
     audio_conversion_ext,
     debug_print,
     download_path,

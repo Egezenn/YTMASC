@@ -3,7 +3,7 @@ import os
 from mutagen.easyid3 import EasyID3
 from prettytable import PrettyTable
 
-from ..utility import source_audio_ext
+from ytmasc.utility import audio_conversion_ext
 
 OLD_music_library = r"old"
 NEW_music_library = r"downloads"
@@ -12,7 +12,7 @@ files_to_remove = r"!remove"
 
 
 def list_mp3(dir: str) -> list:
-    filtered = [f for f in os.listdir(dir) if f.endswith(".mp3")]
+    filtered = [f for f in os.listdir(dir) if f.endswith(audio_conversion_ext)]
 
     return filtered
 

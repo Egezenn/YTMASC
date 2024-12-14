@@ -8,7 +8,7 @@ from PIL import Image
 from yt_dlp import YoutubeDL
 from yt_dlp.utils import DownloadError
 
-from .utility import (
+from ytmasc.utility import (
     append_txt,
     current_path,
     debug_print,

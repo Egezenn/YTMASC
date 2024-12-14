@@ -6,10 +6,10 @@ from shutil import rmtree
 
 from eyed3 import load as loadmp3
 
-from .converter import convert_bulk
-from .downloader import download_bulk
-from .tagger import tag_bulk
-from .utility import (
+from ytmasc.converter import convert_bulk
+from ytmasc.downloader import download_bulk
+from ytmasc.tagger import tag_bulk
+from ytmasc.utility import (
     audio_conversion_ext,
     current_path,
     data_path,
@@ -17,13 +17,15 @@ from .utility import (
     download_path,
     get_current_file,
     get_current_function,
-    library_data,
     library_data_path,
-    library_page,
+    library_data,
     library_page_path,
+    library_page,
     read_json,
     sort_dictionary_based_on_value_inside_nested_dictionary,
+    update_yaml,
     write_json,
+    yaml_config,
 )
 
 current_file = get_current_file(__file__)
@@ -142,3 +144,28 @@ def check_if_data_exists():
         or path.isfile(library_data_path)
         else False
     )
+
+
+def create_config():
+    default_config = {
+        "fetcherArgs": {
+            "closingDelay": 3,  # 5,
+            "dialogWaitDelay": 0.5,  # 3
+            "inbetweenDelay": 0.2,  # 2
+            "openingDelay": 6,  # 4
+            "resendAmount": 60,  # 1
+            "savePageAsIndexOnRightClick": 5,  # 6
+        },
+        "parser": {
+            "delete_library_page_files_afterwards": 0,
+            "parse_library_page": 0,
+            "parse_ri_music_db": 0,
+            "run_fetcher": 0,
+        },
+        "tasks": {
+            "convert": 1,
+            "download": 1,
+            "tag": 1,
+        },
+    }
+    update_yaml(yaml_config, default_config)

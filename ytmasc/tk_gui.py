@@ -9,13 +9,18 @@ from inspect import currentframe
 from os import path
 from threading import Thread
 
-from .intermediates import (
+from ytmasc.intermediates import (
     check_if_data_exists,
     run_tasks,
     update_library_with_manual_changes_on_files,
 )
-from .parser import parse_library_page, parse_ri_music_db
-from .utility import debug_print, get_current_file, get_current_function, library_data
+from ytmasc.parser import parse_library_page, parse_ri_music_db
+from ytmasc.utility import (
+    debug_print,
+    get_current_file,
+    get_current_function,
+    library_data,
+)
 
 current_file = get_current_file(__file__)
 

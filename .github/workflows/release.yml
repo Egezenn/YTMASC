@@ -1,0 +1,41 @@
+name: Release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Build executable with PyInstaller
+        run: pyinstaller ./ytmasc/__main__.py
+
+      - name: Release preparations
+        run: |
+          cd ./dist/__main__
+          mv __main__.exe ytmasc.exe
+          echo "RELEASE_NAME=$(date +'%Y-%m-%d').Xi" >> $GITHUB_ENV
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ env.RELEASE_NAME }}
+          body: Xi release
+          files: ytmasc.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

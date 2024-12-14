@@ -5,12 +5,12 @@ from argparse import ArgumentParser
 from ytmasc.downloader import download
 
 
-from .dbtools.comparison import compare
-from .dbtools.find_unpaired import find_unpaired_files
-from .intermediates import update_library_with_manual_changes_on_files, run_tasks
-from .tk_gui import create_gui
-from .parser import parse_library_page, parse_ri_music_db
-from .utility import (
+from ytmasc.dbtools.comparison import compare
+from ytmasc.dbtools.find_unpaired import find_unpaired_files
+from ytmasc.intermediates import update_library_with_manual_changes_on_files, run_tasks
+from ytmasc.tk_gui import create_gui
+from ytmasc.parser import parse_library_page, parse_ri_music_db
+from ytmasc.utility import (
     convert_csv_to_json,
     convert_json_to_csv,
     csv_library_data_path,
