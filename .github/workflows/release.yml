@@ -8,7 +8,7 @@ permissions:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
       - uses: actions/checkout@v4
@@ -23,11 +23,11 @@ jobs:
           pip install -r requirements.txt
 
       - name: Build executable with PyInstaller
-        run: pyinstaller ./ytmasc/__main__.py
+        run: pyinstaller .\ytmasc\__main__.py
 
       - name: Release preparations
         run: |
-          mv dist/__main__/__main__.exe ytmasc.exe
+          mv dist\__main__\__main__.exe ytmasc.exe
           echo "RELEASE_NAME=$(date +'%Y-%m-%d').Xi" >> $GITHUB_ENV
 
       - name: Create Release
