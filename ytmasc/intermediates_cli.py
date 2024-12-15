@@ -67,7 +67,14 @@ def handle_cli(args: classmethod):
         handle_settings(args)
 
     else:
-        create_gui()
+        if not (
+            args.update_library_with_manual_changes_on_files
+            or args.export_library_as_csv
+            or args.import_csv_to_library
+            or args.update_tags
+            or args.db_compare
+        ):
+            create_gui()
 
     if args.update_library_with_manual_changes_on_files:
         update_library_with_manual_changes_on_files()

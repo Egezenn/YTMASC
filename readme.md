@@ -1,11 +1,16 @@
 # YTMASC
 
+<a href="#"><img alt="horrible orange triangle" style="padding-left:20px;" align="left" src="assets/icon.svg"></a>
+
 YTMASC(**Y**ou**T**ube **M**usic **A**udio **S**craper & syn**C**hronizer) in a nutshell, aims to get your music library off of YouTube and provide you an offline backup of it along with other maintenance niceties.
+
+Grab the latest alpha version [here](https://github.com/Egezenn/YTMASC/releases)!
 
 It's features are:
 
 - Scraping your library page from YouTube
 - Importing favorites from a [RiMusic](https://github.com/fast4x/RiMusic) database
+- Import a CSV of your own (columns are: `ID`, `artist`, `title`)
 - Maintaining a data file for your music for an easily reproducible collection
 - Automatic downloading, converting and tagging
 - Some helper functions to modify your data file easier and for easy migration
@@ -27,7 +32,7 @@ The project just keeps expanding as I learn more stuff and want to implement nic
 - You need `python3.11`, `ffmpeg` and `python3-tk` packages.
   - You can run `linuxpkgRequirements.sh` via the terminal.
 
-### I.C Required python packages
+### I.C Required python packages to run from source
 
 - Run `pip install -r requirements.txt` command via the terminal.
 
