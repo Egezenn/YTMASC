@@ -27,7 +27,9 @@ jobs:
           pip install -r requirements.txt
 
       - name: Build executable with PyInstaller
-        run: pyinstaller --name=ytmasc --icon=".\assets\icon.ico" --onefile .\ytmasc\__main__.py
+        run: |
+          pyinstaller --name=ytmasc --icon=".\assets\icon.ico" --onefile .\ytmasc\__main__.py
+          move .\dist\ytmasc.exe .
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
@@ -35,6 +37,6 @@ jobs:
           tag_name: ${{ env.RELEASE_NAME }}
           prerelease: true
           body: Alpha stage release
-          files: .\dist\ytmasc.exe
+          files: ytmasc.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
