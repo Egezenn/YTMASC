@@ -22,17 +22,12 @@ jobs:
 
       - name: Install dependencies
         run: |
+          echo "RELEASE_NAME=$(Get-Date -Format 'yyyy-MM-dd').alpha" | Out-File -FilePath $Env:GITHUB_ENV -Append
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
       - name: Build executable with PyInstaller
-        run: pyinstaller .\ytmasc\__main__.py
-
-      - name: Release preparations
-        run: |
-          ren .\dist\__main__\__main__.exe ytmasc.exe
-          Compress-Archive -Path ".\dist\__main__\*" -DestinationPath '.\ytmasc.zip'
-          echo "RELEASE_NAME=$(Get-Date -Format 'yyyy-MM-dd').alpha" | Out-File -FilePath $Env:GITHUB_ENV -Append
+        run: pyinstaller --name=ytmasc --icon=".\assets\icon.ico" --onefile .\ytmasc\__main__.py
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
@@ -40,6 +35,6 @@ jobs:
           tag_name: ${{ env.RELEASE_NAME }}
           prerelease: true
           body: Alpha stage release
-          files: ytmasc.zip
+          files: .\dist\ytmasc.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
