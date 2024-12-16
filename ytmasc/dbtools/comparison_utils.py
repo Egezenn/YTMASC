@@ -5,8 +5,8 @@ from prettytable import PrettyTable
 
 from ytmasc.utility import audio_conversion_ext
 
-OLD_music_library = r"old"
-NEW_music_library = r"downloads"
+old_music_library = r"old"
+new_music_library = r"downloads"
 files_to_keep = r"!keep"
 files_to_remove = r"!remove"
 
@@ -18,36 +18,36 @@ def list_mp3(dir: str) -> list:
 
 
 def create_old_database(title_filename_fallback=False):
-    OLD_FILES = list_mp3(OLD_music_library)
-    OLD_DATABASE = []
-    for OLD_song in OLD_FILES:
-        data = EasyID3(os.path.join(OLD_music_library, OLD_song))
+    old_files = list_mp3(old_music_library)
+    old_database = []
+    for OLD_song in old_files:
+        data = EasyID3(os.path.join(old_music_library, OLD_song))
         if title_filename_fallback:
             title = OLD_song.split(".")[0]  # make a switch based on an user input
         else:
             title = data.get("Title")[0]
         artist = data.get("Artist")[0]
-        OLD_DATABASE.append({title: artist})
+        old_database.append({title: artist})
 
     old_file_amt = 0
-    for _ in OLD_FILES:
+    for _ in old_files:
         old_file_amt += 1
 
-    return OLD_DATABASE, old_file_amt
+    return old_database, old_file_amt
 
 
 def create_new_database():
-    NEW_FILES = list_mp3(NEW_music_library)
-    NEW_DATABASE = []
-    for NEW_song in NEW_FILES:
-        data = EasyID3(os.path.join(NEW_music_library, NEW_song))
+    new_files = list_mp3(new_music_library)
+    new_database = []
+    for NEW_song in new_files:
+        data = EasyID3(os.path.join(new_music_library, NEW_song))
         title = data.get("Title")[0]
         if data.get("Artist") is not None:
             artist = data.get("Artist")[0]
         else:
             artist = "░"  # so that there's no unpacking errors or something xd
-        NEW_DATABASE.append({title: artist})
-    return NEW_DATABASE
+        new_database.append({title: artist})
+    return new_database
 
 
 def sort_based_on_score(scores, by_which):

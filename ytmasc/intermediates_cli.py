@@ -2,9 +2,6 @@
 
 from argparse import ArgumentParser
 
-from ytmasc.downloader import download
-
-
 from ytmasc.dbtools.comparison import compare
 from ytmasc.dbtools.find_unpaired import find_unpaired_files
 from ytmasc.intermediates import update_library_with_manual_changes_on_files, run_tasks

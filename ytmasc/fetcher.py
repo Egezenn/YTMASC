@@ -41,7 +41,7 @@ def fetch(
         sleep(dialog_wait_delay)
 
         # scrolling the page down and getting to save dialog
-        for amount in range(resend_amount):
+        for _ in range(resend_amount):
             press(["end"])
             sleep(inbetween_delay)
         moveTo(0, 540)

@@ -4,10 +4,9 @@ probably should've done this with classes and stuff but didn't expect it to get 
 would rewrite the whole thing rather than modify it.
 """
 
-import tkinter as tk
 from inspect import currentframe
-from os import path
 from threading import Thread
+import tkinter as tk
 
 from ytmasc.intermediates import (
     check_if_data_exists,

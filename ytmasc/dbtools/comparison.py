@@ -7,8 +7,8 @@ from fuzzywuzzy import fuzz
 from keyboard import read_key
 
 from ytmasc.dbtools.comparison_utils import (
-    NEW_music_library,
-    OLD_music_library,
+    new_music_library,
+    old_music_library,
     create_new_database,
     create_old_database,
     files_to_keep,
@@ -29,20 +29,20 @@ def compare():
     with a CLI that handles keypresses.
     """
 
-    if not path.isdir(OLD_music_library):
+    if not path.isdir(old_music_library):
         current_function = get_current_function(currentframe())
 
         debug_print(
             current_file,
             current_function,
             "w",
-            f"Directory `{OLD_music_library}` doesn't exist, creating directory. Put your old music files here and rerun the command.",
+            f"Directory `{old_music_library}` doesn't exist, creating directory. Put your old music files here and rerun the command.",
         )
-        mkdir(OLD_music_library)
+        mkdir(old_music_library)
         exit()
 
     for directory in [
-        NEW_music_library,
+        new_music_library,
         files_to_keep,
         files_to_remove,
     ]:
@@ -50,23 +50,23 @@ def compare():
             mkdir(directory)
 
     # database to be replaced
-    OLD_DATABASE, old_file_amt = create_old_database()
+    old_database, old_file_amt = create_old_database()
 
     # ytmasc database
-    NEW_DATABASE = create_new_database()
+    new_database = create_new_database()
 
     # comparisons
     system("clear")
-    for i, data_OLD in enumerate(OLD_DATABASE, start=1):
+    for i, data_OLD in enumerate(old_database, start=1):
         scores = []
-        OLD_title = list(data_OLD.items())[0][0]
-        OLD_artist = list(data_OLD.items())[0][1]
+        old_title = list(data_OLD.items())[0][0]
+        old_artist = list(data_OLD.items())[0][1]
 
-        for data_NEW in NEW_DATABASE:
+        for data_NEW in new_database:
             NEW_title = list(data_NEW.items())[0][0]
             NEW_artist = list(data_NEW.items())[0][1]
-            title_score = fuzz.ratio(OLD_title.lower(), NEW_title.lower())
-            artist_score = fuzz.ratio(OLD_artist.lower(), NEW_artist.lower())
+            title_score = fuzz.ratio(old_title.lower(), NEW_title.lower())
+            artist_score = fuzz.ratio(old_artist.lower(), NEW_artist.lower())
             scores.append(
                 {
                     title_score: {
@@ -77,7 +77,7 @@ def compare():
                 }
             )
 
-        file = path.join(OLD_music_library, f"{OLD_title}.mp3")
+        file = path.join(old_music_library, f"{old_title}.mp3")
         sorted_data_title = sort_based_on_score(scores, "title_score")
         sorted_data_artist = sort_based_on_score(scores, "artist_score")
 
@@ -90,15 +90,15 @@ def compare():
             print(
                 f"{str(i).zfill(len(str(old_file_amt)))}/{old_file_amt}\nremove: {file}\n"
             )
-            rename(file, path.join("!removal", f"{OLD_title}.mp3"))
+            rename(file, path.join("!removal", f"{old_title}.mp3"))
 
         # user decisions
         else:
             print(f"r=remove, k=keep, i=ignore\n")
             table = init_table()
-            insert_old_file_data(table, OLD_title, OLD_artist, column_to_mark=1)
+            insert_old_file_data(table, old_title, old_artist, column_to_mark=1)
             insert_rows(sorted_data_title, table, truncate_at=30)
-            insert_old_file_data(table, OLD_title, OLD_artist, column_to_mark=2)
+            insert_old_file_data(table, old_title, old_artist, column_to_mark=2)
             insert_rows(sorted_data_artist, table, truncate_at=30)
             print(table)
 
@@ -118,13 +118,13 @@ def compare():
                     print(
                         f"{str(i).zfill(len(str(old_file_amt)))}/{old_file_amt}\nremove: {file}\n"
                     )
-                    rename(file, path.join("!remove", f"{OLD_title}.mp3"))
+                    rename(file, path.join("!remove", f"{old_title}.mp3"))
                 elif input_key == "k":
                     system("clear")
                     print(
                         f"{str(i).zfill(len(str(old_file_amt)))}/{old_file_amt}\nkeep: {file}\n"
                     )
-                    rename(file, path.join("!keep", f"{OLD_title}.mp3"))
+                    rename(file, path.join("!keep", f"{old_title}.mp3"))
                 elif input_key == "i":
                     system("clear")
                     print(
