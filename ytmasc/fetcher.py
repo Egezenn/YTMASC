@@ -2,9 +2,10 @@
 Provides a function to get the library page on YouTube.
 """
 
-import webbrowser
+from logging import getLogger
 from os import path
 from platform import system
+from webbrowser import open_new_tab
 
 from pyautogui import click, hotkey, moveTo, press, sleep, typewrite
 from pygetwindow import getWindowsWithTitle
@@ -13,6 +14,8 @@ from ytmasc.utility import (
     current_path,
     library_page_path,
 )
+
+logger = getLogger(__name__)
 
 
 def fetch(
@@ -28,7 +31,7 @@ def fetch(
     systemInfo = system()
     if systemInfo == "Windows":
         # initializing the browser
-        webbrowser.open_new_tab("https://music.youtube.com/playlist?list=LM")
+        open_new_tab("https://music.youtube.com/playlist?list=LM")
         sleep(opening_delay)
         hotkey("winleft", "up")
         sleep(dialog_wait_delay)
@@ -57,8 +60,7 @@ def fetch(
         sleep(dialog_wait_delay)
 
     else:
+        logger.error(
+            f"[UnsupportedConfiguration] System is {systemInfo}, fetcher script doesn't support this OS."
+        )
         pass
-        # debug_print("e",
-        #     f"System is {systemInfo}, currently {current_file} doesn't support this OS.",
-        #     error_type="UnsupportedConfiguration",
-        # )

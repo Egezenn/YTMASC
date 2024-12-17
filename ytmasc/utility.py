@@ -2,6 +2,7 @@
 from glob import glob
 from json import dump as jdump
 from json import load as jload
+from logging import basicConfig, DEBUG, INFO, WARNING, ERROR, CRITICAL
 from os import getcwd, makedirs, path
 
 from pandas import read_csv as pread_csv
@@ -20,6 +21,7 @@ csv_library_data = r"library.csv"
 fail_log = r"fails.txt"
 library_data = r"library.json"
 library_page = r"libraryPage.htm"
+log = r"log.txt"
 yaml_config = r"config.yaml"
 
 audio_conversion_ext = r".mp3"
@@ -33,71 +35,41 @@ library_data_path = path.join(data_path, library_data)
 library_page_path = path.join(data_path, library_page)
 
 
-# class Formatting:
-#     "Shorthand for terminal formatting sequences"
-#     PURPLE = "\x1b[95m"
-#     LIGHTBLUE = "\x1b[94m"
-#     CYAN = "\x1b[96m"
-#     GREEN = "\x1b[92m"
-#     YELLOW = "\x1b[93m"
-#     RED = "\x1b[91m"
-#     BOLD = "\x1b[1m"
-#     UNDERLINE = "\x1b[4m"
-#     ENDFORMATTING = "\x1b[0m"
-
-
-# def debug_print(
-#     curr_file: str, curr_func: str, message_type: str, message: str, **kwargs: int | str
-# ):
-#     "Prints stuff so we know what's going on"
-#     if debug:
-#         if (
-#             message_type == "task"
-#             and kwargs.get("num") is not None
-#             and (kwargs.get("position") == "start")
-#         ):
-#             print(
-#                 f"{Formatting.PURPLE}{Formatting.BOLD}{Formatting.UNDERLINE}/////////// {message} TASK({kwargs.get('num')}) \\\\\\\\\\\\\\\\\\\\\\{Formatting.ENDFORMATTING}"
-#             )
-#         elif message_type == "task" and kwargs.get("num") is not None:
-#             if kwargs.get("position") == "end":
-#                 print(
-#                     f"{Formatting.PURPLE}{Formatting.BOLD}{Formatting.UNDERLINE}\\\\\\\\\\\\\\\\\\\\\\ {message} TASK({kwargs.get('num')}) ///////////\n{Formatting.ENDFORMATTING}"
-#                 )
-#         else:
-#             formatting_string = ""
-#             if message_type == "i":
-#                 message_type = "INFO"
-#                 formatting_string += Formatting.CYAN
-#             elif message_type == "e":
-#                 message_type = f"ERROR"
-#                 formatting_string += Formatting.RED
-#             elif message_type == "w":
-#                 message_type = f"WARNING"
-#                 formatting_string += Formatting.YELLOW
-
-#             if "error_type" in kwargs:
-#                 message_type += f"-{kwargs.get('error_type')}"
-
-#             if kwargs.get("purple"):
-#                 formatting_string += Formatting.PURPLE
-#             elif kwargs.get("lightblue"):
-#                 formatting_string += Formatting.LIGHTBLUE
-#             elif kwargs.get("cyan"):
-#                 formatting_string += Formatting.CYAN
-#             elif kwargs.get("green"):
-#                 formatting_string += Formatting.GREEN
-#             elif kwargs.get("yellow"):
-#                 formatting_string += Formatting.YELLOW
-#             elif kwargs.get("red"):
-#                 formatting_string += Formatting.RED
-#             if kwargs.get("bold"):
-#                 formatting_string += Formatting.BOLD
-#             if kwargs.get("underline"):
-#                 formatting_string += Formatting.UNDERLINE
-#             print(
-#                 f"{formatting_string}[{curr_file}-{curr_func}-{message_type}] {message}{Formatting.ENDFORMATTING}"
-#             )
+def setup_logging(verbosity):
+    if verbosity == "d":
+        basicConfig(
+            level=DEBUG,
+            format="%(asctime)s | %(name)s - %(funcName)s - %(levelname)s - %(message)s",
+            filename=log,
+            filemode="w",
+        )
+    elif verbosity == "i":
+        basicConfig(
+            level=INFO,
+            format="%(asctime)s | %(name)s - %(funcName)s - %(levelname)s - %(message)s",
+            filename=log,
+            filemode="w",
+        )
+    elif verbosity == "w":
+        basicConfig(
+            level=WARNING,
+            format="%(asctime)s | %(name)s - %(funcName)s - %(levelname)s - %(message)s",
+            filename=log,
+        )
+    elif verbosity == "e":
+        basicConfig(
+            level=ERROR,
+            format="%(asctime)s | %(name)s - %(funcName)s - %(levelname)s - %(message)s",
+            filename=log,
+            filemode="w",
+        )
+    elif verbosity == "c":
+        basicConfig(
+            level=CRITICAL,
+            format="%(asctime)s | %(name)s - %(funcName)s - %(levelname)s - %(message)s",
+            filename=log,
+            filemode="w",
+        )
 
 
 def check_if_directories_exist_and_make_if_not(*directories: str):

@@ -28,7 +28,7 @@ jobs:
 
       - name: Build executable with PyInstaller
         run: |
-          pyinstaller --name=ytmasc --icon=".\assets\icon.ico" --onefile .\ytmasc\__main__.py
+          pyinstaller --name=ytmasc --icon=".\assets\icon.ico" --onefile --noconsole .\ytmasc\__main__.py
           move .\dist\ytmasc.exe .
 
       - name: Create Release

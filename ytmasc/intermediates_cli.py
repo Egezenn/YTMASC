@@ -49,6 +49,9 @@ def get_cli_args():
     parser.add_argument("--update_tags", action="store_true", help="")
     parser.add_argument("--db_compare", action="store_true", help="")
     parser.add_argument("--db_find_unpaired", action="store_true", help="")
+    parser.add_argument(
+        "-v", "--verbosity", default="w", action="store", help="d|i|w|e|c"
+    )
 
     return parser.parse_args()
 

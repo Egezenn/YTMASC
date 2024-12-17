@@ -1,4 +1,5 @@
 "Provides tagging functions for the desired files."
+from logging import getLogger
 from os import path
 
 from eyed3 import load as loadmp3
@@ -11,6 +12,8 @@ from ytmasc.utility import (
     source_cover_ext,
 )
 
+logger = getLogger(__name__)
+
 
 def tag_bulk(json: dict):
     "Tag files in bulk using tag()"
@@ -18,25 +21,18 @@ def tag_bulk(json: dict):
     total_files = count_files(download_path, possible_audio_ext)
     num_digits = len(str(total_files))
     for i, (key, value) in enumerate(json.items(), start=1):
-        # debug_print(
-        #     current_file, current_function, "task", "TAG", num=i, position="start"
-        # )
+
+        logger.info(f"<<< TAG {i} >>>")
         fail_status = tag(key, value, num_digits, i - fail_amount)
-        # debug_print(
-        #     current_file, current_function, "task", "TAG", num=i, position="end"
-        # )
+        logger.info(f">>> TAG {i} <<<")
         fail_amount += fail_status
 
     if not fail_amount:
+        logger.info(f"Successfully tagged all files in {download_path}.")
         pass
-        # debug_print("i",
-        #     f"Successfully tagged all files in {download_path}.",
-        # )
     else:
+        logger.info(f"{fail_amount} out of {i} files couldn't be tagged.")
         pass
-        # debug_print("i",
-        #     f"{fail_amount} out of {i} files couldn't be tagged.",
-        # )
 
 
 def tag(key, value, digit_amount, num):
@@ -56,13 +52,13 @@ def tag(key, value, digit_amount, num):
 
         # if audio_file is not None and audio_file.tag is not None:  # true
         #     if key in json:  # true
-        # debug_print("i",
-        #     f"Tagging {audio_file} with:\n"
-        #     f"\ttitle:\t{title}\n"
-        #     f"\tartist:\t{artist}\n"
-        #     f"\talbum:\t{order_number}\n"
-        #     f"\tcover:\t{cover_file}",
-        # )
+        logger.info(
+            f"Tagging {audio_file} with:\n"
+            f"\ttitle:\t{title}\n"
+            f"\tartist:\t{artist}\n"
+            f"\talbum:\t{order_number}\n"
+            f"\tcover:\t{cover_file}",
+        )
         audio_file.tag.title = title
         audio_file.tag.artist = value["artist"]
         audio_file.tag.album = order_number
@@ -70,23 +66,15 @@ def tag(key, value, digit_amount, num):
             audio_file.tag.images.set(3, cover_art.read(), "image/jpeg")
 
         audio_file.tag.save()
-        # debug_print(
-        #     current_file, current_function, "i", f"Successfully tagged {audio_file}."
-        # )
+        logger.info(f"Successfully tagged {audio_file}.")
         return 0
 
     except FileNotFoundError:
-        # debug_print("w",
-        #     f"{audio_file} doesn't exist, skipping tagging.",
-        #     error_type="FileNotFoundError",
-        # )
+        logger.warning(f"{audio_file} doesn't exist, skipping tagging.")
         return 1
+
     except OSError:
-        # debug_print("w",
-        #     f"{audio_file} doesn't exist, skipping tagging. Might be related to YouTube key updates?",
-        #     error_type="OSError",
-        # )
+        logger.warning(
+            f"{audio_file} doesn't exist, skipping tagging. Might be related to YouTube key updates?"
+        )
         return 1
-
-
-# for forensics: print(rf"{a.tag.title}------{a.tag.artist}------{a.tag.album}------{a.path.split('/')[1]}")

@@ -1,4 +1,5 @@
 "Provides functions to fetch all the desired files."
+from logging import getLogger
 from os import listdir, path, remove, rename
 from urllib.error import HTTPError
 from urllib.request import urlretrieve
@@ -18,6 +19,8 @@ from ytmasc.utility import (
     write_txt,
 )
 
+logger = getLogger(__name__)
+
 
 def download_bulk(json: dict):
     "Downloads files in bulk."
@@ -25,29 +28,26 @@ def download_bulk(json: dict):
     write_txt(fail_log_path, "")
 
     for i, key in enumerate(json.keys(), start=1):
-        # debug_print(
-        #     current_file, current_function, "task", "DOWNLOAD", num=i, position="start"
-        # )
+        logger.info(f"<<< DOWNLOAD {i} >>>")
         fail_state, exception = download(key)
-        # debug_print(
-        #     current_file, current_function, "task", "DOWNLOAD", num=i, position="end"
-        # )
+        logger.info(f"<<< DOWNLOAD {i} >>>")
         fail_amount += fail_state
         if exception != 0:
-            if r"Sign in to confirm you’re not a bot" in exception:
+            if (
+                r"Sign in to confirm you’re not a bot" in exception
+                or r"Failed to extract any player response" in exception
+            ):
                 break  # sleep?
             append_txt(fail_log_path, exception + "\n")
 
     if not fail_amount:
+        logger.info(f"Successfully downloaded all files to {download_path}.")
         pass
-        # debug_print("i",
-        #     f"Successfully downloaded all files to {download_path}.",
-        # )
     else:
+        logger.info(
+            f"{fail_amount} out of {i} files couldn't be downloaded. You can check the logs at {fail_log_path}."
+        )
         pass
-        # debug_print("i",
-        #     f"{fail_amount} out of {i} files couldn't be downloaded. You can check the logs at {fail_log_path}.",
-        # )
 
 
 # TODO return more things if things blow up
@@ -90,17 +90,14 @@ def download(key: str) -> list[str]:
 
         for ext in possible_audio_ext:
             if path.isfile(path.join(download_path, key + ext)):
-                # debug_print("i",
-                #     f"{key + ext} already exists, skipping download.",
-                #     error_type="FileExistsError",
-                # )
+                logger.info(
+                    f"[FileExistsError] {key + ext} already exists, skipping download."
+                )
                 audio_file_found = True
                 break
 
         if not audio_file_found:
-            # debug_print(
-            #     current_file, current_function, "i", f"Downloading audio of {key}."
-            # )
+            logger.info(f"Downloading audio of {key}.")
 
             try:
                 file.download(url)
@@ -117,63 +114,54 @@ def download(key: str) -> list[str]:
                             download_ext = file[-len(ext) :]
                             break
 
-                # debug_print("i",
-                #     f"Successfully downloaded {key + download_ext}.",
-                # )
+                logger.info(f"Successfully downloaded {key + download_ext}.")
 
             except FileExistsError:
-                pass
-                # debug_print("i",
-                #     f"{key + download_ext} already exists, skipping download.",
-                #     error_type="FileExistsError",
-                # )
+                logger.info(
+                    f"[FileExistsError] {key + download_ext} already exists, skipping download."
+                )
 
             except DownloadError as exception:
                 exception = str(exception)
                 if "Video unavailable" in exception:
+                    logger.warning(
+                        f"[JustYouTubeThings] {url} is not available, skipping."
+                    )
                     pass
-                    # debug_print("w",
-                    #     f"{url} is not available, skipping.",
-                    #     error_type="JustYouTubeThings",
-                    # )
                 elif "Sign in to confirm you’re not a bot" in exception:
+                    logger.warning(
+                        f"[JustYouTubeThings] Classified as bot, unable to download {url}."
+                    )
                     pass
-                    # debug_print("w",
-                    #     f"Classified as bot, unable to download {url}.",
-                    #     error_type="JustYouTubeThings",
-                    # )
                 elif "Sign in to confirm your age" in exception:
+                    logger.warning(
+                        f"[JustYouTubeThings] Has age restriction, unable to download {url}."
+                    )
                     pass
-                    # debug_print("w",
-                    #     f"Classified as bot, unable to download {url}.",
-                    #     error_type="JustYouTubeThings",
-                    # )
+                elif "Failed to extract any player response":
+                    logger.critical(
+                        f"[NoInternetOrElse] yt-dlp was unable to get a response, ensure your internet connection."
+                    )
                 else:
+                    logger.warning(
+                        f"[JustYouTubeThings] Some other error on downloading {url}."
+                    )
                     pass
-                    # debug_print("w",
-                    #     f"Some other error on downloading {url}.",
-                    #     error_type="JustYouTubeThings",
-                    # )
                 return 1, exception
 
     if path.isfile(path.join(download_path, key + source_cover_ext)):
-        # debug_print("i",
-        #     f"{key + source_cover_ext} already exists, skipping download.",
-        #     error_type="FileExistsError",
-        # )
+        logger.info(
+            f"[FileExistsError] {key + source_cover_ext} already exists, skipping download."
+        )
         cover_file_found = True
 
     if not cover_file_found:
         try:
-            # debug_print("i",
-            #     f"Downloading {key + source_cover_ext}.",
-            # )
+            logger.info(f"Downloading {key + source_cover_ext}.")
             try:
                 cover = f"https://img.youtube.com/vi/{key}/maxresdefault.jpg"
                 urlretrieve(cover, path.join(temp_path, f"{key + source_cover_ext}"))
-                # debug_print("i",
-                #     f"Successfully downloaded {key + source_cover_ext}.",
-                # )
+                logger.info(f"Successfully downloaded {key + source_cover_ext}.")
 
             # caused mostly by files generated from non-youtube music id's
             # but this is an inconsistent error, it can happen to youtube music files too, have no idea as to why
@@ -182,15 +170,10 @@ def download(key: str) -> list[str]:
                 # try:
                 cover = f"https://img.youtube.com/vi/{key}/hqdefault.jpg"
                 urlretrieve(cover, path.join(temp_path, f"{key + source_cover_ext}"))
-                # debug_print("i",
-                #     f"Successfully downloaded {key + source_cover_ext}.",
-                # )
+                # logger.info(f"Successfully downloaded {key + source_cover_ext}.")
                 # except HTTPError:
                 #     exception = HTTPError.reason
-                #     # debug_print("e",
-                #         f"Couldn't download {key + source_cover_ext}, skipping download.",
-                #         error_type="JustYoutubeThings",
-                #     )
+                #     # logger.error(f"[JustYoutubeThings] Couldn't download {key + source_cover_ext}, skipping download.")
                 #     print(exception)
                 #     return 1, exception
 
@@ -203,83 +186,60 @@ def download(key: str) -> list[str]:
                     (area_to_be_cut, 0, width - area_to_be_cut, height)
                 )
                 cropped_img.save(path.join(temp_path, key + source_cover_ext))
-                # debug_print("i",
-                #     f"Successfully cropped {key + source_cover_ext}.",
-                # )
+                logger.info(f"Successfully cropped {key + source_cover_ext}.")
 
         except FileExistsError:
+            logger.info(
+                f"[FileExistsError] {key + source_cover_ext} already exists, skipping download."
+            )
             pass
-            # debug_print("i",
-            #     f"{key + source_cover_ext} already exists, skipping download.",
-            #     error_type="FileExistsError",
-            # )
 
     try:
         if not audio_file_found:
-            # debug_print("i",
-            #     f"Moving audio file to {download_path}.",
-            # )
+            logger.info(f"Moving audio file to {download_path}.")
             rename(
                 path.join(temp_path, download_filename + download_ext),
                 path.join(download_path, key + download_ext),
             )
 
     except FileExistsError:
+        logger.warning(f"[FileExistsError]{key + download_ext} already exists!")
         remove(path.join(temp_path, download_filename + download_ext))
-        # debug_print("w",
-        #     f"{key + download_ext} already exists!",
-        #     error_type="FileExistsError",
-        # )
 
     except FileNotFoundError:
+        logger.warning(f"[FileNotFoundError] {key + download_ext} doesn't exist!")
         pass
-        # debug_print("w",
-        #     f"{key + download_ext} doesn't exist!",
-        #     error_type="FileNotFoundError",
-        # )
 
     except PermissionError:
+        logger.error(f"[PermissionError] {key + download_ext} is in use!")
         pass
-        # debug_print("e",
-        #     f"{key + download_ext} is in use!",
-        #     error_type="PermissionError",
-        # )
         # TODO wait a little then retry?
 
     try:
         if not cover_file_found:
-            # debug_print("i",
-            #     f"Moving cover file to {download_path}.",
-            # )
+            logger.info(f"Moving cover file to {download_path}.")
             rename(
                 path.join(temp_path, key + source_cover_ext),
                 path.join(download_path, key + source_cover_ext),
             )
-
-            # debug_print("i",
-            #     f"Successfully moved files to {download_path}.",
-            # )
-
+            logger.info(f"Successfully moved files to {download_path}.")
         return 0, 0
 
     except FileExistsError:
         remove(path.join(temp_path, key + source_cover_ext))
-        # debug_print("w",
-        #     f"{key + source_cover_ext} file already exists!",
-        #     error_type="FileExistsError",
-        # )
+        logger.warning(
+            f"[FileExistsError] {key + source_cover_ext} file already exists!"
+        )
 
     except FileNotFoundError:
+        logger.warning(
+            f"[FileNotFoundError] {key + source_cover_ext} file doesn't exist!"
+        )
         pass
-        # debug_print("w",
-        #     f"{key + source_cover_ext} file doesn't exist!",
-        #     error_type="FileNotFoundError",
-        # )
 
     except PermissionError:
+        logger.error(
+            f"[PermissionError] {key + source_cover_ext} is in use!",
+        )
         pass
-        # debug_print("e",
-        #     f"{key + source_cover_ext} is in use!",
-        #     error_type="PermissionError",
-        # )
         # TODO wait a little then retry?

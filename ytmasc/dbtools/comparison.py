@@ -1,4 +1,5 @@
 "Imports an old database and compares each file with new ones."
+from logging import getLogger
 from os import path, mkdir, system, rename
 from time import sleep
 
@@ -18,6 +19,8 @@ from ytmasc.dbtools.comparison_utils import (
     sort_based_on_score,
 )
 
+logger = getLogger(__name__)
+
 
 def compare():
     """
@@ -26,9 +29,9 @@ def compare():
     """
 
     if not path.isdir(old_music_library):
-        # debug_print("w",
-        #     f"Directory `{old_music_library}` doesn't exist, creating directory. Put your old music files here and rerun the command.",
-        # )
+        logger.warning(
+            f"Directory `{old_music_library}` doesn't exist, creating directory. Put your old music files here and rerun the command."
+        )
         mkdir(old_music_library)
         exit()
 

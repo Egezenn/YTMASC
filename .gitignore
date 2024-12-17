@@ -7,6 +7,7 @@ __pycache__
 config.yaml
 data
 downloads
+log.txt
 temp
 # db folders
 !keep

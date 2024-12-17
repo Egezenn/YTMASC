@@ -1,5 +1,6 @@
 "Provides conversion functions for unwanted formats."
 from os import path, remove
+from logging import getLogger
 
 from ffmpeg import input as finput
 
@@ -9,32 +10,24 @@ from ytmasc.utility import (
     source_audio_ext,
 )
 
+logger = getLogger(__name__)
+
 
 def convert_bulk(json: dict):
     "Converts source source_audio_ext to audio_conversion_ext in bulk."
     fail_amount = 0
     for i, key in enumerate(json.keys(), start=1):
-        # debug_print("task",
-        #     "CONVERSION",
-        #     num=i,
-        #     position="start",
-        # )
+        logger.info(f"<<< CONVERSION {i} >>>")
         fail_state = convert(key)
-        # debug_print(
-        #     current_file, current_function, "task", "CONVERSION", num=i, position="end"
-        # )
+        logger.info(f">>> CONVERSION {i} <<<")
         fail_amount += fail_state
 
     if not fail_amount:
+        logger.info(f"Successfully converted all files in {download_path}.")
         pass
-        # debug_print("i",
-        #     f"Successfully converted all files in {download_path}.",
-        # )
     else:
+        logger.info(f"{fail_amount} out of {i} files couldn't be converted.")
         pass
-        # debug_print("i",
-        #     f"{fail_amount} out of {i} files couldn't be converted.",
-        # )
 
 
 def convert(key: str):
@@ -54,9 +47,9 @@ def convert(key: str):
                     audio_file_path = path.join(download_path, audio_file)
                     break
 
-            # debug_print("i",
-            #     f"Converting {audio_file} to {output_audio_file}...",
-            # )
+            logger.info(
+                f"Converting {audio_file} to {output_audio_file}...",
+            )
             finput(audio_file_path).output(
                 output_audio_file_path,
                 acodec="libmp3lame",
@@ -64,19 +57,13 @@ def convert(key: str):
                 loglevel="error",
             ).run()
             remove(audio_file_path)
-            # debug_print("i",
-            #     f"Successfully converted {audio_file} to {output_audio_file}.",
-            # )
+            logger.info(f"Successfully converted {audio_file} to {output_audio_file}.")
             return 0
         else:
-            # debug_print("w",
-            #     f"{output_audio_file} doesn't exist.",
-            #     error_type="FileNotFoundError",
-            # )
+            logger.warning(f"[FileNotFoundError] {output_audio_file} doesn't exist.")
             return 1
     else:
-        # debug_print("w",
-        #     f"{output_audio_file} already exists, skipping conversion.",
-        #     error_type="FileExistsError",
-        # )
+        logger.warning(
+            f"[FileExistsError] {output_audio_file} already exists, skipping conversion."
+        )
         return 0

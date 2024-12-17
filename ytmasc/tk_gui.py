@@ -19,7 +19,6 @@ from ytmasc.utility import (
 
 
 def create_gui():
-    # debug_print(current_file, current_function, "i", "Creating GUI...")
     root = tk.Tk()
     root.geometry("340x560")
 
@@ -197,7 +196,6 @@ def create_gui():
     tagger_uldwmc.grid(row=18, column=0, columnspan=2, pady=(10, 10))
 
     check_if_data_exists_and_set_checkbutton(parser_plp_rf)
-    # debug_print(current_file, current_function, "i", "GUI has been created!")
     root.mainloop()
 
 
@@ -256,14 +254,7 @@ def validate_input(new_value: float) -> bool:
 def check_if_data_exists_and_set_checkbutton(checkbutton: tk.Checkbutton):
     if check_if_data_exists():
         pass
-        # debug_print(current_file, current_function, "i", "Data exists.")
         checkbutton.config(state=tk.NORMAL)
-    else:
-        pass
-        # debug_print("i",
-        #     f"Data doesn't exist, setting `lpo_rf_state` as true and disabling `lpo_rf`",
-        #     error_type="FileNotFoundError",
-        # )
 
         checkbutton.invoke()
         checkbutton.config(state=tk.DISABLED)
