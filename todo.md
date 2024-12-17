@@ -11,11 +11,8 @@
 
 ## I Working on
 
-- [ ] Log bad thumbnails
-  - [ ] `hqdefault`
-  - [ ] Ones that are available as `hqdefault` but aren't a square (`720x720`)
-
-- [ ] Remove quirky file finding method for the `temp` directory in `download` function as it's not required anymore?
+- [ ] Proper logging
+  - bumped up because code is unreadable with the previous *crappy* solution
 
 ## II Highest Importance
 
@@ -69,6 +66,12 @@
 
 ## IV Lowest Importance
 
+- [ ] Log bad thumbnails
+  - [ ] `hqdefault`
+  - [ ] Ones that are available as `hqdefault` but aren't a square (`720x720`)
+
+- [ ] Remove quirky file finding method for the `temp` directory in `download` function as it's not required anymore?
+
 - [ ] Allow the library file to have no artist & no title specified
   - Tell `yt-dlp` to automatically tag it
   - Make a function to fetch missing metadata?
@@ -92,9 +95,7 @@
 
 - [ ] remove exceptions/cases/if statements that shouldn't naturally occur
 
-- [ ] Proper logging
-
-- [ ] Store `debug_output` printouts from each session
+- [ ] Store `debug_print` printouts from each session
 
 - [x] Improve debug prints,
   - [ ] Change errors that are handled to warnings or something else

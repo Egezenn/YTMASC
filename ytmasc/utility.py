@@ -1,6 +1,5 @@
 "Stores all the values required, provides base functions that NOT use these values."
 from glob import glob
-from inspect import getframeinfo
 from json import dump as jdump
 from json import load as jload
 from os import getcwd, makedirs, path
@@ -11,7 +10,6 @@ from yaml import FullLoader
 from yaml import dump as ydump
 from yaml import load as yload
 
-debug = True
 current_path = getcwd()
 
 data_path = r"data"
@@ -35,81 +33,71 @@ library_data_path = path.join(data_path, library_data)
 library_page_path = path.join(data_path, library_page)
 
 
-def get_current_file(file: str):
-    "Provides context as to which module is doing stuff"
-    return path.basename(file.split(".")[0])
+# class Formatting:
+#     "Shorthand for terminal formatting sequences"
+#     PURPLE = "\x1b[95m"
+#     LIGHTBLUE = "\x1b[94m"
+#     CYAN = "\x1b[96m"
+#     GREEN = "\x1b[92m"
+#     YELLOW = "\x1b[93m"
+#     RED = "\x1b[91m"
+#     BOLD = "\x1b[1m"
+#     UNDERLINE = "\x1b[4m"
+#     ENDFORMATTING = "\x1b[0m"
 
 
-def get_current_function(frame):
-    "Provides context as to which function is doing stuff"
-    return getframeinfo(frame).function
+# def debug_print(
+#     curr_file: str, curr_func: str, message_type: str, message: str, **kwargs: int | str
+# ):
+#     "Prints stuff so we know what's going on"
+#     if debug:
+#         if (
+#             message_type == "task"
+#             and kwargs.get("num") is not None
+#             and (kwargs.get("position") == "start")
+#         ):
+#             print(
+#                 f"{Formatting.PURPLE}{Formatting.BOLD}{Formatting.UNDERLINE}/////////// {message} TASK({kwargs.get('num')}) \\\\\\\\\\\\\\\\\\\\\\{Formatting.ENDFORMATTING}"
+#             )
+#         elif message_type == "task" and kwargs.get("num") is not None:
+#             if kwargs.get("position") == "end":
+#                 print(
+#                     f"{Formatting.PURPLE}{Formatting.BOLD}{Formatting.UNDERLINE}\\\\\\\\\\\\\\\\\\\\\\ {message} TASK({kwargs.get('num')}) ///////////\n{Formatting.ENDFORMATTING}"
+#                 )
+#         else:
+#             formatting_string = ""
+#             if message_type == "i":
+#                 message_type = "INFO"
+#                 formatting_string += Formatting.CYAN
+#             elif message_type == "e":
+#                 message_type = f"ERROR"
+#                 formatting_string += Formatting.RED
+#             elif message_type == "w":
+#                 message_type = f"WARNING"
+#                 formatting_string += Formatting.YELLOW
 
+#             if "error_type" in kwargs:
+#                 message_type += f"-{kwargs.get('error_type')}"
 
-class Formatting:
-    "Shorthand for terminal formatting sequences"
-    PURPLE = "\x1b[95m"
-    LIGHTBLUE = "\x1b[94m"
-    CYAN = "\x1b[96m"
-    GREEN = "\x1b[92m"
-    YELLOW = "\x1b[93m"
-    RED = "\x1b[91m"
-    BOLD = "\x1b[1m"
-    UNDERLINE = "\x1b[4m"
-    ENDFORMATTING = "\x1b[0m"
-
-
-def debug_print(
-    curr_file: str, curr_func: str, message_type: str, message: str, **kwargs: int | str
-):
-    "Prints stuff so we know what's going on"
-    if debug:
-        if (
-            message_type == "task"
-            and kwargs.get("num") is not None
-            and (kwargs.get("position") == "start")
-        ):
-            print(
-                f"{Formatting.PURPLE}{Formatting.BOLD}{Formatting.UNDERLINE}/////////// {message} TASK({kwargs.get('num')}) \\\\\\\\\\\\\\\\\\\\\\{Formatting.ENDFORMATTING}"
-            )
-        elif message_type == "task" and kwargs.get("num") is not None:
-            if kwargs.get("position") == "end":
-                print(
-                    f"{Formatting.PURPLE}{Formatting.BOLD}{Formatting.UNDERLINE}\\\\\\\\\\\\\\\\\\\\\\ {message} TASK({kwargs.get('num')}) ///////////\n{Formatting.ENDFORMATTING}"
-                )
-        else:
-            formatting_string = ""
-            if message_type == "i":
-                message_type = "INFO"
-                formatting_string += Formatting.CYAN
-            elif message_type == "e":
-                message_type = f"ERROR"
-                formatting_string += Formatting.RED
-            elif message_type == "w":
-                message_type = f"WARNING"
-                formatting_string += Formatting.YELLOW
-
-            if "error_type" in kwargs:
-                message_type += f"-{kwargs.get('error_type')}"
-
-            if kwargs.get("purple"):
-                formatting_string += Formatting.PURPLE
-            elif kwargs.get("lightblue"):
-                formatting_string += Formatting.LIGHTBLUE
-            elif kwargs.get("cyan"):
-                formatting_string += Formatting.CYAN
-            elif kwargs.get("green"):
-                formatting_string += Formatting.GREEN
-            elif kwargs.get("yellow"):
-                formatting_string += Formatting.YELLOW
-            elif kwargs.get("red"):
-                formatting_string += Formatting.RED
-            if kwargs.get("bold"):
-                formatting_string += Formatting.BOLD
-            if kwargs.get("underline"):
-                formatting_string += Formatting.UNDERLINE
-            print(
-                f"{formatting_string}[{curr_file}-{curr_func}-{message_type}] {message}{Formatting.ENDFORMATTING}"
-            )
+#             if kwargs.get("purple"):
+#                 formatting_string += Formatting.PURPLE
+#             elif kwargs.get("lightblue"):
+#                 formatting_string += Formatting.LIGHTBLUE
+#             elif kwargs.get("cyan"):
+#                 formatting_string += Formatting.CYAN
+#             elif kwargs.get("green"):
+#                 formatting_string += Formatting.GREEN
+#             elif kwargs.get("yellow"):
+#                 formatting_string += Formatting.YELLOW
+#             elif kwargs.get("red"):
+#                 formatting_string += Formatting.RED
+#             if kwargs.get("bold"):
+#                 formatting_string += Formatting.BOLD
+#             if kwargs.get("underline"):
+#                 formatting_string += Formatting.UNDERLINE
+#             print(
+#                 f"{formatting_string}[{curr_file}-{curr_func}-{message_type}] {message}{Formatting.ENDFORMATTING}"
+#             )
 
 
 def check_if_directories_exist_and_make_if_not(*directories: str):

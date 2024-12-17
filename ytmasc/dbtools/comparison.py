@@ -1,7 +1,6 @@
 "Imports an old database and compares each file with new ones."
 from os import path, mkdir, system, rename
 from time import sleep
-from inspect import currentframe
 
 from fuzzywuzzy import fuzz
 from keyboard import read_key
@@ -18,9 +17,6 @@ from ytmasc.dbtools.comparison_utils import (
     insert_rows,
     sort_based_on_score,
 )
-from ytmasc.utility import debug_print, get_current_file, get_current_function
-
-current_file = get_current_file(__file__)
 
 
 def compare():
@@ -30,14 +26,9 @@ def compare():
     """
 
     if not path.isdir(old_music_library):
-        current_function = get_current_function(currentframe())
-
-        debug_print(
-            current_file,
-            current_function,
-            "w",
-            f"Directory `{old_music_library}` doesn't exist, creating directory. Put your old music files here and rerun the command.",
-        )
+        # debug_print("w",
+        #     f"Directory `{old_music_library}` doesn't exist, creating directory. Put your old music files here and rerun the command.",
+        # )
         mkdir(old_music_library)
         exit()
 

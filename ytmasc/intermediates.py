@@ -1,5 +1,4 @@
 "Provides chained functions for UX."
-from inspect import currentframe
 from os import listdir, path, remove
 from re import match
 from shutil import rmtree
@@ -13,14 +12,9 @@ from ytmasc.utility import (
     audio_conversion_ext,
     current_path,
     data_path,
-    debug_print,
     download_path,
-    get_current_file,
-    get_current_function,
     library_data_path,
-    library_data,
     library_page_path,
-    library_page,
     read_json,
     sort_dictionary_based_on_value_inside_nested_dictionary,
     update_yaml,
@@ -28,46 +22,34 @@ from ytmasc.utility import (
     yaml_config,
 )
 
-current_file = get_current_file(__file__)
-
 
 def delete_library_page_files(fetcher_is_going_to_run: bool):
-    current_function = get_current_function(currentframe())
 
     try:
         remove(library_page_path)
         rmtree(f"{library_page_path[:-4]}_files")
-        debug_print(
-            current_file,
-            current_function,
-            "i",
-            f"Successfully deleted {library_page} and {library_page_path[:-4]}_files.",
-        )
+        # debug_print("i",
+        #     f"Successfully deleted {library_page} and {library_page_path[:-4]}_files.",
+        # )
 
     except FileNotFoundError:
         if fetcher_is_going_to_run:
             pass
 
         else:
-            debug_print(
-                current_file,
-                current_function,
-                "e",
-                "File(s) do not exist!",
-                error_type="FileNotFoundError",
-            )
             pass
+            # debug_print("e",
+            #     "File(s) do not exist!",
+            #     error_type="FileNotFoundError",
+            # )
 
     except PermissionError:
-        debug_print(
-            current_file,
-            current_function,
-            "e",
-            "File(s) are in use!",
-            error_type="PermissionError",
-        )
-        # TODO wait a little then retry?
         pass
+        # debug_print("e",
+        #     "File(s) are in use!",
+        #     error_type="PermissionError",
+        # )
+        # TODO wait a little then retry?
 
 
 def find_newest_ri_music_export():
@@ -87,7 +69,6 @@ def find_newest_ri_music_export():
 
 
 def update_library_with_manual_changes_on_files():
-    current_function = get_current_function(currentframe())
 
     existing_data = read_json(library_data_path)
 
@@ -96,14 +77,11 @@ def update_library_with_manual_changes_on_files():
         if not (
             value["title"] == song.tag.title and value["artist"] == song.tag.artist
         ):
-            debug_print(
-                current_file,
-                current_function,
-                "i",
-                f"Manual change detected on {key}, updating {library_data} with changes:\n"
-                f"artist:\t{song.tag.artist} -> {value['artist']}\n"
-                f"title:\t{song.tag.title} -> {value['title']}\n",
-            )
+            # debug_print("i",
+            #     f"Manual change detected on {key}, updating {library_data} with changes:\n"
+            #     f"artist:\t{song.tag.artist} -> {value['artist']}\n"
+            #     f"title:\t{song.tag.title} -> {value['title']}\n",
+            # )
             song.tag.artist = value["artist"]
             song.tag.title = value["title"]
             song.tag.save()
@@ -113,16 +91,13 @@ def update_library_with_manual_changes_on_files():
 
 
 def run_tasks(download: bool, convert: bool, tag: bool):
-    current_function = get_current_function(currentframe())
 
     if not path.exists(library_data_path) or not path.getsize(library_data_path) > 0:
-        debug_print(
-            current_file,
-            current_function,
-            "e",
-            f"{library_data} doesn't exist or is empty. Build {library_data} by running a parse.",
-            error_type="FileNotFoundError",
-        )
+        pass
+        # debug_print("e",
+        #     f"{library_data} doesn't exist or is empty. Build {library_data} by running a parse.",
+        #     error_type="FileNotFoundError",
+        # )
 
     else:
         json = read_json(library_data_path)

@@ -4,7 +4,6 @@ probably should've done this with classes and stuff but didn't expect it to get 
 would rewrite the whole thing rather than modify it.
 """
 
-from inspect import currentframe
 from threading import Thread
 import tkinter as tk
 
@@ -15,19 +14,12 @@ from ytmasc.intermediates import (
 )
 from ytmasc.parser import parse_library_page, parse_ri_music_db
 from ytmasc.utility import (
-    debug_print,
-    get_current_file,
-    get_current_function,
     library_data,
 )
 
-current_file = get_current_file(__file__)
-
 
 def create_gui():
-    current_function = get_current_function(currentframe())
-
-    debug_print(current_file, current_function, "i", "Creating GUI...")
+    # debug_print(current_file, current_function, "i", "Creating GUI...")
     root = tk.Tk()
     root.geometry("340x560")
 
@@ -205,7 +197,7 @@ def create_gui():
     tagger_uldwmc.grid(row=18, column=0, columnspan=2, pady=(10, 10))
 
     check_if_data_exists_and_set_checkbutton(parser_plp_rf)
-    debug_print(current_file, current_function, "i", "GUI has been created!")
+    # debug_print(current_file, current_function, "i", "GUI has been created!")
     root.mainloop()
 
 
@@ -262,18 +254,16 @@ def validate_input(new_value: float) -> bool:
 
 
 def check_if_data_exists_and_set_checkbutton(checkbutton: tk.Checkbutton):
-    current_function = get_current_function(currentframe())
     if check_if_data_exists():
-        debug_print(current_file, current_function, "i", "Data exists.")
+        pass
+        # debug_print(current_file, current_function, "i", "Data exists.")
         checkbutton.config(state=tk.NORMAL)
     else:
-        debug_print(
-            current_file,
-            current_function,
-            "i",
-            f"Data doesn't exist, setting `lpo_rf_state` as true and disabling `lpo_rf`",
-            error_type="FileNotFoundError",
-        )
+        pass
+        # debug_print("i",
+        #     f"Data doesn't exist, setting `lpo_rf_state` as true and disabling `lpo_rf`",
+        #     error_type="FileNotFoundError",
+        # )
 
         checkbutton.invoke()
         checkbutton.config(state=tk.DISABLED)

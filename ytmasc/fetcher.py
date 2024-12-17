@@ -3,7 +3,6 @@ Provides a function to get the library page on YouTube.
 """
 
 import webbrowser
-from inspect import currentframe
 from os import path
 from platform import system
 
@@ -12,13 +11,8 @@ from pygetwindow import getWindowsWithTitle
 
 from ytmasc.utility import (
     current_path,
-    debug_print,
-    get_current_file,
-    get_current_function,
     library_page_path,
 )
-
-current_file = get_current_file(__file__)
 
 
 def fetch(
@@ -30,7 +24,6 @@ def fetch(
     save_page_as_index_on_right_click=5,
 ):
     "Fetches library page while emulating user interaction."
-    current_function = get_current_function(currentframe())
 
     systemInfo = system()
     if systemInfo == "Windows":
@@ -64,10 +57,8 @@ def fetch(
         sleep(dialog_wait_delay)
 
     else:
-        debug_print(
-            current_file,
-            current_function,
-            "e",
-            f"System is {systemInfo}, currently {current_file} doesn't support this OS.",
-            error_type="UnsupportedConfiguration",
-        )
+        pass
+        # debug_print("e",
+        #     f"System is {systemInfo}, currently {current_file} doesn't support this OS.",
+        #     error_type="UnsupportedConfiguration",
+        # )
