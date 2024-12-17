@@ -42,6 +42,8 @@
 
 ## III Requires Research
 
+- [ ] Find out how to launch gui without a console
+
 - [ ] Find out if there is a better way to structure the CLI logic or make it more maintainable in general [click](https://click.palletsprojects.com/en/8.1.x/)?
 
 - [ ] Do async downloading
