@@ -1,1 +1,0 @@
-winget install python3.11 ffmpeg

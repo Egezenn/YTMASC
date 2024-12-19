@@ -42,15 +42,34 @@ def get_cli_args():
     )
 
     parser.add_argument(
-        "--update_library_with_manual_changes_on_files", action="store_true", help=""
+        "--update_library_with_manual_changes_on_files",
+        action="store_true",
+        help="Updates library with tag changes you've made to the files",
     )
-    parser.add_argument("--export_library_as_csv", action="store_true", help="")
-    parser.add_argument("--import_csv_to_library", action="store_true", help="")
-    parser.add_argument("--update_tags", action="store_true", help="")
-    parser.add_argument("--db_compare", action="store_true", help="")
-    parser.add_argument("--db_find_unpaired", action="store_true", help="")
     parser.add_argument(
-        "-v", "--verbosity", default="w", action="store", help="d|i|w|e|c"
+        "--export_library_as_csv",
+        action="store_true",
+        help="Exports the library as a CSV file",
+    )
+    parser.add_argument(
+        "--import_csv_to_library",
+        action="store_true",
+        help="Imports a CSV of 3 columns [ID, artist, title]",
+    )
+    parser.add_argument(
+        "--db_compare",
+        action="store_true",
+        help="Helps you migrate your old library by checking if any of them exist in your current library to avoid duplication",
+    )
+    parser.add_argument(
+        "--db_find_unpaired", action="store_true", help="Find unpaired items"
+    )
+    parser.add_argument(
+        "-v",
+        "--verbosity",
+        default="w",
+        action="store",
+        help="Set the log verbosity d | i | w | e | c",
     )
 
     return parser.parse_args()
@@ -85,9 +104,6 @@ def handle_cli(args: classmethod):
     if args.import_csv_to_library:
         convert_csv_to_json(csv_library_data_path, library_data_path)
         # should work properly now with fillna()
-
-    if args.update_tags:
-        pass
 
     if args.db_compare:
         compare()

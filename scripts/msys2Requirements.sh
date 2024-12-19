@@ -1,1 +1,0 @@
-pacman -S ucrt64/mingw-w64-ucrt-x86_64-ffmpeg ucrt64/mingw-w64-x86_64-python

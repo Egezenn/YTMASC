@@ -1,1 +1,0 @@
-apt install python3.11 ffmpeg python3-tk

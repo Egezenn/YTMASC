@@ -29,7 +29,6 @@ logger = getLogger(__name__)
 
 
 def delete_library_page_files(fetcher_is_going_to_run: bool):
-
     try:
         remove(library_page_path)
         rmtree(f"{library_page_path[:-4]}_files")
@@ -68,29 +67,27 @@ def find_newest_ri_music_export():
 
 
 def update_library_with_manual_changes_on_files():
-
     existing_data = read_json(library_data_path)
+    modified_data = existing_data
 
     for key, value in existing_data.items():
         song = loadmp3(path.join(download_path, key + audio_conversion_ext))
-        if not (
-            value["title"] == song.tag.title and value["artist"] == song.tag.artist
-        ):
+        if not (value["title"] == song.tag.title or value["artist"] == song.tag.artist):
             logger.info(
                 f"Manual change detected on {key}, updating {library_data} with changes:\n"
                 f"artist:\t{song.tag.artist} -> {value['artist']}\n"
                 f"title:\t{song.tag.title} -> {value['title']}\n",
             )
-            song.tag.artist = value["artist"]
-            song.tag.title = value["title"]
-            song.tag.save()
+            modified_data[key] = {
+                "artist": song.tag.artist,
+                "title": song.tag.title,
+            }
 
-    json = sort_dictionary_based_on_value_inside_nested_dictionary(existing_data)
+    json = sort_dictionary_based_on_value_inside_nested_dictionary(modified_data)
     write_json(library_data_path, json)
 
 
 def run_tasks(download: bool, convert: bool, tag: bool):
-
     if not path.exists(library_data_path) or not path.getsize(library_data_path) > 0:
         logger.error(
             f"[FileNotFoundError] {library_data} doesn't exist or is empty. Build {library_data} by running a parse."
