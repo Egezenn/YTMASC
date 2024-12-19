@@ -58,9 +58,43 @@ Change `savePageAsIndexOnRightClick` to which index your save as is on your brow
 
 The rest is fine if you don't have a really old computer.
 
-## Credits
+## Dependencies
 
-I'd like to personally thank all the people that have developed\/maintained\/poured their hearts into the packages\/tools this *thing* is using and the artists that pushed me to keep a copy of their music in my library.
+### Binaries
+
+[Python ~=3.11](https://www.python.org/) - Core language. Licensed under PSFL license.
+
+[FFmpeg](https://ffmpeg.org/) - Used in conversion of the files. Licensed under LGPLv2.1 license.
+
+### Python packages
+
+[beautifulsoup4](https://www.crummy.com/software/BeautifulSoup/) - Used in parsing the user's likes page HTML. Licensed under MIT license.
+
+[eyed3](https://github.com/nicfit/eyeD3) - Used in tagging the files. Licensed under GPL-3.0 license.
+
+[ffmpeg-python](https://github.com/kkroening/ffmpeg-python) - Used in converting files to desired format(s) as a wrapper. Licensed under Apache-2.0 license.
+
+[mutagen](https://github.com/quodlibet/mutagen)* - Subdependency, planned to replace eyed3. Licensed under GPL-2.0 license.
+
+[pandas](https://github.com/pandas-dev/pandas) - Used in CSV/JSON helper utilities. Licensed under BSD-3-Clause license.
+
+[pillow](https://github.com/python-pillow/Pillow) - Used in modification of covers. Licensed under MIT-CMU license.
+
+[pyautogui](https://github.com/asweigart/pyautogui) - Used in fetcher to get the user's likes page. Licensed under BSD-3-Clause license.
+
+[pyinstaller](https://github.com/pyinstaller/pyinstaller) - Used in compilation. Licensed under a GPLv2 license.
+
+[pyyaml](https://github.com/yaml/pyyaml) - Used in handling user's config files. Licensed under MIT license.
+
+[yt-dlp](https://github.com/yt-dlp/yt-dlp) - Used in downloading user's library. Licensed under Unlicense license.
+
+[fuzzywuzzy](https://github.com/seatgeek/fuzzywuzzy) - Used in comparison utilities for migration for fuzzy matching. Licensed under GPLv2 license.
+
+[python-levenshtein](https://github.com/rapidfuzz/python-Levenshtein)* - Subdependency for fuzzywuzzy. Licensed under GPL-2.0 license.
+
+[keyboard](https://github.com/boppreh/keyboard) - Used in comparison utilities for migration to handle keypresses. Licensed under MIT license.
+
+[prettytable](https://github.com/prettytable/prettytable) - Used in comparison utilities as a part of UX. Licensed under a custom license.
 
 ## Disclaimer
 

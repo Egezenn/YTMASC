@@ -5,6 +5,8 @@ from re import match
 from shutil import rmtree
 
 from eyed3 import load as loadmp3
+from json import dump
+from pandas import read_csv
 
 from ytmasc.converter import convert_bulk
 from ytmasc.downloader import download_bulk
@@ -141,3 +143,37 @@ def create_config():
             },
         }
         update_yaml(yaml_config, default_config)
+
+
+def import_csv(csv_file: str, json_file: str, overwrite=True):
+    df = read_csv(csv_file)
+    df.fillna("", inplace=True)
+    json_data = read_json(json_file)
+
+    for index, row in df.iterrows():
+        key = row.iloc[0]
+        value1 = row.iloc[1]
+        value2 = row.iloc[2]
+
+        if key in json_data:
+            logger.info(f"Key {key} is already in the library.")
+            if (
+                (json_data[key]["artist"] != value1)
+                or (json_data[key]["title"] != value2)
+            ) and overwrite:
+                logger.info(
+                    f"Values don't match, updating with:\n"
+                    f"artist: {json_data[key]['artist']} -> {row.iloc[1]}\n"
+                    f"title: {json_data[key]['title']} -> {row.iloc[2]}"
+                )
+                json_data[key] = {"artist": value1, "title": value2}
+        else:
+            logger.info(
+                f"Key {key} is not in library, adding it with values:\n"
+                f"artist: {row.iloc[1]}\n"
+                f"title: {row.iloc[2]}"
+            )
+            json_data[key] = {"artist": value1, "title": value2}
+
+    with open(json_file, "w") as f:
+        dump(json_data, f, indent=2)

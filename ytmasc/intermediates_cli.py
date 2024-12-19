@@ -4,7 +4,11 @@ from argparse import ArgumentParser
 
 from ytmasc.dbtools.comparison import compare
 from ytmasc.dbtools.find_unpaired import find_unpaired_files
-from ytmasc.intermediates import update_library_with_manual_changes_on_files, run_tasks
+from ytmasc.intermediates import (
+    import_csv,
+    update_library_with_manual_changes_on_files,
+    run_tasks,
+)
 from ytmasc.tk_gui import create_gui
 from ytmasc.parser import parse_library_page, parse_ri_music_db
 from ytmasc.utility import (
@@ -54,7 +58,15 @@ def get_cli_args():
     parser.add_argument(
         "--import_csv_to_library",
         action="store_true",
-        help="Imports a CSV of 3 columns [ID, artist, title]",
+        help="Imports a CSV of 3 columns [ID, artist, title]. If keys exist but their values are different they will be updated with the tags from the CSV",
+    )
+    parser.add_argument(
+        "--import_csv_to_library_no_overwrite",
+        action="store_true",
+        help="Imports a CSV of 3 columns [ID, artist, title]. If keys exist but their values are different they will NOT be updated with the tags from the CSV",
+    )
+    parser.add_argument(
+        "--direct_import", action="store_true", help="Completely overwrites the library"
     )
     parser.add_argument(
         "--db_compare",
@@ -90,8 +102,10 @@ def handle_cli(args: classmethod):
             args.update_library_with_manual_changes_on_files
             or args.export_library_as_csv
             or args.import_csv_to_library
-            or args.update_tags
+            or args.import_csv_to_library_no_overwrite
+            or args.direct_import
             or args.db_compare
+            or args.db_find_unpaired
         ):
             create_gui()
 
@@ -101,9 +115,14 @@ def handle_cli(args: classmethod):
     if args.export_library_as_csv:
         convert_json_to_csv(library_data_path, csv_library_data_path)
 
+    # modify this later on and get a filename
     if args.import_csv_to_library:
+        import_csv(csv_library_data_path, library_data_path)
+    elif args.import_csv_to_library_no_overwrite:
+        import_csv(csv_library_data_path, library_data_path, overwrite=False)
+
+    if args.direct_import:
         convert_csv_to_json(csv_library_data_path, library_data_path)
-        # should work properly now with fillna()
 
     if args.db_compare:
         compare()

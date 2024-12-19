@@ -9,9 +9,11 @@
 
 ## I Highest Importance
 
-- [ ] CSV "import" currently overwrites the file :facepalm:
-  - [ ] Convert the provided CSV to JSON. check if key exists, if not add it yada yada
-  - [ ] Move it to intermediates
+- [ ] Allow the library file to have no artist & no title specified
+  - Make a function to fetch missing metadata?
+    - InnerTube
+    - yt-dlp
+      - `yt-dlp --get-filename -o "%(uploader)s hsfOqb5r8m0VbV31 %(title)s" VIDEO_URL` for null artists, which is caused by ViMusic's search function returning empty
 
 - [ ] Make an executable for Linux aswell
   - [x] Need the user to download ffmpeg binaries as `ffmpeg-python` is just a wrapper, should mention that in the readme
@@ -20,74 +22,83 @@
   - [x] Write a utility script to check if there are missing pairs
   - [x] `matcher.py`, helper script to make the switch from your old archive.
   - [ ] Script to migrate to youtubes metadata using previously created user metadata.
+    - [ ] InnerTube
     - [ ] Use a headless browser to get links under Songs if it doesn't exist as a Song fallback to Video
       - `https://music.youtube.com/search?q=example+song`
   - [ ] Script to remove duplicate entries that only differ with the key.
 
 - [ ] Provide the user with a fallback json that consists of replacement keys \(for the ID's that fail or preference\)
+  - [ ] Write a sanitazation function to remove fallbacks and replace them
+    - [ ] Make sure every import (fetcher, rimusic, csv) does not add the keys to the library
   - [ ] Use the dbtools utility to be written to prompt the user for the replacement key
 
 - [x] Log unavailable videos into a file.
   - [ ] Could be better
 
-- [ ] Exit and notify the user somehow when `yt-dlp` outputs `Sign in to confirm you’re not a bot. This helps protect our community.`
-  - [x] Break download loop
-  - [ ] Use an alternative?
-    - Piped
-    - [Invidious](https://github.com/grqz/yt-dlp-invidious)
-
 ## II Requires Research
+
+- [ ] Find out what InnerTube API can do
+  - [ ] for [python](https://github.com/tombulled/innertube)
+  - [ ] for [javascript](https://github.com/LuanRT/YouTube.js/)
 
 - [ ] Find out how to launch gui without a console
 
 - [ ] Find out if there is a better way to structure the CLI logic or make it more maintainable in general [click](https://click.palletsprojects.com/en/8.1.x/)?
 
-- [ ] Do async downloading
-
 - [ ] Find out if this output from `yt-dlp` affects anything `WARNING: [youtube] Failed to download m3u8 information: HTTP Error 429: Too Many Requests`
 
-- [ ] Fetch lyrics and add them into `library.json`
-  - Sources that RiMusic is using seems pretty solid.
+- [ ] Fetch lyrics and tag the songs with it
+  - Unsynced?
+    - Boring
+  - Synced?
+    - Sources that RiMusic is using seems pretty solid.
+    - Not always available
+
+- [ ] Do async downloading
 
 - [ ] Write tests
 
-- [ ] InnerTube
+- [ ] Some languages have characters that are indexed inside the latin alphabet and by default I think Python just looks for its unicode index, so fixing this
 
 ## III Lowest Importance
 
-- [ ] Make settings interactable (e.g import the file named x)
+- [x] Do attributions for dependencies
+  - Add links for the licenses
+
+- [ ] Add a function to delete files in `downloads` that aren't in `library.json`
+
+- [ ] Add a function to delete entries in `library.json` that aren't in `downloads`
+
+- [ ] Remove quirky file finding method for the `temp` directory in `download` function as it's not required anymore?
 
 - [ ] Log bad thumbnails
   - [ ] `hqdefault`
   - [ ] Ones that are available as `hqdefault` but aren't a square (`720x720`)
     - OpenCV hsl similiarity? the fills in those files aren't just 1 color last I tried & checked
 
-- [ ] Remove quirky file finding method for the `temp` directory in `download` function as it's not required anymore?
+- [ ] Replace `eyed3` with `mutagen`
 
-- [ ] Allow the library file to have no artist & no title specified
-  - Tell `yt-dlp` to automatically tag it
-  - Make a function to fetch missing metadata?
+- [ ] Replace `fuzzywuzzy` with [`TheFuzz`](https://github.com/seatgeek/thefuzz)
+
+- [ ] Make settings interactable (e.g import the file named x)
 
 - [x] Handle cover and music seperately in `downloader.py`
   - [ ] Better `return` values
 
-- [ ] Replace `eyed3` with `mutagen`
+- [ ] Rename `key` to `watch_id`
 
-- [ ] Rename `key` to `video_id`
+- [ ] Exit and notify the user somehow when `yt-dlp` outputs `Sign in to confirm you’re not a bot. This helps protect our community.`
+  - [x] Break download loop and go to the next task
+  - [ ] Use an alternative?
+    - Piped
+    - [Invidious](https://github.com/grqz/yt-dlp-invidious)
 
-- [ ] Write a better scrape algorithm, get album names properly this time.
-
-- [ ] Add a function to delete files in `downloads` that aren't in `library.json`
-
-- [ ] Add a function to delete entries in `library.json` that aren't in `downloads`
-
-- [ ] Fetch metadata from YouTube instead of using the existing data
-
-- [ ] Implement `yt-dlp --get-filename -o "%(uploader)s hsfOqb5r8m0VbV31 %(title)s" VIDEO_URL` for null artists, which is caused by ViMusic's search function returning empty
+- [ ] Write a better scrape algorithm, get album names properly.
+  - What to do with songs that doesn't belong to an album?
 
 - [ ] Write `PermissionError` exceptions
 
-- [ ] Some languages have characters that are indexed inside the latin alphabet and by default I think Python just looks for its unicode index, so fixing this
+- [ ] Write new GUI with [ImGui](https://github.com/hoffstadt/DearPyGui)
 
 ## IV Doubts and Head Scratchers
 
@@ -106,6 +117,10 @@
 ## Latest Implementations & Fixes
 
 NOTE: These will be removed after a while.
+
+- [x] CSV "import" currently overwrites the file :facepalm:
+  - [x] Convert the provided CSV to JSON. check if key exists, if not add it yada yada
+  - [x] Move it to intermediates
 
 - [x] Record any manual changes to songs ~~\[did do this, but it's instead checking if json has been manually edited\]~~
   - why did i do it for the json? probably i hadn't done the export import at that time and was doing something wacky
