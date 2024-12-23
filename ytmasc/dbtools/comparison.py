@@ -1,14 +1,12 @@
 "Imports an old database and compares each file with new ones."
 from logging import getLogger
-from os import path, mkdir, system, rename
+from os import mkdir, path, rename, system
 from time import sleep
 
 from fuzzywuzzy import fuzz
 from keyboard import read_key
 
 from ytmasc.dbtools.comparison_utils import (
-    new_music_library,
-    old_music_library,
     create_new_database,
     create_old_database,
     files_to_keep,
@@ -16,6 +14,8 @@ from ytmasc.dbtools.comparison_utils import (
     init_table,
     insert_old_file_data,
     insert_rows,
+    new_music_library,
+    old_music_library,
     sort_based_on_score,
 )
 

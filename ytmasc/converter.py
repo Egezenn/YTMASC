@@ -1,14 +1,10 @@
 "Provides conversion functions for unwanted formats."
-from os import path, remove
 from logging import getLogger
+from os import path, remove
 
 from ffmpeg import input as finput
 
-from ytmasc.utility import (
-    audio_conversion_ext,
-    download_path,
-    source_audio_ext,
-)
+from ytmasc.utility import audio_conversion_ext, download_path, source_audio_ext
 
 logger = getLogger(__name__)
 

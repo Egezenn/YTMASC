@@ -4,8 +4,8 @@ probably should've done this with classes and stuff but didn't expect it to get 
 would rewrite the whole thing rather than modify it.
 """
 
-from threading import Thread
 import tkinter as tk
+from threading import Thread
 
 from ytmasc.intermediates import (
     check_if_data_exists,
@@ -13,9 +13,7 @@ from ytmasc.intermediates import (
     update_library_with_manual_changes_on_files,
 )
 from ytmasc.parser import parse_library_page, parse_ri_music_db
-from ytmasc.utility import (
-    library_data,
-)
+from ytmasc.utility import library_data
 
 
 def create_gui():

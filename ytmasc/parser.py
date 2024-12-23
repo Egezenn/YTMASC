@@ -40,24 +40,44 @@ def parse_library_page(
         with open(library_page_path, encoding="utf-8") as file:
             soup = BeautifulSoup(file, "html.parser")
 
-            title_selector = "ytmusic-responsive-list-item-renderer.style-scope.ytmusic-playlist-shelf-renderer > div.flex-columns.style-scope.ytmusic-responsive-list-item-renderer > div.title-column.style-scope.ytmusic-responsive-list-item-renderer > yt-formatted-string.title.style-scope.ytmusic-responsive-list-item-renderer.complex-string > a:nth-of-type(1).yt-simple-endpoint.style-scope.yt-formatted-string"
-            artist_selector = "ytmusic-responsive-list-item-renderer.style-scope.ytmusic-playlist-shelf-renderer > div.flex-columns.style-scope.ytmusic-responsive-list-item-renderer > div.secondary-flex-columns.style-scope.ytmusic-responsive-list-item-renderer > yt-formatted-string:nth-child(2n+1).flex-column.style-scope.ytmusic-responsive-list-item-renderer"
-            # album_selector = "ytmusic-responsive-list-item-renderer.style-scope.ytmusic-playlist-shelf-renderer > div.flex-columns.style-scope.ytmusic-responsive-list-item-renderer > div.secondary-flex-columns.style-scope.ytmusic-responsive-list-item-renderer > yt-formatted-string:nth-child(2n).flex-column.style-scope.ytmusic-responsive-list-item-renderer.complex-string > a:nth-of-type(1).yt-simple-endpoint.style-scope.yt-formatted-string"
+            base_selector = "ytmusic-responsive-list-item-renderer.style-scope.ytmusic-playlist-shelf-renderer"
 
             logger.info(f"Parsing {library_page}..")
 
-            title_elements = soup.select(title_selector)
-            artist_elements = soup.select(artist_selector)
-            # this is a little problematic to include as they might not belong to an album, have to iterate through each div and see if it has an album or not
-            # album_elements = soup.select(album_selector)
+            base_elements = soup.select(base_selector)
 
             json = {}
+            if base_elements:
+                for element in base_elements:
+                    title_element = element.select_one(
+                        "div.flex-columns.style-scope.ytmusic-responsive-list-item-renderer > div.title-column.style-scope.ytmusic-responsive-list-item-renderer > yt-formatted-string.title.style-scope.ytmusic-responsive-list-item-renderer.complex-string > a:nth-of-type(1).yt-simple-endpoint.style-scope.yt-formatted-string"
+                    )
+                    artist_element = element.select_one(
+                        "div.flex-columns.style-scope.ytmusic-responsive-list-item-renderer > div.secondary-flex-columns.style-scope.ytmusic-responsive-list-item-renderer > yt-formatted-string:nth-child(1).flex-column.style-scope.ytmusic-responsive-list-item-renderer.complex-string > a.yt-simple-endpoint.style-scope.yt-formatted-string"
+                    )
+                    # album_element = element.select_one(
+                    #     "div.flex-columns.style-scope.ytmusic-responsive-list-item-renderer > div.secondary-flex-columns.style-scope.ytmusic-responsive-list-item-renderer > yt-formatted-string:nth-child(2).flex-column.style-scope.ytmusic-responsive-list-item-renderer.complex-string > a.yt-simple-endpoint.style-scope.yt-formatted-string"
+                    # )
 
-            for n in range(len(title_elements)):
-                json[title_elements[n]["href"][34:-8]] = {
-                    "artist": f"{artist_elements[n]['title']}",
-                    "title": f"{title_elements[n].text}",
-                }
+                    if title_element.text != "Video":  # oh dear god
+                        # if album_element:
+                        #     json[title_element["href"][34:-8]] = {
+                        #         "artist": artist_element.text,
+                        #         "title": title_element.text,
+                        #         "album": album_element.text,
+                        #     }
+                        # else:
+                        json[title_element["href"][34:-8]] = {
+                            "artist": artist_element.text,
+                            "title": title_element.text,
+                        }
+                    else:
+                        logger.warning(
+                            f"YouTube didn't fail to provide another edge case, ID {title_element['href'][34:-8]} by \"{artist_element.text}\"'s title is {title_element.text}"
+                        )
+
+            else:
+                logger.error("Page is corrupted")
 
             logger.info(f"Successfully parsed {library_page}.")
 

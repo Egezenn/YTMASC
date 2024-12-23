@@ -48,7 +48,7 @@ Find out the music via `https://music.youtube.com/watch?v=<key>`, delete the jso
 
 ### `fetcher.py`
 
-This part is a little duct taped, I couldn't find a good way to get the `libraryPage` formerly known as `likesPage` so I just emulated user input. It's written for a Windows computer that has `firefox` and `file explorer`. Shouldn't be hard to tinker and get it to work for your configuration.
+This part is a little duct taped, I couldn't find a good way to get the `libraryPage` formerly known as `likesPage` so I just emulated user input. It's written for a Windows computer that has `firefox` or `zen` as the default browser and `file explorer`. Shouldn't be hard to tinker and get it to work for your configuration. You can do this manually too, shouldn't take much of your time.
 
 Change `resendAmount` based on your internet connection, page length. For reference with good connection and 600~ likes containing page requires about 60.
 
@@ -64,7 +64,7 @@ The rest is fine if you don't have a really old computer.
 
 [Python ~=3.11](https://www.python.org/) - Core language. Licensed under PSFL license.
 
-[FFmpeg](https://ffmpeg.org/) - Used in conversion of the files. Licensed under LGPLv2.1 license.
+[FFmpeg](https://ffmpeg.org/) - Required for the conversion of files. Licensed under LGPLv2.1 license.
 
 ### Python packages
 

@@ -2,7 +2,7 @@
 from glob import glob
 from json import dump as jdump
 from json import load as jload
-from logging import basicConfig, DEBUG, INFO, WARNING, ERROR, CRITICAL
+from logging import CRITICAL, DEBUG, ERROR, INFO, WARNING, basicConfig
 from os import getcwd, makedirs, path
 
 from pandas import read_csv as pread_csv

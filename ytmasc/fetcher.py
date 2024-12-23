@@ -7,13 +7,10 @@ from os import path
 from platform import system
 from webbrowser import open_new_tab
 
-from pyautogui import click, hotkey, moveTo, press, sleep, typewrite
+from pyautogui import hotkey, press, sleep, typewrite
 from pygetwindow import getWindowsWithTitle
 
-from ytmasc.utility import (
-    current_path,
-    library_page_path,
-)
+from ytmasc.utility import current_path, library_page_path
 
 logger = getLogger(__name__)
 
@@ -33,15 +30,12 @@ def fetch(
         # initializing the browser
         open_new_tab("https://music.youtube.com/playlist?list=LM")
         sleep(opening_delay)
-        hotkey("winleft", "up")
-        sleep(dialog_wait_delay)
 
         # scrolling the page down and getting to save dialog
         for _ in range(resend_amount):
             press(["end"])
             sleep(inbetween_delay)
-        moveTo(0, 540)
-        click(button="right")
+        press("apps")
         sleep(dialog_wait_delay)
         press(["down"] * save_page_as_index_on_right_click, interval=0.1)
         sleep(dialog_wait_delay)

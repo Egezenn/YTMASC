@@ -6,11 +6,11 @@ from ytmasc.dbtools.comparison import compare
 from ytmasc.dbtools.find_unpaired import find_unpaired_files
 from ytmasc.intermediates import (
     import_csv,
-    update_library_with_manual_changes_on_files,
     run_tasks,
+    update_library_with_manual_changes_on_files,
 )
-from ytmasc.tk_gui import create_gui
 from ytmasc.parser import parse_library_page, parse_ri_music_db
+from ytmasc.tk_gui import create_gui
 from ytmasc.utility import (
     convert_csv_to_json,
     convert_json_to_csv,
