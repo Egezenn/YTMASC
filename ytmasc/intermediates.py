@@ -122,24 +122,24 @@ def create_config():
     if not path.exists(yaml_config):
         logger.info("Config doesn't exist, creating..")
         default_config = {
-            "fetcherArgs": {
-                "closingDelay": 3,  # 5,
-                "dialogWaitDelay": 0.5,  # 3
-                "inbetweenDelay": 0.2,  # 2
-                "openingDelay": 6,  # 4
-                "resendAmount": 60,  # 1
-                "savePageAsIndexOnRightClick": 5,  # 6
+            "fetcher": {
+                "closing-delay": 3,  # 5,
+                "dialog-wait-delay": 0.5,  # 3
+                "inbetween-delay": 0.2,  # 2
+                "opening-delay": 6,  # 4
+                "resend-amount": 60,  # 1
+                "save-page-as-index-on-right-click": 5,  # 6
             },
             "parser": {
-                "delete_library_page_files_afterwards": 0,
-                "parse_library_page": 0,
-                "parse_ri_music_db": 0,
-                "run_fetcher": 0,
+                "delete-library-page-files-afterwards": 0,
+                "parse-library-page": 0,
+                "parse-ri-music-db": 0,
+                "run-fetcher": 0,
             },
             "tasks": {
-                "convert": 1,
-                "download": 1,
-                "tag": 1,
+                "convert": 0,
+                "download": 0,
+                "tag": 0,
             },
         }
         update_yaml(yaml_config, default_config)

@@ -48,6 +48,7 @@ def fetch(
         hotkey("ctrl", "a")
         sleep(dialog_wait_delay)
         typewrite(path.join(current_path, library_page_path))
+        sleep(dialog_wait_delay)
         press("enter")
         sleep(closing_delay)
         hotkey("ctrl", "w")

@@ -30,21 +30,21 @@ The project just keeps expanding as I learn more stuff and want to implement nic
 
 `ytmasc set`: will show you the state of the config
 
-`ytmasc set parser run_fetcher 1`: sets the fetcher to run
+`ytmasc set parser run-fetcher 1`: sets the fetcher to run
 
-`ytmasc --export_library_as_csv`: exports the library as csv to the `data` directory
-
-## Requirements to run from source or build
-
-- You need `~=python3.11` (also `python3-tk` for the GUI on Linux) and `ffmpeg` packages.
+`ytmasc --export-library-as-csv`: exports the library as csv to the `data` directory
 
 ## Side notes
 
 - You need `ffmpeg` binaries for conversion.
-- YouTube blocks API requests if you exceed the amount they classify you as a bot (around 200 requests). You can either use a VPN, proxy or just wait to bypass this. See related `yt-dlp` [issue](https://github.com/yt-dlp/yt-dlp/issues/10128).
+- YouTube blocks API requests if you exceed the amount they classify you as a bot (around 200 requests). You can either use a VPN, proxy or just wait to bypass this. See related `yt-dlp` [issue](https://github.com/yt-dlp/yt-dlp/issues/10128). Currently the download loop breaks and skips to the next task.
 - You might want to change your YouTube language while the fetcher is running as YouTube has rare concatenation of artists which gives you the word "and" in your own language.
 - While downloading, some changes may occur in YouTube which results in an error.
 Find out the music via `https://music.youtube.com/watch?v=<key>`, delete the json entry and add the changed one into your likes to continue. At least your music is not lost by YouTube for some unknown reason! :\)
+
+## Requirements to run from source or build
+
+- You need `~=python3.11` (also `python3-tk` for the GUI on Linux) and `ffmpeg` packages.
 
 ### `fetcher.py`
 

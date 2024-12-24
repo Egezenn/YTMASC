@@ -12,5 +12,6 @@ pyinstaller
 python-Levenshtein
 PyYAML
 yt-dlp
-# selenium
+ytmusicapi
+
 # opencv-python

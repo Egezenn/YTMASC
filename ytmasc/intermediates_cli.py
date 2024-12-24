@@ -36,45 +36,45 @@ def get_cli_args():
         "setting",
         nargs="?",
         type=str,
-        help="parse_ri_music_db, parse_library_page, run_fetcher, delete_library_page_files_afterwards | resendAmount, inbetweenDelay, dialogWaitDelay, openingDelay, closingDelay, savePageAsIndexOnRightClick | download, convert, tag",
+        help="parse-ri-music-db, parse-library-page, run-fetcher, delete-library-page-files-afterwards | resend-amount, inbetween-delay, dialog-wait-delay, opening-delay, closing-delay, save-page-as-index-on-right-click | download, convert, tag",
     )
     parser.add_argument(
         "setting_value",
         nargs="?",
         type=str,
-        help="parser -> inbetweenDelay, dialogWaitDelay == float, else == boolean | byte",
+        help="parser -> inbetween-delay, dialog-wait-delay == float, else == boolean | byte",
     )
 
     parser.add_argument(
-        "--update_library_with_manual_changes_on_files",
+        "--update-library-with-manual-changes-on-files",
         action="store_true",
         help="Updates library with tag changes you've made to the files",
     )
     parser.add_argument(
-        "--export_library_as_csv",
+        "--export-library-as-csv",
         action="store_true",
         help="Exports the library as a CSV file",
     )
     parser.add_argument(
-        "--import_csv_to_library",
+        "--import-csv-to-library",
         action="store_true",
         help="Imports a CSV of 3 columns [ID, artist, title]. If keys exist but their values are different they will be updated with the tags from the CSV",
     )
     parser.add_argument(
-        "--import_csv_to_library_no_overwrite",
+        "--import-csv-to-library-no-overwrite",
         action="store_true",
         help="Imports a CSV of 3 columns [ID, artist, title]. If keys exist but their values are different they will NOT be updated with the tags from the CSV",
     )
     parser.add_argument(
-        "--direct_import", action="store_true", help="Completely overwrites the library"
+        "--direct-import", action="store_true", help="Completely overwrites the library"
     )
     parser.add_argument(
-        "--db_compare",
+        "--db-compare",
         action="store_true",
         help="Helps you migrate your old library by checking if any of them exist in your current library to avoid duplication",
     )
     parser.add_argument(
-        "--db_find_unpaired", action="store_true", help="Find unpaired items"
+        "--db-find-unpaired", action="store_true", help="Find unpaired items"
     )
     parser.add_argument(
         "-v",
@@ -157,21 +157,21 @@ def handle_settings(args: classmethod):
 
 def handle_run():
     config = read_yaml(yaml_config)
-    if config["parser"]["parse_library_page"]:
+    if config["parser"]["parse-library-page"]:
         parse_library_page(
             config["parser"]["run_fetcher"],
             [
-                config["fetcherArgs"]["resendAmount"],
-                config["fetcherArgs"]["inbetweenDelay"],
-                config["fetcherArgs"]["dialogWaitDelay"],
-                config["fetcherArgs"]["openingDelay"],
-                config["fetcherArgs"]["closingDelay"],
-                config["fetcherArgs"]["savePageAsIndexOnRightClick"],
+                config["fetcher-args"]["resend-amount"],
+                config["fetcher-args"]["inbetween-dDelay"],
+                config["fetcher-args"]["dialog-wait-delay"],
+                config["fetcher-args"]["opening-delay"],
+                config["fetcher-args"]["closing-delay"],
+                config["fetcher-args"]["save-page-as-index-on-right-click"],
             ],
-            config["parser"]["delete_library_page_files_afterwards"],
+            config["parser"]["delete-library-page-files-afterwards"],
         )
 
-    if config["parser"]["parse_ri_music_db"]:
+    if config["parser"]["parse-ri-music-db"]:
         parse_ri_music_db()
 
     run_tasks(
