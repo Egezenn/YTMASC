@@ -6,6 +6,7 @@ from eyed3 import load as loadmp3
 from ytmasc.utility import (
     audio_conversion_ext,
     count_files,
+    count_key_amount_in_json,
     download_path,
     possible_audio_ext,
     source_cover_ext,
@@ -17,10 +18,9 @@ logger = getLogger(__name__)
 def tag_bulk(json: dict):
     "Tag files in bulk"
     fail_amount = 0
-    total_files = count_files(download_path, possible_audio_ext)
-    num_digits = len(str(total_files))
+    total_operations = count_key_amount_in_json(library_data_path)
+    num_digits = len(str(total_operations))
     for i, (watch_id, value) in enumerate(json.items(), start=1):
-
         logger.info(f"<<< TAG {i} >>>")
         fail_status = tag(watch_id, value, num_digits, i - fail_amount)
         logger.info(f">>> TAG {i} <<<")

@@ -1,6 +1,11 @@
 from argparse import ArgumentParser
 
-from ytmasc.database_helpers import compare, find_unpaired_files, replace_fails
+from ytmasc.database_helpers import (
+    compare,
+    find_unpaired_files,
+    replace_current_metadata_with_youtube,
+    replace_fails,
+)
 from ytmasc.intermediates import (
     import_csv,
     run_tasks,
@@ -38,6 +43,13 @@ def get_cli_args():
         help="parser -> inbetween-delay, dialog-wait-delay == float, else == boolean | byte",
     )
 
+    parser.add_argument(
+        "--replace-current-metadata-with-youtube",
+        nargs="?",
+        const=True,
+        type=int,
+        help="Replace the whole library's metadata with YouTube metadata.",
+    )
     parser.add_argument(
         "--update-library-with-manual-changes-on-files",
         action="store_true",
@@ -96,7 +108,28 @@ def handle_cli(args: classmethod, parser: classmethod):
         handle_settings(args)
 
     else:
-        parser.print_help()
+        if not any(
+            [
+                args.replace_current_metadata_with_youtube,
+                args.update_library_with_manual_changes_on_files,
+                args.export_library_as_csv,
+                args.import_csv_to_library,
+                args.import_csv_to_library_no_overwrite,
+                args.direct_import,
+                args.db_compare,
+                args.db_find_unpaired,
+                args.db_replace_fails,
+            ]
+        ):
+            parser.print_help()
+
+    # TODO also implement this behavior to csv import
+    if args.replace_current_metadata_with_youtube is not None:
+        replace_current_metadata_with_youtube(
+            args.replace_current_metadata_with_youtube
+        )
+    elif args.replace_current_metadata_with_youtube is None:
+        replace_current_metadata_with_youtube()
 
     if args.update_library_with_manual_changes_on_files:
         update_library_with_manual_changes_on_files()

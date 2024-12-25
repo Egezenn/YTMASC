@@ -1,5 +1,6 @@
 import json
 import os
+from logging import getLogger
 
 from mutagen.easyid3 import EasyID3
 from prettytable import PrettyTable
@@ -11,6 +12,8 @@ old_music_library = r"old"
 new_music_library = r"downloads"
 files_to_keep = r"!keep"
 files_to_remove = r"!remove"
+
+logger = getLogger(__name__)
 
 
 class ComparisonUtilities:
@@ -163,54 +166,9 @@ class FailReplacementUtilities:
 
         return result
 
-    def get_metadata_from_query(self, query: str) -> list:
-        """Get songs metadata from the provided query. e.g Linkin Park - Numb
-        First one is the most popular video as a fallback. (for some reason the artist for it returns as watch count)
-        """
-
-        yt = YTMusic()
-        search_results = yt.search(query, ignore_spelling=True)
-
-        results_metadata = []
-        for result in search_results:
-            if result["category"] not in [
-                "More from YouTube",
-                "Videos",
-                "Community playlists",
-                "Featured playlists",
-                "Artists",
-                "Podcasts",
-                "Profiles",
-                "Episodes",
-                "Albums",
-            ]:
-                artists = []
-                for artist in result["artists"]:
-                    artists.append(artist["name"])
-                watch_id = result["videoId"]
-                title = result["title"]
-                try:
-                    album = result["album"]["name"]
-                except:
-                    album = None
-
-            results_metadata.append([artists, watch_id, title, album])
-        results_metadata = self.remove_duplicates_by_second_item(results_metadata)
-
-        return results_metadata
-
-    def get_metadata_from_watch_id(self, watch_id: str) -> [str, str]:
-        yt = YTMusic()
-
-        search_results = yt.get_song(watch_id)
-
-        artist = search_results["videoDetails"]["author"]
-        # does this provide a list if there's more than one?
-        title = search_results["videoDetails"]["title"]
-
-        return artist, title
-
-    def insert_data(self, table, artist, watch_id, title, album):
+    def insert_data(
+        self, table: classmethod, artist: str, watch_id: str, title: str, album: str
+    ):
         table.add_row(
             [
                 f"\x1b[101m\x1b[1m  {artist}  \x1b[0m",
@@ -219,3 +177,53 @@ class FailReplacementUtilities:
                 f"\x1b[104m\x1b[1m  {album}  \x1b[0m",
             ]
         )
+
+
+def get_metadata_from_query(query: str) -> list:
+    """Get songs metadata from the provided query. e.g Linkin Park - Numb
+    First one is the most popular video as a fallback. (for some reason the artist for it returns as watch count)
+    """
+
+    yt = YTMusic()
+    search_results = yt.search(query, ignore_spelling=True)
+
+    results_metadata = []
+    for result in search_results:
+        if result["category"] not in [
+            "More from YouTube",
+            "Videos",
+            "Community playlists",
+            "Featured playlists",
+            "Artists",
+            "Podcasts",
+            "Profiles",
+            "Episodes",
+            "Albums",
+        ]:
+            artists = []
+            for artist in result["artists"]:
+                artists.append(artist["name"])
+            watch_id = result["videoId"]
+            title = result["title"]
+            try:
+                album = result["album"]["name"]
+            except:
+                album = None
+
+        results_metadata.append([artists, watch_id, title, album])
+    results_metadata = self.remove_duplicates_by_second_item(results_metadata)
+
+    return results_metadata
+
+
+def get_metadata_from_watch_id(watch_id: str) -> [str, str]:
+    yt = YTMusic()
+
+    search_results = yt.get_song(watch_id)
+    logger.debug(search_results)
+
+    artist = search_results["videoDetails"]["author"]
+    # does this provide a list if there's more than one?
+    title = search_results["videoDetails"]["title"]
+
+    return artist, title

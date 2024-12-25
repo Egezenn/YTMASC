@@ -167,3 +167,11 @@ def count_files(directory: str, extensions: list[str]) -> int:
         files = glob(pattern)
         count += len(files)
     return count
+
+
+def count_key_amount_in_json(file_path: str) -> int:
+    return len(read_json(file_path))
+
+
+def operation_zfill_print(num: int, reference: int) -> str:
+    return f"{str(num).zfill(len(str(reference)))}/{str(reference)}"

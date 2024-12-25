@@ -1,5 +1,6 @@
 from logging import getLogger
 from os import listdir, mkdir, path, rename, system
+from random import shuffle
 from re import search
 from time import sleep
 
@@ -11,10 +12,22 @@ from ytmasc.database_utilities import (
     FailReplacementUtilities,
     files_to_keep,
     files_to_remove,
+    get_metadata_from_query,
+    get_metadata_from_watch_id,
     new_music_library,
     old_music_library,
 )
-from ytmasc.utility import download_path, fail_log_path, read_txt_as_list
+from ytmasc.intermediates import update_library_for_key
+from ytmasc.utility import (
+    count_key_amount_in_json,
+    download_path,
+    fail_log_path,
+    library_data_path,
+    operation_zfill_print,
+    read_json,
+    read_txt_as_list,
+    write_json,
+)
 
 logger = getLogger(__name__)
 
@@ -74,9 +87,7 @@ def compare():
             and sorted_data_title[0][next(iter(sorted_data_title[0]))]["ツ"] == 100
         ):
             system("clear")
-            print(
-                f"{str(i).zfill(len(str(old_file_amt)))}/{old_file_amt}\nremove: {file}\n"
-            )
+            print(f"{operation_zfill_print(i, old_file_amt)}\nremove: {file}\n")
             rename(file, path.join("!removal", f"{old_title}.mp3"))
 
         # user decisions
@@ -102,20 +113,18 @@ def compare():
                 #         time.sleep(0.5)
                 if input_key == "r":
                     system("clear")
-                    print(
-                        f"{str(i).zfill(len(str(old_file_amt)))}/{old_file_amt}\nremove: {file}\n"
-                    )
+                    print(f"{operation_zfill_print(i, old_file_amt)}\nremove: {file}\n")
                     rename(file, path.join("!remove", f"{old_title}.mp3"))
                 elif input_key == "k":
                     system("clear")
                     print(
-                        f"{str(i).zfill(len(str(old_file_amt)))}/{old_file_amt}\nkeep: {file}\n"
+                        f"{operation_zfill_print(i, old_file_amt)}/{old_file_amt}\nkeep: {file}\n"
                     )
                     rename(file, path.join("!keep", f"{old_title}.mp3"))
                 elif input_key == "i":
                     system("clear")
                     print(
-                        f"{str(i).zfill(len(str(old_file_amt)))}/{old_file_amt}\nignore: {file}\n"
+                        f"{operation_zfill_print(i, old_file_amt)}/{old_file_amt}\nignore: {file}\n"
                     )
                 else:
                     quit()
@@ -142,11 +151,11 @@ def replace_fails():
     lines = read_txt_as_list(fail_log_path)
     for line in lines:
         watch_id = search(r"\[youtube\] ([a-zA-Z0-9\-_]*?):", line).group(1)
-        artist, title = utils.get_metadata_from_watch_id(watch_id)
+        artist, title = get_metadata_from_watch_id(watch_id)
         system("clear")
         query = f"{artist} - {title}"
         print(query)
-        results = utils.get_metadata_from_query(query)
+        results = get_metadata_from_query(query)
         table = utils.init_table()
         for result in results:
             utils.insert_data(table, *result)
@@ -154,3 +163,31 @@ def replace_fails():
         input_key = ""
         while input_key not in ["q"]:
             input_key = read_key()
+
+
+def replace_current_metadata_with_youtube(skip_until=-1):
+    # TODO do the skip amount properly, theres some offset to it, too lazy to debug it
+    json_data = read_json(library_data_path)
+    total_operations = count_key_amount_in_json(library_data_path)
+    for i, watch_id in enumerate(json_data, start=1):
+        if i + 1 <= skip_until:
+            continue
+        try:
+            logger.info(
+                f"{operation_zfill_print(i, total_operations)} Getting metadata for {watch_id}"
+            )
+            artist, title = get_metadata_from_watch_id(watch_id)
+            logger.info(
+                f"Got metadata for {watch_id}: artist: {artist}, title: {title}"
+            )
+
+            json_data = update_library_for_key(
+                json_data, watch_id, artist, title, overwrite=True
+            )
+        except:
+            logger.warning(
+                f"YouTube denied to provide information, switch your network and input the latest operation number to skip until that point."
+            )
+            break
+
+    write_json(library_data_path, json_data)

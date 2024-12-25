@@ -142,35 +142,52 @@ def create_config():
         update_yaml(yaml_config, default_config)
 
 
-def import_csv(csv_file: str, json_file: str, overwrite=True):
+def import_csv(csv_file: str, overwrite=True):
     df = read_csv(csv_file)
     df.fillna("", inplace=True)
-    json_data = read_json(json_file)
+    json_data = read_json(library_data_path)
 
     for index, row in df.iterrows():
-        key = row.iloc[0]
-        value1 = row.iloc[1]
-        value2 = row.iloc[2]
+        watch_id = row.iloc[0]
+        artist = row.iloc[1]
+        title = row.iloc[2]
 
-        if key in json_data:
-            logger.info(f"Key {key} is already in the library.")
-            if (
-                (json_data[key]["artist"] != value1)
-                or (json_data[key]["title"] != value2)
-            ) and overwrite:
-                logger.info(
-                    f"Values don't match, updating with:\n"
-                    f"artist: {json_data[key]['artist']} -> {row.iloc[1]}\n"
-                    f"title: {json_data[key]['title']} -> {row.iloc[2]}"
-                )
-                json_data[key] = {"artist": value1, "title": value2}
-        else:
+        json_data = update_library_for_key(
+            json_data, watch_id, artist, title, overwrite
+        )
+
+    write_json(library_data_path, json_data)
+
+
+def update_library_for_key(json_data, watch_id, artist, title, overwrite):
+    if watch_id in json_data:
+        logger.info(f"Key {watch_id} is already in the library.")
+        if (
+            (json_data[watch_id]["artist"] != artist)
+            or (json_data[watch_id]["title"] != title)
+        ) and overwrite:
             logger.info(
-                f"Key {key} is not in library, adding it with values:\n"
-                f"artist: {row.iloc[1]}\n"
-                f"title: {row.iloc[2]}"
+                f"Values don't match, updating with:\n"
+                f"\tartist: {json_data[watch_id]['artist']} -> {artist}\n"
+                f"\ttitle: {json_data[watch_id]['title']} -> {title}"
             )
-            json_data[key] = {"artist": value1, "title": value2}
+            json_data[watch_id] = {"artist": artist, "title": title}
 
-    with open(json_file, "w") as f:
-        dump(json_data, f, indent=2)
+        elif (json_data[watch_id]["artist"] == "") or (
+            json_data[watch_id]["title"] == ""
+        ):
+            logger.info(
+                f"Overwrite not specified but artist and/or title metadata is empty:\n"
+                f"\tartist: {json_data[watch_id]['artist']} -> {artist}\n"
+                f"\ttitle: {json_data[watch_id]['title']} -> {title}"
+            )
+            json_data[watch_id] = {"artist": artist, "title": title}
+    else:
+        logger.info(
+            f"Key {watch_id} is not in json_data, adding it with values:\n"
+            f"\tartist: {artist}\n"
+            f"\ttitle: {title}"
+        )
+        json_data[watch_id] = {"artist": artist, "title": title}
+
+    return json_data
