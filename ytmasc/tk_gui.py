@@ -20,7 +20,7 @@ def create_gui():
     root = tk.Tk()
     root.geometry("340x560")
 
-    root.title("YTMASC")
+    root.title("YTMASC TK GUI (UNMAINTAINED)")
     validate_cmd = root.register(validate_input)
 
     parser_plp_rf_state = tk.BooleanVar()

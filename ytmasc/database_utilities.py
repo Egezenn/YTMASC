@@ -136,7 +136,7 @@ class ComparisonUtilities:
             )
 
 
-class MetadataFinder:
+class FailReplacementUtilities:
     def init_table(self) -> classmethod:
         table = PrettyTable()
         table.border = False

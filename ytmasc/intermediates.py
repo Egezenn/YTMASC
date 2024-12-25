@@ -1,4 +1,3 @@
-"Provides chained functions for UX."
 from json import dump
 from logging import getLogger
 from os import listdir, path, remove
@@ -55,17 +54,18 @@ def delete_library_page_files(fetcher_is_going_to_run: bool):
 def find_newest_ri_music_export():
     pattern = r"rimusic_(\d+)|vimusic_(\d+)"
 
-    highest_number = -1
-    highest_file = None
+    newest_number = -1
+    newest_file = None
 
     for filename in listdir(path.join(current_path, data_path)):
         matched = match(pattern, filename)
         if matched is not None and matched.group(1) is not None:  # what
             number = int(matched.group(1))
-            if number > highest_number:
-                highest_number = number
-                highest_file = path.join(current_path, data_path, filename)
-    return highest_file
+            if number > newest_number:
+                newest_number = number
+                newest_file = path.join(current_path, data_path, filename)
+
+    return newest_file
 
 
 def update_library_with_manual_changes_on_files():
@@ -90,9 +90,9 @@ def update_library_with_manual_changes_on_files():
 
 
 def run_tasks(download: bool, convert: bool, tag: bool):
-    if not path.exists(library_data_path) or not path.getsize(library_data_path) > 0:
+    if not check_if_data_exists("library") or not path.getsize(library_data_path) > 0:
         logger.error(
-            f"[FileNotFoundError] {library_data} doesn't exist or is empty. Build {library_data} by running a parse."
+            f"[FileNotFoundError] {library_data} doesn't exist or is empty. Build {library_data} by running a parse or importing data."
         )
         pass
 
@@ -108,14 +108,11 @@ def run_tasks(download: bool, convert: bool, tag: bool):
             tag_bulk(json)
 
 
-def check_if_data_exists():
-    return (
-        True
-        if path.isfile(library_page_path)
-        or find_newest_ri_music_export()
-        or path.isfile(library_data_path)
-        else False
-    )
+def check_if_data_exists(source: str) -> bool:
+    if source == "library":
+        return True if path.isfile(library_page_path) else False
+    if source == "export_ri":
+        return True if find_newest_ri_music_export() else False
 
 
 def create_config():

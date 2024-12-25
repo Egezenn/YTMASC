@@ -1,4 +1,3 @@
-"Provides parsing functions for library page and RiMusic exports."
 from logging import getLogger
 from os import path
 from sqlite3 import connect
@@ -7,8 +6,13 @@ from time import sleep
 from bs4 import BeautifulSoup
 
 from ytmasc.fetcher import fetch
-from ytmasc.intermediates import delete_library_page_files, find_newest_ri_music_export
+from ytmasc.intermediates import (
+    check_if_data_exists,
+    delete_library_page_files,
+    find_newest_ri_music_export,
+)
 from ytmasc.utility import (
+    library_data,
     library_data_path,
     library_page,
     library_page_path,
@@ -31,19 +35,15 @@ def parse_library_page(
 
         while not path.isfile(library_page_path):
             sleep(1)
-
         logger.info(f"{library_page} is found")
-
         sleep(5)
 
-    if path.isfile(library_page_path):
+    if check_if_data_exists("library"):
         with open(library_page_path, encoding="utf-8") as file:
             soup = BeautifulSoup(file, "html.parser")
 
             base_selector = "ytmusic-responsive-list-item-renderer.style-scope.ytmusic-playlist-shelf-renderer"
-
             logger.info(f"Parsing {library_page}..")
-
             base_elements = soup.select(base_selector)
 
             json = {}
@@ -73,19 +73,18 @@ def parse_library_page(
                         }
                     else:
                         logger.warning(
-                            f"YouTube didn't fail to provide another edge case, ID {title_element['href'][34:-8]} by \"{artist_element.text}\"'s title is {title_element.text}"
+                            f"YouTube didn't fail to provide another edge case, watch_id {title_element['href'][34:-8]} by \"{artist_element.text}\"'s title is {title_element.text}."
                         )
 
             else:
-                logger.error("Page is corrupted")
+                logger.error("Page is corrupted.")
 
             logger.info(f"Successfully parsed {library_page}.")
+            json = sort_dictionary_based_on_value_inside_nested_dictionary(json)
+            update_json(library_data_path, json)
 
-        json = sort_dictionary_based_on_value_inside_nested_dictionary(json)
-        update_json(library_data_path, json)
-
-        if delete_library_page_files_afterwards:
-            delete_library_page_files(delete_library_page_files_afterwards)
+            if delete_library_page_files_afterwards:
+                delete_library_page_files(delete_library_page_files_afterwards)
 
     else:
         logger.error(f"{library_page} doesn't exist, use fetcher to get one.")
@@ -93,25 +92,33 @@ def parse_library_page(
 
 
 def parse_ri_music_db():
-    database = find_newest_ri_music_export()
-    connection = connect(database)
-    cursor = connection.cursor()
+    if check_if_data_exists("export_ri"):
+        database = find_newest_ri_music_export()
+        logger.info(f"RiMusic export ({database}) found, parsing it..")
+        connection = connect(database)
+        cursor = connection.cursor()
 
-    cursor.execute(
-        "SELECT id, title, artistsText, likedAt FROM Song WHERE likedAt IS NOT NULL"
-    )
-    rows = cursor.fetchall()
+        cursor.execute(
+            "SELECT id, title, artistsText, likedAt FROM Song WHERE likedAt IS NOT NULL"
+        )
+        rows = cursor.fetchall()
 
-    json = {}
-    for row in rows:
-        song_id, title, artists, liked_at = row
-        json[song_id] = {
-            "artist": artists,
-            "title": title,
-        }
+        json = {}
+        for row in rows:
+            song_id, title, artists, liked_at = row
+            json[song_id] = {
+                "artist": artists,
+                "title": title,
+            }
 
-    cursor.close()
-    connection.close()
+        cursor.close()
+        connection.close()
 
-    sort_dictionary_based_on_value_inside_nested_dictionary(json)
-    update_json(library_data_path, json)
+        sort_dictionary_based_on_value_inside_nested_dictionary(json)
+        update_json(library_data_path, json)
+
+        logger.info(f"Successfully parsed RiMusic export and updated {library_data}.")
+
+    else:
+        logger.warning("No RiMusic export found.")
+        pass

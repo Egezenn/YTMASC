@@ -1,4 +1,3 @@
-"Handles all things regarding CLI arguments, launches UI"
 import logging
 
 from ytmasc.intermediates import create_config
@@ -17,7 +16,7 @@ if __name__ == "__main__":
     check_if_directories_exist_and_make_if_not(download_path, temp_path, data_path)
     create_config()
 
-    args = get_cli_args()
+    args, parser = get_cli_args()
     setup_logging(args.verbosity)
 
-    handle_cli(args)
+    handle_cli(args, parser)

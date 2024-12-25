@@ -1,4 +1,3 @@
-"Provides conversion functions for unwanted formats."
 from logging import getLogger
 from os import path, remove
 
@@ -10,7 +9,6 @@ logger = getLogger(__name__)
 
 
 def convert_bulk(json: dict):
-    "Converts source source_audio_ext to audio_conversion_ext in bulk."
     fail_amount = 0
     for i, key in enumerate(json.keys(), start=1):
         logger.info(f"<<< CONVERSION {i} >>>")
@@ -27,8 +25,6 @@ def convert_bulk(json: dict):
 
 
 def convert(key: str):
-    "Converts source source_audio_ext to audio_conversion_ext."
-
     file_name = key
     output_audio_file = path.join(file_name + audio_conversion_ext)
     output_audio_file_path = path.join(download_path, output_audio_file)

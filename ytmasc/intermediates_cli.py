@@ -1,5 +1,3 @@
-"Provides chained functions for CLI"
-
 from argparse import ArgumentParser
 
 from ytmasc.database_helpers import compare, find_unpaired_files, replace_fails
@@ -27,10 +25,6 @@ def get_cli_args():
     parser = ArgumentParser()
     parser.add_argument("positional_arg", nargs="?", type=str, help="gui|run|set")
 
-    # yaml config settings
-    parser.add_argument(
-        "setting_category", nargs="?", type=str, help="parser | fetcherArgs | tasks"
-    )  # could just not make a category check, values are unique
     parser.add_argument(
         "setting",
         nargs="?",
@@ -88,10 +82,10 @@ def get_cli_args():
         help="Set the log verbosity d | i | w | e | c",
     )
 
-    return parser.parse_args()
+    return parser.parse_args(), parser
 
 
-def handle_cli(args: classmethod):
+def handle_cli(args: classmethod, parser: classmethod):
     if args.positional_arg == "gui" or args.positional_arg == "g":
         create_gui()
 
@@ -102,17 +96,7 @@ def handle_cli(args: classmethod):
         handle_settings(args)
 
     else:
-        if not (
-            args.update_library_with_manual_changes_on_files
-            or args.export_library_as_csv
-            or args.import_csv_to_library
-            or args.import_csv_to_library_no_overwrite
-            or args.direct_import
-            or args.db_compare
-            or args.db_find_unpaired
-            or args.db_replace_fails
-        ):
-            create_gui()
+        parser.print_help()
 
     if args.update_library_with_manual_changes_on_files:
         update_library_with_manual_changes_on_files()
@@ -140,26 +124,22 @@ def handle_cli(args: classmethod):
 
 
 def handle_settings(args: classmethod):
-    "Handles user input for configuring the config.yaml"
     config = read_yaml(yaml_config)
 
-    if args.setting_category == None:
+    if args.setting == None:
         print(read_txt(yaml_config))
 
-    for setting_category in config:
-        if (
-            args.setting_category == setting_category
-        ):  # could just not make a category check, values are unique
-            for setting in config[setting_category]:
-                if args.setting == setting:
-                    args.setting_value = (
-                        float(args.setting_value)
-                        if "." in args.setting_value
-                        else int(args.setting_value)
-                    )
-                    config[args.setting_category][args.setting] = args.setting_value
-                    break
-            break
+    for setting_category in config.keys():
+        for setting in config[setting_category]:
+            if args.setting == setting:
+                args.setting_value = (
+                    float(args.setting_value)
+                    if "." in args.setting_value
+                    else int(args.setting_value)
+                )
+                config[setting_category][args.setting] = args.setting_value
+                break
+
     update_yaml(yaml_config, config)
 
 

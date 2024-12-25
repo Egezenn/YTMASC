@@ -1,7 +1,3 @@
-"""
-Provides a function to get the library page on YouTube.
-"""
-
 from logging import getLogger
 from os import path
 from platform import system
@@ -23,8 +19,6 @@ def fetch(
     closing_delay=3,
     save_page_as_index_on_right_click=5,
 ):
-    "Fetches library page while emulating user interaction."
-
     systemInfo = system()
     if systemInfo == "Windows":
         # initializing the browser

@@ -10,13 +10,13 @@ It's features are:
 
 - Scraping your library page from YouTube
 - Importing favorites from a [RiMusic](https://github.com/fast4x/RiMusic) database
-- Import a CSV of your own (columns are: `ID`, `artist`, `title`)
+- Import a CSV of your own (columns are: `watch_id`, `artist`, `title`)
 - Maintaining a data file for your music for an easily reproducible collection
 - Automatic downloading, converting and tagging
 - Some helper functions to modify your data file easier and for easy migration
 - A GUI and a CLI (shipped as a binary for Windows!)
 
-The project just keeps expanding as I learn more stuff and want to implement niche things. So it's currently in Alpha stages, you may see new features come and go every now and then.
+The project just keeps expanding as I learn more stuff and want to implement niche things. So it's currently in alpha stages, you may see new features come and go every now and then.
 
 ## CLI Usage Examples
 
@@ -30,7 +30,7 @@ The project just keeps expanding as I learn more stuff and want to implement nic
 
 `ytmasc set`: will show you the state of the config
 
-`ytmasc set parser run-fetcher 1`: sets the fetcher to run
+`ytmasc set run-fetcher 1`: sets the fetcher to run
 
 `ytmasc --export-library-as-csv`: exports the library as csv to the `data` directory
 
@@ -38,9 +38,8 @@ The project just keeps expanding as I learn more stuff and want to implement nic
 
 - You need `ffmpeg` binaries for conversion.
 - YouTube blocks API requests if you exceed the amount they classify you as a bot (around 200 requests). You can either use a VPN, proxy or just wait to bypass this. See related `yt-dlp` [issue](https://github.com/yt-dlp/yt-dlp/issues/10128). Currently the download loop breaks and skips to the next task.
-- You might want to change your YouTube language while the fetcher is running as YouTube has rare concatenation of artists which gives you the word "and" in your own language.
 - While downloading, some changes may occur in YouTube which results in an error.
-Find out the music via `https://music.youtube.com/watch?v=<key>`, delete the json entry and add the changed one into your likes to continue. At least your music is not lost by YouTube for some unknown reason! :\)
+You can use `ytmasc --db-replace-fails` to replace these `watch_id`s to something else.
 
 ## Requirements to run from source or build
 
@@ -50,7 +49,7 @@ Find out the music via `https://music.youtube.com/watch?v=<key>`, delete the jso
 
 This part is a little duct taped, I couldn't find a good way to get the `libraryPage` formerly known as `likesPage` so I just emulated user input. It's written for a Windows computer that has `firefox` or `zen` as the default browser and `file explorer`. Shouldn't be hard to tinker and get it to work for your configuration. You can do this manually too, shouldn't take much of your time.
 
-Change `resendAmount` based on your internet connection, page length. For reference with good connection and 600~ likes containing page requires about 60.
+Change `resendAmount` based on your internet connection, page length. Rule of thumb is to divide your like amount by 10 for this.
 
 Change `openingDelay` based on your internet connection.
 

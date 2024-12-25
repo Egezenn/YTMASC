@@ -1,4 +1,3 @@
-"Provides tagging functions for the desired files."
 from logging import getLogger
 from os import path
 
@@ -16,14 +15,14 @@ logger = getLogger(__name__)
 
 
 def tag_bulk(json: dict):
-    "Tag files in bulk using tag()"
+    "Tag files in bulk"
     fail_amount = 0
     total_files = count_files(download_path, possible_audio_ext)
     num_digits = len(str(total_files))
-    for i, (key, value) in enumerate(json.items(), start=1):
+    for i, (watch_id, value) in enumerate(json.items(), start=1):
 
         logger.info(f"<<< TAG {i} >>>")
-        fail_status = tag(key, value, num_digits, i - fail_amount)
+        fail_status = tag(watch_id, value, num_digits, i - fail_amount)
         logger.info(f">>> TAG {i} <<<")
         fail_amount += fail_status
 
@@ -35,9 +34,9 @@ def tag_bulk(json: dict):
         pass
 
 
-def tag(key, value, digit_amount, num):
-    "Tag a file with title, artist, album(order_number), cover art"
-    file_name = key
+def tag(watch_id, value, digit_amount, num):
+    "Tag a file with title, artist, album(zero filled integers), cover art"
+    file_name = watch_id
     title = value["title"]
     artist = value["artist"]
     audio_file = file_name + audio_conversion_ext
@@ -51,7 +50,7 @@ def tag(key, value, digit_amount, num):
         audio_file.initTag()
 
         # if audio_file is not None and audio_file.tag is not None:  # true
-        #     if key in json:  # true
+        #     if watch_id in json:  # true
         logger.info(
             f"Tagging {audio_file} with:\n"
             f"\ttitle:\t{title}\n"
@@ -75,6 +74,6 @@ def tag(key, value, digit_amount, num):
 
     except OSError:
         logger.warning(
-            f"{audio_file} doesn't exist, skipping tagging. Might be related to YouTube key updates?"
+            f"{audio_file} doesn't exist, skipping tagging. Might be related to YouTube watch_id updates?"
         )
         return 1

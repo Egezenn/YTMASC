@@ -73,20 +73,17 @@ def setup_logging(verbosity):
 
 
 def check_if_directories_exist_and_make_if_not(*directories: str):
-    "Used at initialization"
     for directory in directories:
         makedirs(directory, exist_ok=True)
 
 
-def sortDictionaryBasedOnKey(dictionary: dict) -> dict:
-    "Unused"
+def sort_dictionary_based_on_key(dictionary: dict) -> dict:
     return dict(sorted(dictionary.items(), key=lambda item: item[0].lower()))
 
 
 def sort_dictionary_based_on_value_inside_nested_dictionary(
     dictionary: dict,
 ) -> dict:
-    "Used for storing dictionary data in ascending order depending on title"
     return dict(
         sorted(dictionary.items(), key=lambda item: list(item[1].values())[1].lower())
     )
@@ -108,7 +105,6 @@ def convert_csv_to_json(csv_file: str, json_file: str):
 
 
 def read_json(file_path: str) -> dict:
-    "Used whenever something runs"
     try:
         with open(file_path, "r") as json_file:
             return jload(json_file)
@@ -117,13 +113,11 @@ def read_json(file_path: str) -> dict:
 
 
 def write_json(file_path: str, data: dict):
-    "Used whenever saving"
     with open(file_path, "w") as json_file:
         jdump(data, json_file, indent=2)
 
 
 def update_json(file_path: str, data: dict):
-    "Used in appending unique data to library"
     existing_data = read_json(file_path)
     for key, value in data.items():
         if key not in existing_data:
@@ -133,7 +127,6 @@ def update_json(file_path: str, data: dict):
 
 
 def read_yaml(file_path: str) -> dict:
-    "Used whenever something runs"
     try:
         with open(file_path, "r") as file:
             return yload(file, Loader=FullLoader)
@@ -142,19 +135,16 @@ def read_yaml(file_path: str) -> dict:
 
 
 def update_yaml(file_path: str, data: dict):
-    "Used whenever a value is changed"
     with open(file_path, "w") as file:
         ydump(data, file, default_flow_style=False)
 
 
 def write_txt(file_path: str, data: str):
-    "Used for fail logs"
     with open(file_path, "w") as file:
         file.write(data)
 
 
 def read_txt(file_path: str) -> str:
-    "Used for fail logs"
     with open(file_path, "r") as file:
         return file.read()
 
@@ -166,13 +156,11 @@ def read_txt_as_list(file_path: str) -> list:
 
 
 def append_txt(file_path: str, data: str):
-    "Used for fail logs"
     with open(file_path, "a") as file:
         file.write(data)
 
 
 def count_files(directory: str, extensions: list[str]) -> int:
-    "Used for album naming"
     count = 0
     for extension in extensions:
         pattern = path.join(directory, f"*{extension}")

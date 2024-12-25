@@ -1,4 +1,3 @@
-"Provides functions to fetch all the desired files."
 from logging import getLogger
 from os import listdir, path, remove, rename
 from re import search
@@ -24,7 +23,6 @@ logger = getLogger(__name__)
 
 
 def download_bulk(json: dict):
-    "Downloads files in bulk."
     fail_amount = 0
     write_txt(fail_log_path, "")
 
@@ -52,7 +50,6 @@ def download_bulk(json: dict):
         pass
 
 
-# TODO return more things if things blow up
 def download(key: str) -> list[str]:
     """
     Downloads files.

@@ -1,4 +1,3 @@
-"Imports an old database and compares each file with new ones."
 from logging import getLogger
 from os import listdir, mkdir, path, rename, system
 from re import search
@@ -9,7 +8,7 @@ from keyboard import read_key
 
 from ytmasc.database_utilities import (
     ComparisonUtilities,
-    MetadataFinder,
+    FailReplacementUtilities,
     files_to_keep,
     files_to_remove,
     new_music_library,
@@ -21,11 +20,6 @@ logger = getLogger(__name__)
 
 
 def compare():
-    """
-    Compares each file in the old database with the ones that are downloaded
-    with a CLI that handles keypresses.
-    """
-
     utils = ComparisonUtilities()
     if not path.isdir(old_music_library):
         logger.warning(
@@ -131,7 +125,6 @@ def compare():
 
 
 def find_unpaired_files():
-    "Finds unpaired MP3 or JPG files"
     files = listdir(download_path)
 
     mp3_files = {f[:-4] for f in files if f.endswith(".mp3")}
@@ -145,18 +138,18 @@ def find_unpaired_files():
 
 
 def replace_fails():
-    finder = MetadataFinder()
+    utils = FailReplacementUtilities()
     lines = read_txt_as_list(fail_log_path)
     for line in lines:
         watch_id = search(r"\[youtube\] ([a-zA-Z0-9\-_]*?):", line).group(1)
-        artist, title = finder.get_metadata_from_watch_id(watch_id)
+        artist, title = utils.get_metadata_from_watch_id(watch_id)
         system("clear")
         query = f"{artist} - {title}"
         print(query)
-        results = finder.get_metadata_from_query(query)
-        table = finder.init_table()
+        results = utils.get_metadata_from_query(query)
+        table = utils.init_table()
         for result in results:
-            finder.insert_data(table, *result)
+            utils.insert_data(table, *result)
         print(table)
         input_key = ""
         while input_key not in ["q"]:
