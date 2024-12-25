@@ -1,6 +1,5 @@
 .git
 .venv
-.vscode
 __pycache__
 
 # project files

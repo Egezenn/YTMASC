@@ -1,0 +1,89 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "YTMASC: GUI",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "ytmasc",
+      "args": ["gui"]
+    },
+    {
+      "name": "YTMASC: run",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "ytmasc",
+      "args": ["run", "-v", "i"]
+    },
+    {
+      "name": "YTMASC: set",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "ytmasc",
+      "args": ["set", "download", "1"]
+    },
+    {
+      "name": "YTMASC: replace-current-metadata-with-youtube",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "ytmasc",
+      "args": ["--replace-current-metadata-with-youtube", "-v", "i"]
+    },
+    {
+      "name": "YTMASC: update-library-with-manual-changes-on-files",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "ytmasc",
+      "args": ["update-library-with-manual-changes-on-files", "-v", "i"]
+    },
+    {
+      "name": "YTMASC: export-library-as-csv",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "ytmasc",
+      "args": ["export-library-as-csv", "-v", "i"]
+    },
+    {
+      "name": "YTMASC: import-csv-to-library",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "ytmasc",
+      "args": ["import-csv-to-library", "-v", "i"]
+    },
+    {
+      "name": "YTMASC: import-csv-to-library-no-overwrite",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "ytmasc",
+      "args": ["import-csv-to-library-no-overwrite", "-v", "i"]
+    },
+    {
+      "name": "YTMASC: direct-import",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "ytmasc",
+      "args": ["direct-import", "-v", "i"]
+    },
+    {
+      "name": "YTMASC: db-compare",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "ytmasc",
+      "args": ["db-compare", "-v", "i"]
+    },
+    {
+      "name": "YTMASC: db-find-unpaired",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "ytmasc",
+      "args": ["db-find-unpaired", "-v", "i"]
+    },
+    {
+      "name": "YTMASC: db-replace-fails",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "ytmasc",
+      "args": ["db-replace-fails", "-v", "i"]
+    }
+  ]
+}
