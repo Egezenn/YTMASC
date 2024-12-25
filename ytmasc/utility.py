@@ -159,6 +159,12 @@ def read_txt(file_path: str) -> str:
         return file.read()
 
 
+def read_txt_as_list(file_path: str) -> list:
+    with open(file_path, "r") as file:
+        lines = [line.strip() for line in file]
+    return lines
+
+
 def append_txt(file_path: str, data: str):
     "Used for fail logs"
     with open(file_path, "a") as file:

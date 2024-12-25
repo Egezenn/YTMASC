@@ -2,8 +2,7 @@
 
 from argparse import ArgumentParser
 
-from ytmasc.dbtools.comparison import compare
-from ytmasc.dbtools.find_unpaired import find_unpaired_files
+from ytmasc.database_helpers import compare, find_unpaired_files, replace_fails
 from ytmasc.intermediates import (
     import_csv,
     run_tasks,
@@ -77,6 +76,11 @@ def get_cli_args():
         "--db-find-unpaired", action="store_true", help="Find unpaired items"
     )
     parser.add_argument(
+        "--db-replace-fails",
+        action="store_true",
+        help="Helps you select a new file for the failed items.",
+    )
+    parser.add_argument(
         "-v",
         "--verbosity",
         default="w",
@@ -106,6 +110,7 @@ def handle_cli(args: classmethod):
             or args.direct_import
             or args.db_compare
             or args.db_find_unpaired
+            or args.db_replace_fails
         ):
             create_gui()
 
@@ -129,6 +134,9 @@ def handle_cli(args: classmethod):
 
     if args.db_find_unpaired:
         find_unpaired_files(download_path)
+
+    if args.db_replace_fails:
+        replace_fails()
 
 
 def handle_settings(args: classmethod):

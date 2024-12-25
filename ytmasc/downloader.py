@@ -1,6 +1,7 @@
 "Provides functions to fetch all the desired files."
 from logging import getLogger
 from os import listdir, path, remove, rename
+from re import search
 from urllib.error import HTTPError
 from urllib.request import urlretrieve
 
@@ -38,6 +39,7 @@ def download_bulk(json: dict):
                 or r"Failed to extract any player response" in exception
             ):
                 break  # sleep?
+            # final name for the unique identifier
             append_txt(fail_log_path, exception + "\n")
 
     if not fail_amount:
@@ -123,22 +125,22 @@ def download(key: str) -> list[str]:
 
             except DownloadError as exception:
                 exception = str(exception)
-                if "Video unavailable" in exception:
+                if r"Video unavailable" in exception:
                     logger.warning(
                         f"[JustYouTubeThings] {url} is not available, skipping."
                     )
                     pass
-                elif "Sign in to confirm you’re not a bot" in exception:
+                elif r"Sign in to confirm you’re not a bot" in exception:
                     logger.warning(
                         f"[JustYouTubeThings] Classified as bot, unable to download {url}."
                     )
                     pass
-                elif "Sign in to confirm your age" in exception:
+                elif r"Sign in to confirm your age" in exception:
                     logger.warning(
                         f"[JustYouTubeThings] Has age restriction, unable to download {url}."
                     )
                     pass
-                elif "Failed to extract any player response":
+                elif r"Failed to extract any player response":
                     logger.critical(
                         f"[NoInternetOrElse] yt-dlp was unable to get a response, ensure your internet connection."
                     )
