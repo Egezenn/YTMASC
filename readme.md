@@ -88,6 +88,8 @@ The rest is fine if you don't have a really old computer.
 
 [yt-dlp](https://github.com/yt-dlp/yt-dlp) - Used in downloading user's library. Licensed under Unlicense license.
 
+[ytmusicapi](https://github.com/sigma67/ytmusicapi) - Used in metadata fetching. Licensed under MIT license.
+
 [fuzzywuzzy](https://github.com/seatgeek/fuzzywuzzy) - Used in comparison utilities for migration for fuzzy matching. Licensed under GPLv2 license.
 
 [python-levenshtein](https://github.com/rapidfuzz/python-Levenshtein)* - Subdependency for fuzzywuzzy. Licensed under GPL-2.0 license.
