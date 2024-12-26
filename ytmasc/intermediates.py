@@ -72,15 +72,15 @@ def update_library_with_manual_changes_on_files():
     existing_data = read_json(library_data_path)
     modified_data = existing_data
 
-    for key, value in existing_data.items():
-        song = loadmp3(path.join(download_path, key + audio_conversion_ext))
+    for watch_id, value in existing_data.items():
+        song = loadmp3(path.join(download_path, watch_id + audio_conversion_ext))
         if not (value["title"] == song.tag.title or value["artist"] == song.tag.artist):
             logger.info(
-                f"Manual change detected on {key}, updating {library_data} with changes:\n"
+                f"Manual change detected on {watch_id}, updating {library_data} with changes:\n"
                 f"artist:\t{song.tag.artist} -> {value['artist']}\n"
                 f"title:\t{song.tag.title} -> {value['title']}\n",
             )
-            modified_data[key] = {
+            modified_data[watch_id] = {
                 "artist": song.tag.artist,
                 "title": song.tag.title,
             }
@@ -110,7 +110,7 @@ def run_tasks(download: bool, convert: bool, tag: bool):
 
 def check_if_data_exists(source: str) -> bool:
     if source == "library":
-        return True if path.isfile(library_page_path) else False
+        return True if path.isfile(library_data_path) else False
     if source == "export_ri":
         return True if find_newest_ri_music_export() else False
 
@@ -152,16 +152,16 @@ def import_csv(csv_file: str, overwrite=True):
         artist = row.iloc[1]
         title = row.iloc[2]
 
-        json_data = update_library_for_key(
+        json_data = update_library_for_watch_id(
             json_data, watch_id, artist, title, overwrite
         )
 
     write_json(library_data_path, json_data)
 
 
-def update_library_for_key(json_data, watch_id, artist, title, overwrite):
+def update_library_for_watch_id(json_data, watch_id, artist, title, overwrite):
     if watch_id in json_data:
-        logger.info(f"Key {watch_id} is already in the library.")
+        logger.info(f"Watch ID {watch_id} is already in the library.")
         if (
             (json_data[watch_id]["artist"] != artist)
             or (json_data[watch_id]["title"] != title)
@@ -184,7 +184,7 @@ def update_library_for_key(json_data, watch_id, artist, title, overwrite):
             json_data[watch_id] = {"artist": artist, "title": title}
     else:
         logger.info(
-            f"Key {watch_id} is not in json_data, adding it with values:\n"
+            f"Watch ID {watch_id} is not in json_data, adding it with values:\n"
             f"\tartist: {artist}\n"
             f"\ttitle: {title}"
         )

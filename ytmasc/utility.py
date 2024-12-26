@@ -169,7 +169,7 @@ def count_files(directory: str, extensions: list[str]) -> int:
     return count
 
 
-def count_key_amount_in_json(file_path: str) -> int:
+def count_watch_id_amount_in_json(file_path: str) -> int:
     return len(read_json(file_path))
 
 

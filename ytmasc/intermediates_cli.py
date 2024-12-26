@@ -5,6 +5,7 @@ from ytmasc.database_helpers import (
     find_unpaired_files,
     replace_current_metadata_with_youtube,
     replace_fails,
+    find_same_metadata,
 )
 from ytmasc.intermediates import (
     import_csv,
@@ -45,9 +46,7 @@ def get_cli_args():
 
     parser.add_argument(
         "--replace-current-metadata-with-youtube",
-        nargs="?",
-        const=True,
-        type=int,
+        action="store_true",
         help="Replace the whole library's metadata with YouTube metadata.",
     )
     parser.add_argument(
@@ -63,12 +62,12 @@ def get_cli_args():
     parser.add_argument(
         "--import-csv-to-library",
         action="store_true",
-        help="Imports a CSV of 3 columns [ID, artist, title]. If keys exist but their values are different they will be updated with the tags from the CSV",
+        help="Imports a CSV of 3 columns [ID, artist, title]. If watch_ids exist but their values are different they will be updated with the tags from the CSV",
     )
     parser.add_argument(
         "--import-csv-to-library-no-overwrite",
         action="store_true",
-        help="Imports a CSV of 3 columns [ID, artist, title]. If keys exist but their values are different they will NOT be updated with the tags from the CSV",
+        help="Imports a CSV of 3 columns [ID, artist, title]. If watch_ids exist but their values are different they will NOT be updated with the tags from the CSV",
     )
     parser.add_argument(
         "--direct-import", action="store_true", help="Completely overwrites the library"
@@ -85,6 +84,11 @@ def get_cli_args():
         "--db-replace-fails",
         action="store_true",
         help="Helps you select a new file for the failed items.",
+    )
+    parser.add_argument(
+        "--db-find-same",
+        action="store_true",
+        help="Finds items with same metadata.",
     )
     parser.add_argument(
         "-v",
@@ -119,16 +123,14 @@ def handle_cli(args: classmethod, parser: classmethod):
                 args.db_compare,
                 args.db_find_unpaired,
                 args.db_replace_fails,
+                args.db_find_same,
             ]
         ):
             parser.print_help()
 
-    # TODO also implement this behavior to csv import
-    if args.replace_current_metadata_with_youtube is not None:
-        replace_current_metadata_with_youtube(
-            args.replace_current_metadata_with_youtube
-        )
-    elif args.replace_current_metadata_with_youtube is None:
+    # TODO i'm at a loss of on how to get a bool value if a setting is passed in
+    # and if there is a value passed alongside it also getting that
+    if args.replace_current_metadata_with_youtube:
         replace_current_metadata_with_youtube()
 
     if args.update_library_with_manual_changes_on_files:
@@ -154,6 +156,9 @@ def handle_cli(args: classmethod, parser: classmethod):
 
     if args.db_replace_fails:
         replace_fails()
+
+    if args.db_find_same:
+        find_same_metadata()
 
 
 def handle_settings(args: classmethod):

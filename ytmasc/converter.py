@@ -10,9 +10,9 @@ logger = getLogger(__name__)
 
 def convert_bulk(json: dict):
     fail_amount = 0
-    for i, key in enumerate(json.keys(), start=1):
+    for i, watch_id in enumerate(json.keys(), start=1):
         logger.info(f"<<< CONVERSION {i} >>>")
-        fail_state = convert(key)
+        fail_state = convert(watch_id)
         logger.info(f">>> CONVERSION {i} <<<")
         fail_amount += fail_state
 
@@ -24,8 +24,8 @@ def convert_bulk(json: dict):
         pass
 
 
-def convert(key: str):
-    file_name = key
+def convert(watch_id: str):
+    file_name = watch_id
     output_audio_file = path.join(file_name + audio_conversion_ext)
     output_audio_file_path = path.join(download_path, output_audio_file)
 

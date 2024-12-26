@@ -1,4 +1,3 @@
-import json
 import os
 from logging import getLogger
 
@@ -17,22 +16,23 @@ logger = getLogger(__name__)
 
 
 class ComparisonUtilities:
-    def list_mp3(self, dir: str) -> list:
+    def list_mp3(self, dir: str) -> list[list[dict], int]:
         filtered = [f for f in os.listdir(dir) if f.endswith(audio_conversion_ext)]
 
         return filtered
 
+    # will fail without the fallback
     def create_old_database(self, title_filename_fallback=False):
         old_files = self.list_mp3(old_music_library)
         old_database = []
-        for OLD_song in old_files:
-            data = EasyID3(os.path.join(old_music_library, OLD_song))
+        for old_song in old_files:
+            data = EasyID3(os.path.join(old_music_library, old_song))
             if title_filename_fallback:
-                title = OLD_song.split(".")[0]  # make a switch based on an user input
+                title = old_song.split(".")[0]  # make a switch based on an user input
             else:
                 title = data.get("Title")[0]
             artist = data.get("Artist")[0]
-            old_database.append({title: artist})
+            old_database.append({old_song[:-4]: {"artist": artist, "title": title}})
 
         old_file_amt = 0
         for _ in old_files:
@@ -40,20 +40,21 @@ class ComparisonUtilities:
 
         return old_database, old_file_amt
 
-    def create_new_database(self):
+    def create_new_database(self) -> list[dict]:
         new_files = self.list_mp3(new_music_library)
         new_database = []
-        for NEW_song in new_files:
-            data = EasyID3(os.path.join(new_music_library, NEW_song))
+        for new_song in new_files:
+            data = EasyID3(os.path.join(new_music_library, new_song))
             title = data.get("Title")[0]
             if data.get("Artist") is not None:
                 artist = data.get("Artist")[0]
             else:
                 artist = "░"  # so that there's no unpacking errors or something xd
-            new_database.append({title: artist})
+            new_database.append({new_song[:-4]: {"artist": artist, "title": title}})
+
         return new_database
 
-    def sort_based_on_score(self, scores, by_which):
+    def sort_based_on_score(self, scores, by_which) -> list:
         if by_which == "title_score":
             sorted_data = sorted(
                 scores,
@@ -67,6 +68,7 @@ class ComparisonUtilities:
                 key=lambda x: (x[next(iter(x))]["ツ"], int(next(iter(x)))),
                 reverse=True,
             )
+
             return sorted_data
 
     def init_table(self) -> classmethod:
@@ -153,19 +155,6 @@ class FailReplacementUtilities:
 
         return table
 
-    def remove_duplicates_by_second_item(self, list_of_lists: list) -> list:
-        seen = set()
-        result = []
-
-        for sublist in list_of_lists:
-            if len(sublist) > 1:
-                second_item = sublist[1]
-                if second_item not in seen:
-                    seen.add(second_item)
-                    result.append(sublist)
-
-        return result
-
     def insert_data(
         self, table: classmethod, artist: str, watch_id: str, title: str, album: str
     ):
@@ -177,6 +166,20 @@ class FailReplacementUtilities:
                 f"\x1b[104m\x1b[1m  {album}  \x1b[0m",
             ]
         )
+
+
+def remove_duplicates_by_second_item(list_of_lists: list) -> list:
+    seen = set()
+    result = []
+
+    for sublist in list_of_lists:
+        if len(sublist) > 1:
+            second_item = sublist[1]
+            if second_item not in seen:
+                seen.add(second_item)
+                result.append(sublist)
+
+    return result
 
 
 def get_metadata_from_query(query: str) -> list:
@@ -211,12 +214,12 @@ def get_metadata_from_query(query: str) -> list:
                 album = None
 
         results_metadata.append([artists, watch_id, title, album])
-    results_metadata = self.remove_duplicates_by_second_item(results_metadata)
+    results_metadata = remove_duplicates_by_second_item(results_metadata)
 
     return results_metadata
 
 
-def get_metadata_from_watch_id(watch_id: str) -> [str, str]:
+def get_metadata_from_watch_id(watch_id: str) -> list[str, str]:
     yt = YTMusic()
 
     search_results = yt.get_song(watch_id)

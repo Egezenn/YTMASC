@@ -26,9 +26,9 @@ def download_bulk(json: dict):
     fail_amount = 0
     write_txt(fail_log_path, "")
 
-    for i, key in enumerate(json.keys(), start=1):
+    for i, watch_id in enumerate(json.keys(), start=1):
         logger.info(f"<<< DOWNLOAD {i} >>>")
-        fail_state, exception = download(key)
+        fail_state, exception = download(watch_id)
         logger.info(f"<<< DOWNLOAD {i} >>>")
         fail_amount += fail_state
         if exception != 0:
@@ -50,7 +50,7 @@ def download_bulk(json: dict):
         pass
 
 
-def download(key: str) -> list[str]:
+def download(watch_id: str) -> list[str]:
     """
     Downloads files.
 
@@ -76,27 +76,27 @@ def download(key: str) -> list[str]:
         "ignore-errors": True,
         "no-abort-on-error": True,
         "quiet": True,
-        "outtmpl": f"{path.join(temp_path, key)}.%(audio_ext)s",
+        "outtmpl": f"{path.join(temp_path, watch_id)}.%(audio_ext)s",
         "compat_opts": {"filename-sanitization"},
     }
     audio_file_found = False
     cover_file_found = False
-    download_filename = None  # should be the same as key
+    download_filename = None  # should be the same as watch_id
     download_ext = None
 
     with YoutubeDL(opt_dict) as file:
-        url = f"https://www.youtube.com/watch?v={key}"
+        url = f"https://www.youtube.com/watch?v={watch_id}"
 
         for ext in possible_audio_ext:
-            if path.isfile(path.join(download_path, key + ext)):
+            if path.isfile(path.join(download_path, watch_id + ext)):
                 logger.info(
-                    f"[FileExistsError] {key + ext} already exists, skipping download."
+                    f"[FileExistsError] {watch_id + ext} already exists, skipping download."
                 )
                 audio_file_found = True
                 break
 
         if not audio_file_found:
-            logger.info(f"Downloading audio of {key}.")
+            logger.info(f"Downloading audio of {watch_id}.")
 
             try:
                 file.download(url)
@@ -113,11 +113,11 @@ def download(key: str) -> list[str]:
                             download_ext = file[-len(ext) :]
                             break
 
-                logger.info(f"Successfully downloaded {key + download_ext}.")
+                logger.info(f"Successfully downloaded {watch_id + download_ext}.")
 
             except FileExistsError:
                 logger.info(
-                    f"[FileExistsError] {key + download_ext} already exists, skipping download."
+                    f"[FileExistsError] {watch_id + download_ext} already exists, skipping download."
                 )
 
             except DownloadError as exception:
@@ -148,48 +148,52 @@ def download(key: str) -> list[str]:
                     pass
                 return 1, exception
 
-    if path.isfile(path.join(download_path, key + source_cover_ext)):
+    if path.isfile(path.join(download_path, watch_id + source_cover_ext)):
         logger.info(
-            f"[FileExistsError] {key + source_cover_ext} already exists, skipping download."
+            f"[FileExistsError] {watch_id + source_cover_ext} already exists, skipping download."
         )
         cover_file_found = True
 
     if not cover_file_found:
         try:
-            logger.info(f"Downloading {key + source_cover_ext}.")
+            logger.info(f"Downloading {watch_id + source_cover_ext}.")
             try:
-                cover = f"https://img.youtube.com/vi/{key}/maxresdefault.jpg"
-                urlretrieve(cover, path.join(temp_path, f"{key + source_cover_ext}"))
-                logger.info(f"Successfully downloaded {key + source_cover_ext}.")
+                cover = f"https://img.youtube.com/vi/{watch_id}/maxresdefault.jpg"
+                urlretrieve(
+                    cover, path.join(temp_path, f"{watch_id + source_cover_ext}")
+                )
+                logger.info(f"Successfully downloaded {watch_id + source_cover_ext}.")
 
             # caused mostly by files generated from non-youtube music id's
             # but this is an inconsistent error, it can happen to youtube music files too, have no idea as to why
             # here's hoping the fallback to always work
             except HTTPError:
                 # try:
-                cover = f"https://img.youtube.com/vi/{key}/hqdefault.jpg"
-                urlretrieve(cover, path.join(temp_path, f"{key + source_cover_ext}"))
-                # logger.info(f"Successfully downloaded {key + source_cover_ext}.")
+                cover = f"https://img.youtube.com/vi/{watch_id}/hqdefault.jpg"
+                urlretrieve(
+                    cover, path.join(temp_path, f"{watch_id + source_cover_ext}")
+                )
+                # logger.info(f"Successfully downloaded {watch_id + source_cover_ext}.")
                 # except HTTPError:
                 #     exception = HTTPError.reason
-                #     # logger.error(f"[JustYoutubeThings] Couldn't download {key + source_cover_ext}, skipping download.")
+                #     # logger.error(f"[JustYoutubeThings] Couldn't download {watch_id + source_cover_ext}, skipping download.")
                 #     print(exception)
                 #     return 1, exception
 
             # TODO find out a way to log images that are actually 16:9 (i.e files generated from non-youtube music id's)
-            img = Image.open(path.join(temp_path, key + source_cover_ext))
+            img = Image.open(path.join(temp_path, watch_id + source_cover_ext))
             width, height = img.size
             if width % 16 == 0 and height % 9 == 0:
                 area_to_be_cut = (width - height) / 2
                 cropped_img = img.crop(
                     (area_to_be_cut, 0, width - area_to_be_cut, height)
                 )
-                cropped_img.save(path.join(temp_path, key + source_cover_ext))
-                logger.info(f"Successfully cropped {key + source_cover_ext}.")
+                cropped_img.save(path.join(temp_path, watch_id + source_cover_ext))
+                logger.info(f"Successfully cropped {watch_id + source_cover_ext}.")
 
         except FileExistsError:
             logger.info(
-                f"[FileExistsError] {key + source_cover_ext} already exists, skipping download."
+                f"[FileExistsError] {watch_id + source_cover_ext} already exists, skipping download."
             )
             pass
 
@@ -198,19 +202,19 @@ def download(key: str) -> list[str]:
             logger.info(f"Moving audio file to {download_path}.")
             rename(
                 path.join(temp_path, download_filename + download_ext),
-                path.join(download_path, key + download_ext),
+                path.join(download_path, watch_id + download_ext),
             )
 
     except FileExistsError:
-        logger.warning(f"[FileExistsError]{key + download_ext} already exists!")
+        logger.warning(f"[FileExistsError]{watch_id + download_ext} already exists!")
         remove(path.join(temp_path, download_filename + download_ext))
 
     except FileNotFoundError:
-        logger.warning(f"[FileNotFoundError] {key + download_ext} doesn't exist!")
+        logger.warning(f"[FileNotFoundError] {watch_id + download_ext} doesn't exist!")
         pass
 
     except PermissionError:
-        logger.error(f"[PermissionError] {key + download_ext} is in use!")
+        logger.error(f"[PermissionError] {watch_id + download_ext} is in use!")
         pass
         # TODO wait a little then retry?
 
@@ -218,27 +222,27 @@ def download(key: str) -> list[str]:
         if not cover_file_found:
             logger.info(f"Moving cover file to {download_path}.")
             rename(
-                path.join(temp_path, key + source_cover_ext),
-                path.join(download_path, key + source_cover_ext),
+                path.join(temp_path, watch_id + source_cover_ext),
+                path.join(download_path, watch_id + source_cover_ext),
             )
             logger.info(f"Successfully moved files to {download_path}.")
         return 0, 0
 
     except FileExistsError:
-        remove(path.join(temp_path, key + source_cover_ext))
+        remove(path.join(temp_path, watch_id + source_cover_ext))
         logger.warning(
-            f"[FileExistsError] {key + source_cover_ext} file already exists!"
+            f"[FileExistsError] {watch_id + source_cover_ext} file already exists!"
         )
 
     except FileNotFoundError:
         logger.warning(
-            f"[FileNotFoundError] {key + source_cover_ext} file doesn't exist!"
+            f"[FileNotFoundError] {watch_id + source_cover_ext} file doesn't exist!"
         )
         pass
 
     except PermissionError:
         logger.error(
-            f"[PermissionError] {key + source_cover_ext} is in use!",
+            f"[PermissionError] {watch_id + source_cover_ext} is in use!",
         )
         pass
         # TODO wait a little then retry?

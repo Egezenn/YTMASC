@@ -84,6 +84,13 @@
       "request": "launch",
       "module": "ytmasc",
       "args": ["db-replace-fails", "-v", "i"]
+    },
+    {
+      "name": "YTMASC: db-find-same",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "ytmasc",
+      "args": ["db-find-same", "-v", "i"]
     }
   ]
 }
