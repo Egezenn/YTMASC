@@ -25,7 +25,7 @@ from ytmasc.database_utilities import (
 )
 from ytmasc.intermediates import update_library_for_watch_id
 from ytmasc.utility import (
-    count_watch_id_amount_in_json,
+    count_key_amount_in_json,
     download_path,
     fail_log_path,
     library_data_path,
@@ -188,7 +188,7 @@ def replace_fails():
 def replace_current_metadata_with_youtube(skip_until=-1):
     # TODO do the skip amount properly, theres some offset to it, too lazy to debug it
     json_data = read_json(library_data_path)
-    total_operations = count_watch_id_amount_in_json(library_data_path)
+    total_operations = count_key_amount_in_json(library_data_path)
     for i, watch_id in enumerate(json_data, start=1):
         if i + 1 <= skip_until:
             continue

@@ -10,7 +10,7 @@ It's features are:
 
 - Scraping your library page from YouTube
 - Importing favorites from a [RiMusic](https://github.com/fast4x/RiMusic) database
-- Import a CSV of your own (columns are: `watch_id`, `artist`, `title`)
+- Import a CSV of your own (columns are: *`watch_id`, `artist`, `title`)
 - Maintaining a data file for your music for an easily reproducible collection
 - Automatic downloading, converting and tagging
 - Some helper functions to modify your data file easier and for easy migration
@@ -41,10 +41,6 @@ The project just keeps expanding as I learn more stuff and want to implement nic
 - While downloading, some changes may occur in YouTube which results in an error.
 You can use `ytmasc --db-replace-fails` to replace these `watch_id`s to something else.
 
-## Requirements to run from source or build
-
-- You need `~=python3.11` (also `python3-tk` for the GUI on Linux) and `ffmpeg` packages.
-
 ### `fetcher.py`
 
 This part is a little duct taped, I couldn't find a good way to get the `libraryPage` formerly known as `likesPage` so I just emulated user input. It's written for a Windows computer that has `firefox` or `zen` as the default browser and `file explorer`. Shouldn't be hard to tinker and get it to work for your configuration. You can do this manually too, shouldn't take much of your time.
@@ -56,6 +52,12 @@ Change `openingDelay` based on your internet connection.
 Change `savePageAsIndexOnRightClick` to which index your save as is on your browser.
 
 The rest is fine if you don't have a really old computer.
+
+## Requirements to run from source or build
+
+- `~=python3.11`
+- `python3-tk` (Linux)
+- `ffmpeg`
 
 ## Dependencies
 
