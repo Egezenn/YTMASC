@@ -20,9 +20,7 @@ The project just keeps expanding as I learn more stuff and want to implement nic
 
 ## CLI Usage Examples
 
-`ytmasc` | `ytmasc gui`: launches the deprecated gui
-
-`ytmasc -h`: shows the help
+`ytmasc` | `ytmasc -h`: shows the help
 
 `ytmasc gui`: will run the tkinter gui (it may get broken in the future)
 
