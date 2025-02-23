@@ -193,7 +193,6 @@ def create_gui():
     tagger_tf.grid(row=17, column=0, columnspan=2)
     tagger_uldwmc.grid(row=18, column=0, columnspan=2, pady=(10, 10))
 
-    check_if_data_exists_and_set_checkbutton(parser_plp_rf)
     root.mainloop()
 
 
@@ -247,15 +246,6 @@ def validate_input(new_value: float) -> bool:
 
     except ValueError:
         return False
-
-
-def check_if_data_exists_and_set_checkbutton(checkbutton: tk.Checkbutton):
-    if check_if_data_exists():
-        pass
-        checkbutton.config(state=tk.NORMAL)
-
-        checkbutton.invoke()
-        checkbutton.config(state=tk.DISABLED)
 
 
 # i've got no idea what i did here
