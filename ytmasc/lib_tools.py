@@ -18,7 +18,7 @@ from ytmasc.lib_utils import (
     old_music_library,
 )
 from ytmasc.utility import (
-    count_key_amount_in_json,
+    count_key_in_json,
     download_path,
     fail_log_path,
     get_file_extension,
@@ -159,6 +159,19 @@ def find_same_metadata():
                     print(f"{next(iter(watch_id))} and {next(iter(watch_id2))} are same.")
 
 
+def find_unpaired():
+    files = os.listdir(download_path)
+
+    mp3_files = {get_file_extension(f) for f in files if f.endswith(".mp3")}
+    jpg_files = {get_file_extension(f) for f in files if f.endswith(".jpg")}
+
+    unpaired_mp3 = mp3_files - jpg_files
+    unpaired_jpg = jpg_files - mp3_files
+
+    print("Unpaired MP3 files:", *unpaired_mp3)
+    print("Unpaired JPG files:", *unpaired_jpg)
+
+
 def replace_fails():
     # TODO add functionality to replace the watch id on the library with the users choice, blacklist the bad one
     lines = read_txt_as_list(fail_log_path)
@@ -178,10 +191,10 @@ def replace_fails():
             input_key = keyboard.read_key()
 
 
-def replace_current_metadata_with_youtube(skip_until=-1):
+def refetch_metadata(skip_until=-1):
     # TODO do the skip amount properly, theres some offset to it, too lazy to debug it
     json_data = read_json(library_data_path)
-    total_operations = count_key_amount_in_json(library_data_path)
+    total_operations = count_key_in_json(library_data_path)
     for i, watch_id in enumerate(json_data, start=1):
         if i + 1 <= skip_until:
             continue
@@ -193,16 +206,3 @@ def replace_current_metadata_with_youtube(skip_until=-1):
             break
 
     write_json(library_data_path, json_data)
-
-
-def find_unpaired_files():
-    files = os.listdir(download_path)
-
-    mp3_files = {get_file_extension(f) for f in files if f.endswith(".mp3")}
-    jpg_files = {get_file_extension(f) for f in files if f.endswith(".jpg")}
-
-    unpaired_mp3 = mp3_files - jpg_files
-    unpaired_jpg = jpg_files - mp3_files
-
-    print("Unpaired MP3 files:", *unpaired_mp3)
-    print("Unpaired JPG files:", *unpaired_jpg)

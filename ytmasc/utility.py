@@ -1,4 +1,4 @@
-"Stores all the values required, provides base functions that NOT use these values."
+"Stores all the values required, provides base functions that does NOT use these values."
 
 import glob
 import json
@@ -72,7 +72,8 @@ def check_if_directories_exist_and_make_if_not(*directories: str):
         os.makedirs(directory, exist_ok=True)
 
 
-def sort_dictionary_based_on_key(dictionary: dict) -> dict:
+def sort_key(dictionary: dict) -> dict:
+    "Sort dictionary based on key"
     return dict(sorted(dictionary.items(), key=lambda item: item[0].lower()))
 
 
@@ -106,6 +107,17 @@ def read_json(file_path: str) -> dict:
         return {}
 
 
+def read_txt(file_path: str) -> str:
+    with open(file_path, "r") as file:
+        return file.read()
+
+
+def read_txt_as_list(file_path: str) -> list:
+    with open(file_path, "r") as file:
+        lines = [line.strip() for line in file]
+    return lines
+
+
 def write_json(file_path: str, data: dict):
     with open(file_path, "w") as json_file:
         json.dump(data, json_file, indent=2)
@@ -120,20 +132,22 @@ def update_json(file_path: str, data: dict):
     write_json(file_path, data)
 
 
+def update_library_for_watch_id(json_data, watch_id, artist, title, overwrite):
+    if watch_id in json_data:
+        if ((json_data[watch_id]["artist"] != artist) or (json_data[watch_id]["title"] != title)) and overwrite:
+            json_data[watch_id] = {"artist": artist, "title": title}
+
+        elif (json_data[watch_id]["artist"] == "") or (json_data[watch_id]["title"] == ""):
+            json_data[watch_id] = {"artist": artist, "title": title}
+    else:
+        json_data[watch_id] = {"artist": artist, "title": title}
+
+    return sort_nested(json_data)
+
+
 def write_txt(file_path: str, data: str):
     with open(file_path, "w") as file:
         file.write(data)
-
-
-def read_txt(file_path: str) -> str:
-    with open(file_path, "r") as file:
-        return file.read()
-
-
-def read_txt_as_list(file_path: str) -> list:
-    with open(file_path, "r") as file:
-        lines = [line.strip() for line in file]
-    return lines
 
 
 def append_txt(file_path: str, data: str):
@@ -150,7 +164,7 @@ def count_files(directory: str, extensions: list[str]) -> int:
     return count
 
 
-def count_key_amount_in_json(file_path: str) -> int:
+def count_key_in_json(file_path: str) -> int:
     return len(read_json(file_path))
 
 

@@ -7,6 +7,7 @@ import ytmusicapi
 
 from ytmasc.utility import audio_conversion_ext, get_filename
 
+# refactor to not use these
 old_music_library = r"old"
 new_music_library = r"downloads"
 files_to_keep = r"!keep"

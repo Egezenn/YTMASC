@@ -1,3 +1,5 @@
+"Audio and image file related functions"
+
 import logging
 import os
 import urllib.error
@@ -12,7 +14,7 @@ import yt_dlp.utils
 from ytmasc.utility import (
     append_txt,
     audio_conversion_ext,
-    count_key_amount_in_json,
+    count_key_in_json,
     current_path,
     download_path,
     fail_log_path,
@@ -275,7 +277,7 @@ class Tasks:
     def tag_bulk(json: dict):
         "Tag files in bulk"
         fail_amount = 0
-        total_operations = count_key_amount_in_json(library_data_path)
+        total_operations = count_key_in_json(library_data_path)
         num_digits = len(str(total_operations))
         for i, (watch_id, value) in enumerate(json.items(), start=1):
             fail_status = Tasks.tag(watch_id, value, num_digits, i - fail_amount)
