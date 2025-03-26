@@ -224,7 +224,6 @@ def get_metadata_from_watch_id(watch_id: str) -> list[str, str]:
     yt = ytmusicapi.YTMusic()
 
     search_results = yt.get_song(watch_id)
-    logger.debug(search_results)
 
     artist = search_results["videoDetails"]["author"]
     # does this provide a list if there's more than one?

@@ -34,9 +34,6 @@ logger = logging.getLogger(__name__)
 
 def compare():
     if not os.path.isdir(old_music_library):
-        logger.warning(
-            f"Directory `{old_music_library}` doesn't exist, creating directory. Put your old music files here and rerun the command."
-        )
         os.mkdir(old_music_library)
         exit()
 
@@ -189,15 +186,10 @@ def replace_current_metadata_with_youtube(skip_until=-1):
         if i + 1 <= skip_until:
             continue
         try:
-            logger.info(f"{zfill_progress(i, total_operations)} Getting metadata for {watch_id}")
             artist, title = get_metadata_from_watch_id(watch_id)
-            logger.info(f"Got metadata for {watch_id}: artist: {artist}, title: {title}")
 
             json_data = update_library_for_watch_id(json_data, watch_id, artist, title, overwrite=True)
         except:
-            logger.warning(
-                f"YouTube denied to provide information, switch your network and input the latest operation number to skip until that point."
-            )
             break
 
     write_json(library_data_path, json_data)

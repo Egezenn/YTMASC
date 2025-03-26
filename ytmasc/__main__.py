@@ -1,5 +1,7 @@
 import click
 
+from ytmasc.utility import setup_logging
+
 
 @click.command(context_settings=dict(help_option_names=["-h", "--help"], max_content_width=120))
 @click.option("--verbosity", type=click.Choice(["d", "i", "w", "e", "c"]), default="w", help="Log verbosity")
@@ -64,7 +66,7 @@ def cli(
     closing_delay,
     save_page_as_index_on_right_click,
 ):
-    pass
+    setup_logging(verbosity)
 
 
 if __name__ == "__main__":

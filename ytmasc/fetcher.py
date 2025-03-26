@@ -49,5 +49,4 @@ def fetch_lib_page(
         pyautogui.sleep(dialog_wait_delay)
 
     else:
-        logger.error(f"[UnsupportedConfiguration] System is {systemInfo}, fetcher script doesn't support this OS.")
         pass

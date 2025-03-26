@@ -16,6 +16,8 @@ from ytmasc.utility import (
     current_path,
     download_path,
     fail_log_path,
+    get_file_extension,
+    get_filename,
     library_data_path,
     possible_audio_ext,
     source_audio_ext,
@@ -71,12 +73,10 @@ class Tasks:
 
             for ext in possible_audio_ext:
                 if os.path.isfile(os.path.join(download_path, watch_id + ext)):
-                    logger.info(f"[FileExistsError] {watch_id + ext} already exists, skipping download.")
                     audio_file_found = True
                     break
 
             if not audio_file_found:
-                logger.info(f"Downloading audio of {watch_id}.")
 
                 try:
                     file.download(url)
@@ -88,50 +88,39 @@ class Tasks:
                     ]
                     for file in searched_files:
                         for ext in possible_audio_ext:
-                            if file[-len(ext) :] == ext:
-                                download_filename = file[: -len(ext)]
-                                download_ext = file[-len(ext) :]
+                            if "." + get_file_extension(file) == ext:
+                                download_filename = get_filename(file)
+                                download_ext = "." + get_file_extension(file)
                                 break
 
-                    logger.info(f"Successfully downloaded {watch_id + download_ext}.")
-
                 except FileExistsError:
-                    logger.info(f"[FileExistsError] {watch_id + download_ext} already exists, skipping download.")
+                    pass
 
                 except yt_dlp.utils.DownloadError as exception:
                     exception = str(exception)
                     if r"Video unavailable" in exception:
-                        logger.warning(f"[JustYouTubeThings] {url} is not available, skipping.")
                         pass
                     elif r"Sign in to confirm you’re not a bot" in exception:
-                        logger.warning(f"[JustYouTubeThings] Classified as bot, unable to download {url}.")
                         pass
                     elif r"Sign in to confirm your age" in exception:
-                        logger.warning(f"[JustYouTubeThings] Has age restriction, unable to download {url}.")
                         pass
                     elif r"Failed to extract any player response":
-                        logger.critical(
-                            f"[NoInternetOrElse] yt-dlp was unable to get a response, ensure your internet connection."
-                        )
+                        exit()
                     else:
-                        logger.warning(f"[JustYouTubeThings] Some other error on downloading {url}.")
                         pass
                     return 1, exception
 
         if os.path.isfile(os.path.join(download_path, watch_id + source_cover_ext)):
-            logger.info(f"[FileExistsError] {watch_id + source_cover_ext} already exists, skipping download.")
             cover_file_found = True
 
         if not cover_file_found:
             try:
-                logger.info(f"Downloading {watch_id + source_cover_ext}.")
                 try:
                     cover = f"https://img.youtube.com/vi/{watch_id}/maxresdefault.jpg"
                     urllib.request.urlretrieve(
                         cover,
                         os.path.join(temp_path, f"{watch_id + source_cover_ext}"),
                     )
-                    logger.info(f"Successfully downloaded {watch_id + source_cover_ext}.")
 
                 # caused mostly by files generated from non-youtube music id's
                 # but this is an inconsistent error, it can happen to youtube music files too, have no idea as to why
@@ -143,10 +132,8 @@ class Tasks:
                         cover,
                         os.path.join(temp_path, f"{watch_id + source_cover_ext}"),
                     )
-                    # logger.info(f"Successfully downloaded {watch_id + source_cover_ext}.")
                     # except HTTPError:
                     #     exception = HTTPError.reason
-                    #     # logger.error(f"[JustYoutubeThings] Couldn't download {watch_id + source_cover_ext}, skipping download.")
                     #     print(exception)
                     #     return 1, exception
 
@@ -157,57 +144,36 @@ class Tasks:
                     area_to_be_cut = (width - height) / 2
                     cropped_img = img.crop((area_to_be_cut, 0, width - area_to_be_cut, height))
                     cropped_img.save(os.path.join(temp_path, watch_id + source_cover_ext))
-                    logger.info(f"Successfully cropped {watch_id + source_cover_ext}.")
 
             except FileExistsError:
-                logger.info(f"[FileExistsError] {watch_id + source_cover_ext} already exists, skipping download.")
                 pass
 
         try:
             if not audio_file_found:
-                logger.info(f"Moving audio file to {download_path}.")
                 os.rename(
                     os.path.join(temp_path, download_filename + download_ext),
                     os.path.join(download_path, watch_id + download_ext),
                 )
 
         except FileExistsError:
-            logger.warning(f"[FileExistsError]{watch_id + download_ext} already exists!")
             os.remove(os.path.join(temp_path, download_filename + download_ext))
 
         except FileNotFoundError:
-            logger.warning(f"[FileNotFoundError] {watch_id + download_ext} doesn't exist!")
             pass
-
-        except PermissionError:
-            logger.error(f"[PermissionError] {watch_id + download_ext} is in use!")
-            pass
-            # TODO wait a little then retry?
 
         try:
             if not cover_file_found:
-                logger.info(f"Moving cover file to {download_path}.")
                 os.rename(
                     os.path.join(temp_path, watch_id + source_cover_ext),
                     os.path.join(download_path, watch_id + source_cover_ext),
                 )
-                logger.info(f"Successfully moved files to {download_path}.")
             return 0, 0
 
         except FileExistsError:
             os.remove(os.path.join(temp_path, watch_id + source_cover_ext))
-            logger.warning(f"[FileExistsError] {watch_id + source_cover_ext} file already exists!")
 
         except FileNotFoundError:
-            logger.warning(f"[FileNotFoundError] {watch_id + source_cover_ext} file doesn't exist!")
             pass
-
-        except PermissionError:
-            logger.error(
-                f"[PermissionError] {watch_id + source_cover_ext} is in use!",
-            )
-            pass
-            # TODO wait a little then retry?
 
     @staticmethod
     def download_bulk(json: dict):
@@ -215,9 +181,7 @@ class Tasks:
         write_txt(fail_log_path, "")
 
         for i, watch_id in enumerate(json.keys(), start=1):
-            logger.info(f"<<< DOWNLOAD {i} >>>")
             fail_state, exception = Tasks.download(watch_id)
-            logger.info(f"<<< DOWNLOAD {i} >>>")
             fail_amount += fail_state
             if exception != 0:
                 if (
@@ -229,12 +193,8 @@ class Tasks:
                 append_txt(fail_log_path, exception + "\n")
 
         if not fail_amount:
-            logger.info(f"Successfully downloaded all files to {download_path}.")
             pass
         else:
-            logger.info(
-                f"{fail_amount} out of {i} files couldn't be downloaded. You can check the logs at {fail_log_path}."
-            )
             pass
 
     @staticmethod
@@ -253,9 +213,6 @@ class Tasks:
                         audio_file_path = os.path.join(download_path, audio_file)
                         break
 
-                logger.info(
-                    f"Converting {audio_file} to {output_audio_file}...",
-                )
                 ffmpeg.input(audio_file_path).output(
                     output_audio_file_path,
                     acodec="libmp3lame",
@@ -263,29 +220,22 @@ class Tasks:
                     loglevel="error",
                 ).run()
                 os.remove(audio_file_path)
-                logger.info(f"Successfully converted {audio_file} to {output_audio_file}.")
                 return 0
             else:
-                logger.warning(f"[FileNotFoundError] {output_audio_file} doesn't exist.")
                 return 1
         else:
-            logger.warning(f"[FileExistsError] {output_audio_file} already exists, skipping conversion.")
             return 0
 
     @staticmethod
     def convert_bulk(json: dict):
         fail_amount = 0
         for i, watch_id in enumerate(json.keys(), start=1):
-            logger.info(f"<<< CONVERSION {i} >>>")
             fail_state = Tasks.convert(watch_id)
-            logger.info(f">>> CONVERSION {i} <<<")
             fail_amount += fail_state
 
         if not fail_amount:
-            logger.info(f"Successfully converted all files in {download_path}.")
             pass
         else:
-            logger.info(f"{fail_amount} out of {i} files couldn't be converted.")
             pass
 
     @staticmethod
@@ -306,13 +256,6 @@ class Tasks:
 
             # if audio_file is not None and audio_file.tag is not None:  # true
             #     if watch_id in json:  # true
-            logger.info(
-                f"Tagging {audio_file} with:\n"
-                f"\ttitle:\t{title}\n"
-                f"\tartist:\t{artist}\n"
-                f"\talbum:\t{order_number}\n"
-                f"\tcover:\t{cover_file}",
-            )
             audio_file.tag.title = title
             audio_file.tag.artist = value["artist"]
             audio_file.tag.album = order_number
@@ -320,17 +263,12 @@ class Tasks:
                 audio_file.tag.images.set(3, cover_art.read(), "image/jpeg")
 
             audio_file.tag.save()
-            logger.info(f"Successfully tagged {audio_file}.")
             return 0
 
         except FileNotFoundError:
-            logger.warning(f"{audio_file} doesn't exist, skipping tagging.")
             return 1
 
         except OSError:
-            logger.warning(
-                f"{audio_file} doesn't exist, skipping tagging. Might be related to YouTube watch_id updates?"
-            )
             return 1
 
     @staticmethod
@@ -340,14 +278,10 @@ class Tasks:
         total_operations = count_key_amount_in_json(library_data_path)
         num_digits = len(str(total_operations))
         for i, (watch_id, value) in enumerate(json.items(), start=1):
-            logger.info(f"<<< TAG {i} >>>")
             fail_status = Tasks.tag(watch_id, value, num_digits, i - fail_amount)
-            logger.info(f">>> TAG {i} <<<")
             fail_amount += fail_status
 
         if not fail_amount:
-            logger.info(f"Successfully tagged all files in {download_path}.")
             pass
         else:
-            logger.info(f"{fail_amount} out of {i} files couldn't be tagged.")
             pass
