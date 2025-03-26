@@ -3,7 +3,6 @@
 __pycache__
 
 # project files
-config.yaml
 data
 downloads
 log.txt

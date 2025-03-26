@@ -8,13 +8,13 @@ Grab the latest alpha version [here](https://github.com/Egezenn/YTMASC/releases)
 
 It's features are:
 
-- Scraping your library page from YouTube
-- Importing favorites from a [RiMusic](https://github.com/fast4x/RiMusic) database
-- Import a CSV of your own (columns are: *`watch_id`, `artist`, `title`)
-- Maintaining a data file for your music for an easily reproducible collection
 - Automatic downloading, converting and tagging
+- CLI (shipped as a binary for Windows!)
+- Import a CSV of your own (columns are: *`watch_id`, `artist`, `title`)
+- Importing favorites from a [RiMusic](https://github.com/fast4x/RiMusic) database
+- Maintaining a data file for your music for an easily reproducible collection
+- Scraping your library page from YouTube
 - Some helper functions to modify your data file easier and for easy migration
-- A GUI and a CLI (shipped as a binary for Windows!)
 
 The project just keeps expanding as I learn more stuff and want to implement niche things. So it's currently in alpha stages, you may see new features come and go every now and then.
 
@@ -22,15 +22,9 @@ The project just keeps expanding as I learn more stuff and want to implement nic
 
 `ytmasc` | `ytmasc -h`: shows the help
 
-`ytmasc gui`: will run the tkinter gui (it may get broken in the future)
-
 `ytmasc run`: runs tasks according to the current configuration
 
-`ytmasc set`: will show you the state of the config
-
-`ytmasc set run-fetcher 1`: sets the fetcher to run
-
-`ytmasc --export-library-as-csv`: exports the library as csv to the `data` directory
+`ytmasc --export`: exports the library as csv to the `data` directory
 
 ## Side notes
 
@@ -57,6 +51,57 @@ The rest is fine if you don't have a really old computer.
 - `python3-tk` (Linux)
 - `ffmpeg`
 
+## Complete rewrite of CLI & removal of GUI
+
+In the monstrosity of a flowchart below, you can find the chaining logic for all the arguments. This is in an effort for the user to run seperate commands and do the whole shebang in one fell swoop.
+
+```mermaid
+graph TD;
+CONVERT-->Library_tools
+CONVERT-->TAG
+delete-library-page-files-afterwards--->refetch-metadata
+delete-library-page-files-afterwards-->export
+delete-library-page-files-afterwards-->Tasks
+delete-library-page-files-afterwards-->update-library-with-manual-changes-on-files
+DOWNLOAD-->CONVERT
+DOWNLOAD-->Library_tools
+export-->Tasks
+Library_tools-->lib-compare-->FINISH
+Library_tools-->lib-find-same-->FINISH
+Library_tools-->lib-find-unpaired-->FINISH
+Library_tools-->lib-replace-fails-->FINISH
+import-->export
+import-->parse-library-page
+import-->refetch-metadata
+import-->Tasks
+import-->update-library-with-manual-changes-on-files
+Library_operations-->export
+Library_operations-->Library_tools
+Library_operations-->import
+Library_operations-->parse-library-page
+Library_operations-->refetch-metadata
+Library_operations-->Tasks
+Library_operations-->update-library-with-manual-changes-on-files
+parse-library-page-->delete-library-page-files-afterwards
+parse-library-page-->export
+parse-library-page-->refetch-metadata
+parse-library-page-->Tasks
+parse-library-page-->update-library-with-manual-changes-on-files
+refetch-metadata-->export
+refetch-metadata-->Tasks
+START-->FINISH
+START-->Library_operations
+START-->verbosity
+TAG-->Library_tools
+Tasks-->DOWNLOAD
+Tasks-->Library_tools
+Tasks-->TAG
+update-library-with-manual-changes-on-files-->export
+update-library-with-manual-changes-on-files-->refetch-metadata
+update-library-with-manual-changes-on-files-->Tasks
+verbosity-->Library_operations
+```
+
 ## Dependencies
 
 ### Binaries
@@ -69,7 +114,11 @@ The rest is fine if you don't have a really old computer.
 
 [beautifulsoup4](https://www.crummy.com/software/BeautifulSoup/) - Used in parsing the user's likes page HTML. Licensed under MIT license.
 
+[click](https://github.com/pallets/click) - Used in CLI, Licensed under BSD-3-Clause license.
+
 [eyed3](https://github.com/nicfit/eyeD3) - Used in tagging the files. Licensed under GPL-3.0 license.
+
+[fire](https://github.com/google/python-fire) - Used in exposing some base functions for a basic CLI. Licensed under Apache-2.0 license.
 
 [ffmpeg-python](https://github.com/kkroening/ffmpeg-python) - Used in converting files to desired format(s) as a wrapper. Licensed under Apache-2.0 license.
 
@@ -82,8 +131,6 @@ The rest is fine if you don't have a really old computer.
 [pyautogui](https://github.com/asweigart/pyautogui) - Used in fetcher to get the user's likes page. Licensed under BSD-3-Clause license.
 
 [pyinstaller](https://github.com/pyinstaller/pyinstaller) - Used in compilation. Licensed under a GPLv2 license.
-
-[pyyaml](https://github.com/yaml/pyyaml) - Used in handling user's config files. Licensed under MIT license.
 
 [yt-dlp](https://github.com/yt-dlp/yt-dlp) - Used in downloading user's library. Licensed under Unlicense license.
 

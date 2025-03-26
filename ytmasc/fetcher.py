@@ -1,17 +1,17 @@
-from logging import getLogger
-from os import path
-from platform import system
-from webbrowser import open_new_tab
+import logging
+import os
+import platform
+import webbrowser
 
-from pyautogui import hotkey, press, sleep, typewrite
-from pygetwindow import getWindowsWithTitle
+import pyautogui
+import pygetwindow
 
 from ytmasc.utility import current_path, library_page_path
 
-logger = getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
-def fetch(
+def fetch_lib_page(
     resend_amount=60,
     inbetween_delay=0.2,
     dialog_wait_delay=0.5,
@@ -19,37 +19,35 @@ def fetch(
     closing_delay=3,
     save_page_as_index_on_right_click=5,
 ):
-    systemInfo = system()
+    systemInfo = platform.system()
     if systemInfo == "Windows":
         # initializing the browser
-        open_new_tab("https://music.youtube.com/playlist?list=LM")
-        sleep(opening_delay)
+        webbrowser.open_new_tab("https://music.youtube.com/playlist?list=LM")
+        pyautogui.sleep(opening_delay)
 
         # scrolling the page down and getting to save dialog
         for _ in range(resend_amount):
-            press(["end"])
-            sleep(inbetween_delay)
-        press("apps")
-        sleep(dialog_wait_delay)
-        press(["down"] * save_page_as_index_on_right_click, interval=0.1)
-        sleep(dialog_wait_delay)
-        press("enter")
-        sleep(dialog_wait_delay)
+            pyautogui.press(["end"])
+            pyautogui.sleep(inbetween_delay)
+        pyautogui.press("apps")
+        pyautogui.sleep(dialog_wait_delay)
+        pyautogui.press(["down"] * save_page_as_index_on_right_click, interval=0.1)
+        pyautogui.sleep(dialog_wait_delay)
+        pyautogui.press("enter")
+        pyautogui.sleep(dialog_wait_delay)
 
         # saving the files and exiting the browser
-        getWindowsWithTitle("Save As")[0].activate()
-        sleep(dialog_wait_delay)
-        hotkey("ctrl", "a")
-        sleep(dialog_wait_delay)
-        typewrite(path.join(current_path, library_page_path))
-        sleep(dialog_wait_delay)
-        press("enter")
-        sleep(closing_delay)
-        hotkey("ctrl", "w")
-        sleep(dialog_wait_delay)
+        pygetwindow.getWindowsWithTitle("Save As")[0].activate()
+        pyautogui.sleep(dialog_wait_delay)
+        pyautogui.hotkey("ctrl", "a")
+        pyautogui.sleep(dialog_wait_delay)
+        pyautogui.typewrite(os.path.join(current_path, library_page_path))
+        pyautogui.sleep(dialog_wait_delay)
+        pyautogui.press("enter")
+        pyautogui.sleep(closing_delay)
+        pyautogui.hotkey("ctrl", "w")
+        pyautogui.sleep(dialog_wait_delay)
 
     else:
-        logger.error(
-            f"[UnsupportedConfiguration] System is {systemInfo}, fetcher script doesn't support this OS."
-        )
+        logger.error(f"[UnsupportedConfiguration] System is {systemInfo}, fetcher script doesn't support this OS.")
         pass

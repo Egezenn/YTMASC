@@ -1,6 +1,8 @@
 beautifulsoup4
+click
 eyed3
 ffmpeg-python
+fire
 fuzzywuzzy
 keyboard
 mutagen
@@ -10,7 +12,6 @@ prettytable
 pyautogui
 pyinstaller
 python-Levenshtein
-PyYAML
 yt-dlp
 ytmusicapi
 
