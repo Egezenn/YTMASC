@@ -8,7 +8,15 @@ from ytmasc.intermediates import import_library_page as _import_library_page
 from ytmasc.intermediates import import_operations
 from ytmasc.lib_tools import refetch_metadata as _refetch_metadata
 from ytmasc.tasks import Tasks
-from ytmasc.utility import convert_json_to_csv, library_data_path, setup_logging
+from ytmasc.utility import (
+    check_if_directories_exist_and_make_if_not,
+    convert_json_to_csv,
+    data_path,
+    download_path,
+    library_data_path,
+    setup_logging,
+    temp_path,
+)
 
 
 @click.command(context_settings=dict(help_option_names=["-h", "--help"], max_content_width=120), no_args_is_help=True)
@@ -86,6 +94,7 @@ def cli(
     closing_delay,
     save_page_as_index_on_right_click,
 ):
+    check_if_directories_exist_and_make_if_not(download_path, temp_path, data_path)
     setup_logging(verbosity)
 
     if import_library_page:
