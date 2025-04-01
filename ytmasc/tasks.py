@@ -108,7 +108,7 @@ class Tasks:
                     elif r"Sign in to confirm your age" in exception:
                         pass
                     elif r"Failed to extract any player response":
-                        exit()
+                        pass
                     else:
                         pass
                     return 1, exception

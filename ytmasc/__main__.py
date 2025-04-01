@@ -152,6 +152,7 @@ def cli(
 
 if __name__ == "__main__":
     if "--fire" in sys.argv:
+        check_if_directories_exist_and_make_if_not(download_path, temp_path, data_path)
         sys.argv.remove("--fire")
         fire.Fire(Tasks)
 
