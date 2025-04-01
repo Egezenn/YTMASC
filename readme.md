@@ -20,11 +20,30 @@ The project just keeps expanding as I learn more stuff and want to implement nic
 
 ## CLI Usage Examples
 
-`ytmasc` | `ytmasc -h`: shows the help
+> Show the help:
+>
+> `ytmasc` | `ytmasc -h`
 
-`ytmasc run`: runs tasks according to the current configuration
+> Run a singular file operation using the fire interface:
+>
+> `ytmasc --fire download | convert | tag <watch_id>`
 
-`ytmasc --export`: exports the library as csv to the `data` directory
+> Import (Changes in file tags, CSV, RiMusic database export):
+>
+> `ytmasc --import-from files | path/to/your.csv | path/to/your.db --import-level soft`
+
+> Import library page
+>
+> `ytmasc --import-library-page fetch-soft | fetch-soft-no-overwrite | no-fetch-softno-fetch-soft-no-overwrite`
+
+> Export the library as CSV to the path you specify
+>
+> `ytmasc --export-to path-of-your-choosing`
+
+> [!TIP]
+> You can chain all these commands in a meaningful manner, see the [flowchart](#flowchart-of-the-cli).
+>
+> `ytmasc --import-library-page fetch-soft --delete-library-page-files-afterwards --refetch-metadata --import-from rimusic_xxxxxxxxxxxxxx.db --import-from data/x.csv --download --convert --tag --lib-find-same`
 
 ## Side notes
 
@@ -51,9 +70,9 @@ The rest is fine if you don't have a really old computer.
 - `python3-tk` (Linux)
 - `ffmpeg`
 
-## Complete rewrite of CLI & removal of GUI
+## Flowchart of the CLI
 
-In the monstrosity of a flowchart below, you can find the chaining logic for all the arguments. This is in an effort for the user to run seperate commands and do the whole shebang in one fell swoop.
+In the monstrosity of a flowchart below, you can find the chaining logic for all the arguments. This is in an effort for the user to run seperate commands and do the whole shebang in one fell swoop. Strange results may occur, it's completely up to the user's usage.
 
 ```mermaid
 graph TD;
@@ -64,11 +83,18 @@ delete-library-page-files-afterwards-->export
 delete-library-page-files-afterwards-->Tasks
 download-->convert
 download-->Library_tools
+download-->tag
 export-->Tasks
 imports-->delete-library-page-files-afterwards
 imports-->export
 imports-->refetch-metadata
 imports-->Tasks
+lib-find-same-->lib-compare
+lib-find-same-->lib-find-unpaired
+lib-find-same-->lib-replace-fails
+lib-find-unpaired-->lib-compare
+lib-find-unpaired-->lib-replace-fails
+lib-replace-fails-->lib-compare
 Library_operations-->export
 Library_operations-->imports
 Library_operations-->Library_tools
@@ -80,10 +106,12 @@ Library_tools-->lib-find-unpaired-->FINISH
 Library_tools-->lib-replace-fails-->FINISH
 refetch-metadata-->export
 refetch-metadata-->Tasks
-START-->FINISH
+START-->help-->FINISH
+START-->fire-->FINISH
 START-->Library_operations
 START-->verbosity
 tag-->Library_tools
+Tasks-->convert
 Tasks-->download
 Tasks-->Library_tools
 Tasks-->tag

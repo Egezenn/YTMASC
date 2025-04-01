@@ -29,7 +29,7 @@ from ytmasc.utility import (
 logger = logging.getLogger(__name__)
 
 
-def delete_library_page_files(fetcher_is_going_to_run: bool):
+def delete_library_page_files(fetcher_is_going_to_run=False):
     try:
         os.remove(library_page_path)
         shutil.rmtree(f"{get_filename(library_page_path)}_files")
@@ -55,11 +55,11 @@ def run_tasks(download: bool, convert: bool, tag: bool):
         Tasks.tag_bulk(json)
 
 
-def import_operations(import_settings: list[str], overwrite=True):
+def import_operations(args: list[str], overwrite=True):
     json_data = read_json(library_data_path)
 
-    for setting in import_settings:
-        if setting == "files":
+    for arg in args:
+        if arg == "files":
             for watch_id in json_data:
                 song = eyed3.load(os.path.join(download_path, watch_id + audio_conversion_ext))
 
@@ -67,11 +67,11 @@ def import_operations(import_settings: list[str], overwrite=True):
 
             write_json(library_data_path, json_data)
 
-        elif os.path.isfile(setting):
-            ext = get_file_extension(setting)
+        elif os.path.isfile(arg):
+            ext = get_file_extension(arg)
 
             if ext == "csv":
-                df = pandas.read_csv(setting)
+                df = pandas.read_csv(arg)
                 df.fillna("", inplace=True)
 
                 for _, row in df.iterrows():
@@ -84,7 +84,7 @@ def import_operations(import_settings: list[str], overwrite=True):
                 write_json(library_data_path, json_data)
 
             elif ext == ".db":
-                connection = sqlite3.connect(setting)
+                connection = sqlite3.connect(arg)
                 cursor = connection.cursor()
 
                 cursor.execute("SELECT id, title, artistsText, likedAt FROM Song WHERE likedAt IS NOT NULL")
@@ -166,7 +166,7 @@ def import_library_page(
                 pass
 
             if delete_library_page_files_afterwards:
-                delete_library_page_files(delete_library_page_files_afterwards)
+                delete_library_page_files()
 
     else:
         pass

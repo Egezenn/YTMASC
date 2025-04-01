@@ -22,6 +22,7 @@ from ytmasc.utility import (
     get_filename,
     library_data_path,
     possible_audio_ext,
+    read_json,
     source_audio_ext,
     source_cover_ext,
     temp_path,
@@ -140,7 +141,7 @@ class Tasks:
                     #     return 1, exception
 
                 # TODO find out a way to log images that are actually 16:9 (i.e files generated from non-youtube music id's)
-                img = PIL.Image.open(os.path.join(os.temp_path, watch_id + source_cover_ext))
+                img = PIL.Image.open(os.path.join(temp_path, watch_id + source_cover_ext))
                 width, height = img.size
                 if width % 16 == 0 and height % 9 == 0:
                     area_to_be_cut = (width - height) / 2
@@ -178,7 +179,8 @@ class Tasks:
             pass
 
     @staticmethod
-    def download_bulk(json: dict):
+    def download_bulk(json_path: str):
+        json = read_json(json_path)
         fail_amount = 0
         write_txt(fail_log_path, "")
 
@@ -229,7 +231,8 @@ class Tasks:
             return 0
 
     @staticmethod
-    def convert_bulk(json: dict):
+    def convert_bulk(json_path: str):
+        json = read_json(json_path)
         fail_amount = 0
         for i, watch_id in enumerate(json.keys(), start=1):
             fail_state = Tasks.convert(watch_id)
@@ -274,7 +277,8 @@ class Tasks:
             return 1
 
     @staticmethod
-    def tag_bulk(json: dict):
+    def tag_bulk(json_path: str):
+        json = read_json(json_path)
         "Tag files in bulk"
         fail_amount = 0
         total_operations = count_key_in_json(library_data_path)

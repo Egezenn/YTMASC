@@ -1,3 +1,5 @@
+"Rough tooling, mostly written for my migration case. Needs an overhaul."
+
 import logging
 import os
 import re
