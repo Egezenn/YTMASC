@@ -32,13 +32,11 @@ logger = logging.getLogger(__name__)
 def delete_library_page_files(fetcher_is_going_to_run=False):
     try:
         os.remove(library_page_path)
+        # TODO check function get_filename
         shutil.rmtree(f"{get_filename(library_page_path)}_files")
 
     except FileNotFoundError:
         if fetcher_is_going_to_run:
-            pass
-
-        else:
             pass
 
 
@@ -56,6 +54,7 @@ def run_tasks(download: bool, convert: bool, tag: bool):
 
 
 def import_operations(args: list[str], overwrite=True):
+    # TODO Metrolist exports, check if method for Kreate which got forked from RiMusic still works
     json_data = read_json(library_data_path)
 
     for arg in args:
@@ -99,12 +98,6 @@ def import_operations(args: list[str], overwrite=True):
 
                 write_json(library_data_path, json_data)
 
-            else:
-                pass
-
-        else:
-            pass
-
 
 def import_library_page(
     run_fetcher: bool, fetcher_params: list, delete_library_page_files_afterwards: bool, overwrite: False
@@ -136,11 +129,12 @@ def import_library_page(
                     artist_element = element.select_one(
                         "div.flex-columns.style-scope.ytmusic-responsive-list-item-renderer > div.secondary-flex-columns.style-scope.ytmusic-responsive-list-item-renderer > yt-formatted-string:nth-child(1).flex-column.style-scope.ytmusic-responsive-list-item-renderer.complex-string > a.yt-simple-endpoint.style-scope.yt-formatted-string"
                     )
+                    # TODO make use of this, throw Albumless-<index> if it's null for compatibility with players where they make albumless songs into one album.
                     # album_element = element.select_one(
                     #     "div.flex-columns.style-scope.ytmusic-responsive-list-item-renderer > div.secondary-flex-columns.style-scope.ytmusic-responsive-list-item-renderer > yt-formatted-string:nth-child(2).flex-column.style-scope.ytmusic-responsive-list-item-renderer.complex-string > a.yt-simple-endpoint.style-scope.yt-formatted-string"
                     # )
 
-                    if title_element.text != "Video":  # oh dear god
+                    if title_element.text != "Video":  # youtube things
                         # if album_element:
                         #     data[title_element["href"][34:-8]] = {
                         #         "artist": artist_element.text,
@@ -160,16 +154,9 @@ def import_library_page(
                             "artist": artist_element.text,
                             "title": title_element.text,
                         }
-                    else:
-                        pass
-            else:
-                pass
 
             if delete_library_page_files_afterwards:
                 delete_library_page_files()
-
-    else:
-        pass
 
 
 def fetch_lib_page(
@@ -208,6 +195,3 @@ def fetch_lib_page(
         pyautogui.sleep(closing_delay)
         pyautogui.hotkey("ctrl", "w")
         pyautogui.sleep(dialog_wait_delay)
-
-    else:
-        pass

@@ -6,7 +6,6 @@ __pycache__
 data
 downloads
 log.txt
-temp
 # db folders
 !keep
 !remove

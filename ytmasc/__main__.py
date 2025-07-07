@@ -1,9 +1,11 @@
+import glob
+import os
 import sys
 
 import click
 import fire
 
-from ytmasc import lib_tools
+from ytmasc import lib_tools, utility
 from ytmasc.intermediates import import_library_page as _import_library_page
 from ytmasc.intermediates import import_operations
 from ytmasc.lib_tools import refetch_metadata as _refetch_metadata
@@ -13,15 +15,21 @@ from ytmasc.utility import (
     convert_json_to_csv,
     data_path,
     download_path,
+    get_filename,
     library_data_path,
     setup_logging,
-    temp_path,
 )
 
 
+# TODO rename library modification options
 @click.command(context_settings=dict(help_option_names=["-h", "--help"], max_content_width=120), no_args_is_help=True)
 @click.option("--fire", is_flag=True, help="Use Fire CLI instead for singular operations")
-@click.option("--verbosity", type=click.Choice(["d", "i", "w", "e", "c"]), default="w", help="Log verbosity")
+@click.option(
+    "--verbosity",
+    type=click.Choice(["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]),
+    default="w",
+    help="Log verbosity",
+)
 # START of Library_operations
 @click.option("--import-from", type=str, multiple=True, help="Path to your file or to import any file changes `files`")
 # .csv, .db, .json
@@ -49,6 +57,7 @@ from ytmasc.utility import (
 )  # an option to lock metadata
 # START of Tasks
 @click.option("--download", is_flag=True, default=False, help="Download all keys found in library")
+@click.option("--continue-download", is_flag=True, default=False, help="Watch ID to continue from")
 @click.option("--convert", is_flag=True, help="Convert all files")  # mp3, m4a, webm
 @click.option("--tag", is_flag=True, default=False, help="Tag all files")
 # START of Library_tools
@@ -81,6 +90,7 @@ def cli(
     delete_library_page_files_afterwards,
     refetch_metadata,
     download,
+    continue_download,
     convert,
     tag,
     lib_compare,
@@ -94,7 +104,7 @@ def cli(
     closing_delay,
     save_page_as_index_on_right_click,
 ):
-    check_if_directories_exist_and_make_if_not(download_path, temp_path, data_path)
+    check_if_directories_exist_and_make_if_not(download_path, data_path)
     setup_logging(verbosity)
 
     if import_library_page:
@@ -129,7 +139,19 @@ def cli(
         convert_json_to_csv(library_data_path, export_to)
 
     if download:
-        Tasks.download_bulk(library_data_path)
+        files = [
+            os.path.join(utility.download_path, f)
+            for f in os.listdir(utility.download_path)
+            if os.path.isfile(os.path.join(utility.download_path, f))
+        ]
+
+        # TODO conversion will mess this up, retain creation dates or switch to modification?
+        if continue_download and files:
+            last_created_file = get_filename(max(files, key=os.path.getctime))
+            Tasks.download_bulk(library_data_path, last_created_file)
+
+        else:
+            Tasks.download_bulk(library_data_path)
 
     if convert:
         Tasks.convert_bulk(library_data_path)
@@ -152,7 +174,7 @@ def cli(
 
 if __name__ == "__main__":
     if "--fire" in sys.argv:
-        check_if_directories_exist_and_make_if_not(download_path, temp_path, data_path)
+        check_if_directories_exist_and_make_if_not(download_path, data_path)
         sys.argv.remove("--fire")
         fire.Fire(Tasks)
 

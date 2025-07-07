@@ -11,7 +11,6 @@ current_path = os.getcwd()
 
 data_path = r"data"
 download_path = r"downloads"
-temp_path = r"temp"
 
 csv_library_data = r"library.csv"
 fail_log = r"fails.txt"
@@ -31,40 +30,23 @@ library_page_path = os.path.join(data_path, library_page)
 
 
 def setup_logging(verbosity):
-    if verbosity == "d":
-        logging.basicConfig(
-            level=logging.DEBUG,
-            format="%(asctime)s | %(name)s - %(funcName)s - %(levelname)s - %(message)s",
-            filename=log,
-            filemode="w",
-        )
-    elif verbosity == "i":
-        logging.basicConfig(
-            level=logging.INFO,
-            format="%(asctime)s | %(name)s - %(funcName)s - %(levelname)s - %(message)s",
-            filename=log,
-            filemode="w",
-        )
-    elif verbosity == "w":
-        logging.basicConfig(
-            level=logging.WARNING,
-            format="%(asctime)s | %(name)s - %(funcName)s - %(levelname)s - %(message)s",
-            filename=log,
-        )
-    elif verbosity == "e":
-        logging.basicConfig(
-            level=logging.ERROR,
-            format="%(asctime)s | %(name)s - %(funcName)s - %(levelname)s - %(message)s",
-            filename=log,
-            filemode="w",
-        )
-    elif verbosity == "c":
-        logging.basicConfig(
-            level=logging.CRITICAL,
-            format="%(asctime)s | %(name)s - %(funcName)s - %(levelname)s - %(message)s",
-            filename=log,
-            filemode="w",
-        )
+    if verbosity == "DEBUG":
+        level = logging.DEBUG
+    elif verbosity == "INFO":
+        level = logging.INFO
+    elif verbosity == "WARNING":
+        level = logging.WARNING
+    elif verbosity == "ERROR":
+        level = logging.ERROR
+    elif verbosity == "CRITICAL":
+        level = logging.CRITICAL
+
+    logging.basicConfig(
+        level=level,
+        format="%(asctime)s | %(name)s - %(funcName)s - %(levelname)s - %(message)s",
+        filename=log,
+        filemode="w",
+    )
 
 
 def check_if_directories_exist_and_make_if_not(*directories: str):
@@ -174,8 +156,12 @@ def zfill_progress(num: int, reference: int) -> str:
 
 # only one dot files
 def get_filename(string: str) -> str:
-    return string.split(".")[0]
+    root, extension = os.path.splitext(string)
+    while "." in root:
+        root, extension = os.path.splitext(string)
+    return os.path.basename(root)
 
 
 def get_file_extension(string: str) -> str:
-    return string.split(".")[1]
+    root, extension = os.path.splitext(string)
+    return extension

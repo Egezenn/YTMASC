@@ -2,59 +2,75 @@
 
 <a href="#"><img alt="horrible orange triangle" style="padding:16px;" align="left" src="assets/icon.svg"></a>
 
-YTMASC(**Y**ou**T**ube **M**usic **A**udio **S**craper & syn**C**hronizer) in a nutshell, aims to get your music library off of YouTube and provide you an offline backup of it along with other maintenance niceties.
+YTMASC(**Y**ou**T**ube **M**usic **A**udio **S**craper & syn**C**hronizer) is a multi-tool based on `yt-dlp` that allows you to create fast&reproducible offline music libraries.
 
 Grab the latest alpha version [here](https://github.com/Egezenn/YTMASC/releases)!
 
 It's features are:
 
-- Automatic downloading, converting and tagging
+- Downloading, converting and tagging
 - CLI (shipped as a binary for Windows!)
 - Import a CSV of your own (columns are: *`watch_id`, `artist`, `title`)
-- Importing favorites from a [RiMusic](https://github.com/fast4x/RiMusic) database
+- Importing favorites from [Kreate](https://github.com/knighthat/Kreate) databases
 - Maintaining a data file for your music for an easily reproducible collection
-- Scraping your library page from YouTube
+- Scraping your [library page from YouTube Music](https://music.youtube.com/playlist?list=LM)
 - Some helper functions to modify your data file easier and for easy migration
 
-The project just keeps expanding as I learn more stuff and want to implement niche things. So it's currently in alpha stages, you may see new features come and go every now and then.
+> [!IMPORTANT]
+> You need `ffmpeg` binaries for conversion.
 
 ## CLI Usage Examples
 
 > Show the help:
 >
-> `ytmasc` | `ytmasc -h`
+> ```shell
+> ytmasc` | `ytmasc -h
+> ```
 
 > Run a singular file operation using the fire interface:
 >
-> `ytmasc --fire download | convert | tag <watch_id>`
+> ```shell
+> ytmasc --fire download | convert | tag <watch_id>
+> ```
 
-> Import (Changes in file tags, CSV, RiMusic database export):
+> Import (Changes in file tags, CSV, Kreate database export):
 >
-> `ytmasc --import-from files | path/to/your.csv | path/to/your.db --import-level soft`
+> ```shell
+> ytmasc --import-from files | path/to/your.csv | path/to/your.db --import-level soft
+> ```
 
 > Import library page
 >
-> `ytmasc --import-library-page fetch-soft | fetch-soft-no-overwrite | no-fetch-softno-fetch-soft-no-overwrite`
+> ```shell
+> ytmasc --import-library-page fetch-soft | fetch-soft-no-overwrite | no-fetch-softno-fetch-soft-no-overwrite
+> ```
 
 > Export the library as CSV to the path you specify
 >
-> `ytmasc --export-to path-of-your-choosing`
+> ```shell
+> ytmasc --export-to path-of-your-choosing
+> ```
 
 > [!TIP]
 > You can chain all these commands in a meaningful manner, see the [flowchart](#flowchart-of-the-cli).
 >
-> `ytmasc --import-library-page fetch-soft --delete-library-page-files-afterwards --refetch-metadata --import-from rimusic_xxxxxxxxxxxxxx.db --import-from data/x.csv --download --convert --tag --lib-find-same`
+> ```shell
+> ytmasc --import-library-page fetch-soft --delete-library-page-files-afterwards --refetch-metadata --import-from rimusic_xxxxxxxxxxxxxx.db --import-from data/x.csv --download --convert --tag --lib-find-same
+> ```
+
 
 ## Side notes
 
-- You need `ffmpeg` binaries for conversion.
-- YouTube blocks API requests if you exceed the amount they classify you as a bot (around 200 requests). You can either use a VPN, proxy or just wait to bypass this. See related `yt-dlp` [issue](https://github.com/yt-dlp/yt-dlp/issues/10128). Currently the download loop breaks and skips to the next task.
-- While downloading, some changes may occur in YouTube which results in an error.
+> [!NOTE]
+> YouTube blocks API requests if you exceed the amount they classify you as a bot (around 200 requests). You can either use a VPN, proxy or just wait to bypass this. See related `yt-dlp` [issue](https://github.com/yt-dlp/yt-dlp/issues/10128). Currently the download loop breaks and skips to the next task.
+
+> [!TIP]
+> While downloading, some changes may occur in YouTube which results in an error.
 You can use `ytmasc --db-replace-fails` to replace these `watch_id`s to something else.
 
 ### `fetcher.py`
 
-This part is a little duct taped, I couldn't find a good way to get the `libraryPage` formerly known as `likesPage` so I just emulated user input. It's written for a Windows computer that has `firefox` or `zen` as the default browser and `file explorer`. Shouldn't be hard to tinker and get it to work for your configuration. You can do this manually too, shouldn't take much of your time.
+This part is a little duct taped, I couldn't find a good way to get the `libraryPage` formerly known as `likesPage` so I just emulated user input. It's written for a Windows computer that has `firefox` as the default browser and `file explorer`. Shouldn't be hard to tinker and get it to work for your configuration. You can do this manually too, shouldn't take much of your time.
 
 Change `resendAmount` based on your internet connection, page length. Rule of thumb is to divide your like amount by 10 for this.
 
@@ -64,10 +80,18 @@ Change `savePageAsIndexOnRightClick` to which index your save as is on your brow
 
 The rest is fine if you don't have a really old computer.
 
+<div align="center">
+
+## Special thanks to
+
+- the artists whom pushed me to preserve what I like when services fumbled to do so
+- the devs of the many dependencies!
+
+</div>
+
 ## Requirements to run from source or build
 
-- `~=python3.11`
-- `python3-tk` (Linux)
+- `~=python3.13`
 - `ffmpeg`
 
 ## Flowchart of the CLI
@@ -106,8 +130,8 @@ Library_tools-->lib-find-unpaired-->FINISH
 Library_tools-->lib-replace-fails-->FINISH
 refetch-metadata-->export
 refetch-metadata-->Tasks
-START-->help-->FINISH
 START-->fire-->FINISH
+START-->help-->FINISH
 START-->Library_operations
 START-->verbosity
 tag-->Library_tools
@@ -115,6 +139,7 @@ Tasks-->convert
 Tasks-->download
 Tasks-->Library_tools
 Tasks-->tag
+Tasks<-->continue-from
 verbosity-->Library_operations
 ```
 
