@@ -7,6 +7,7 @@ import time
 
 import fuzzywuzzy
 import keyboard
+import requests.exceptions
 
 from ytmasc.intermediates import update_library_for_watch_id
 from ytmasc.lib_utils import (
@@ -20,13 +21,16 @@ from ytmasc.lib_utils import (
     old_music_library,
 )
 from ytmasc.utility import (
-    count_key_in_json,
+    audio_conversion_ext,
+    current_path,
     download_path,
     fail_log_path,
-    get_file_extension,
+    get_filename,
     library_data_path,
     read_json,
     read_txt_as_list,
+    source_audio_ext,
+    source_cover_ext,
     write_json,
     zfill_progress,
 )
@@ -161,17 +165,33 @@ def find_same_metadata():
                     print(f"{next(iter(watch_id))} and {next(iter(watch_id2))} are same.")
 
 
-def find_unpaired():
+def find_unpaired(delete=None):
     files = os.listdir(download_path)
 
-    mp3_files = {get_file_extension(f) for f in files if f.endswith(".mp3")}
-    jpg_files = {get_file_extension(f) for f in files if f.endswith(".jpg")}
+    audio_files = [f for f in files if f.endswith(audio_conversion_ext[0]) or f.endswith(audio_conversion_ext[1])]
+    image_files = [f for f in files if f.endswith(source_cover_ext)]
 
-    unpaired_mp3 = mp3_files - jpg_files
-    unpaired_jpg = jpg_files - mp3_files
+    audio_base = []
+    for audio in audio_files:
+        audio_base.append(get_filename(audio))
+    image_base = []
+    for image in image_files:
+        image_base.append(get_filename(image))
 
-    print("Unpaired MP3 files:", *unpaired_mp3)
-    print("Unpaired JPG files:", *unpaired_jpg)
+    unpaired_audio = [s for s in audio_files if all(sub not in s for sub in image_base)]
+    unpaired_image = [s for s in image_base if all(sub not in s for sub in audio_base)]
+
+    if delete == "audio":
+        for audio in unpaired_audio:
+            for ext in audio_conversion_ext:
+                if os.path.isfile(audio + ext):
+                    os.remove(os.path.join(download_path, audio + ext))
+                    break
+    if delete == "image":
+        for image in unpaired_image:
+            os.remove(os.path.join(download_path, image + source_cover_ext))
+
+    print("Unpaired audio files:", *unpaired_audio, "\n\nUnpaired image files:", *unpaired_image)
 
 
 def replace_fails():
@@ -193,18 +213,36 @@ def replace_fails():
             input_key = keyboard.read_key()
 
 
-def refetch_metadata(skip_until=-1):
+def refetch_metadata(skip_until=-1, force=False):
     # TODO do the skip amount properly, theres some offset to it, too lazy to debug it
     json_data = read_json(library_data_path)
-    total_operations = count_key_in_json(library_data_path)
     for i, watch_id in enumerate(json_data, start=1):
         if i + 1 <= skip_until:
             continue
         try:
-            artist, title = get_metadata_from_watch_id(watch_id)
-
-            json_data = update_library_for_watch_id(json_data, watch_id, artist, title, overwrite=True)
-        except:
+            if not force and not (json_data[watch_id]["artist"] and json_data[watch_id]["title"]):
+                artist, title = get_metadata_from_watch_id(watch_id)
+                logger.info(f"\n{watch_id} is empty, pulled data:\n{artist} - {title}")
+                json_data = update_library_for_watch_id(json_data, watch_id, artist, title, overwrite=True)
+            else:
+                artist, title = get_metadata_from_watch_id(watch_id)
+                logger.info(f"\nForcefully repulled data for {watch_id}:\n{artist} - {title}")
+                json_data = update_library_for_watch_id(json_data, watch_id, artist, title, overwrite=True)
+            if not i % 10:
+                logger.debug(f"Saved")
+                write_json(library_data_path, json_data)
+        except requests.exceptions.ConnectionError:
+            # TODO arg to sleep
             break
 
     write_json(library_data_path, json_data)
+
+
+def generate_playlist(file_dir):
+    with open(file_dir + ".m3u", "w") as m3u:
+        m3u.write("#EXTM3U\n")
+        for file in os.listdir(download_path):
+            for ext in [*source_audio_ext, *audio_conversion_ext]:
+                if file.endswith(ext):
+                    m3u.write(os.path.join(current_path, download_path, file) + "\n")
+                    break

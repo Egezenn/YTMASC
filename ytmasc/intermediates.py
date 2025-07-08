@@ -7,7 +7,6 @@ import time
 import webbrowser
 
 import bs4
-import eyed3
 import pandas
 import pyautogui
 import pygetwindow
@@ -16,7 +15,6 @@ from ytmasc.tasks import Tasks
 from ytmasc.utility import (
     audio_conversion_ext,
     current_path,
-    download_path,
     get_file_extension,
     get_filename,
     library_data_path,
@@ -60,9 +58,26 @@ def import_operations(args: list[str], overwrite=True):
     for arg in args:
         if arg == "files":
             for watch_id in json_data:
-                song = eyed3.load(os.path.join(download_path, watch_id + audio_conversion_ext))
+                for ext in audio_conversion_ext:
+                    try:
+                        audio_file = mutagen.File(audio_file_path)
+                    except Exception as e:
+                        print(str(e))
 
-                json_data = update_library_for_watch_id(json_data, watch_id, song.tag.artist, song.tag.title, overwrite)
+                    if audio_file.mime[0] == "audio/mpeg":
+                        artist_frame = audio_file.tags.get("TPE1")
+                        title_frame = audio_file.tags.get("TIT2")
+                        artist = artist.text[0] if artist_frame else ""
+                        title = title.text[0] if title_frame else ""
+
+                    elif audio_file.mime[0] == "audio/opus":
+                        artist = audio_file.tags.get("artist", [None])[0]
+                        title = audio_file.tags.get("title", [None])[0]
+                        print(artist, title)
+                    else:
+                        raise Exception
+
+                json_data = update_library_for_watch_id(json_data, watch_id, artist_text, title_text, overwrite)
 
             write_json(library_data_path, json_data)
 

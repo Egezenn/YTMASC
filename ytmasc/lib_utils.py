@@ -21,7 +21,9 @@ class ComparisonUtilities:
 
     @staticmethod
     def list_mp3(self, dir: str) -> list[list[dict], int]:
-        filtered = [f for f in os.listdir(dir) if f.endswith(audio_conversion_ext)]
+        filtered = [
+            f for f in os.listdir(dir) if (f.endswith(audio_conversion_ext[0]) or f.endswith(audio_conversion_ext[1]))
+        ]
 
         return filtered
 

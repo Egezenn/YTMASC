@@ -1,9 +1,8 @@
 beautifulsoup4
 click
-eyed3
-ffmpeg-python
+ffmpeg-python # just use subprocess
 fire
-fuzzywuzzy
+fuzzywuzzy #
 keyboard
 mutagen
 pandas

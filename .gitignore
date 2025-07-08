@@ -5,7 +5,7 @@ __pycache__
 # project files
 data
 downloads
-log.txt
+logs.log
 # db folders
 !keep
 !remove

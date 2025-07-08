@@ -1,4 +1,3 @@
-import glob
 import os
 import sys
 
@@ -27,7 +26,7 @@ from ytmasc.utility import (
 @click.option(
     "--verbosity",
     type=click.Choice(["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]),
-    default="w",
+    default="WARNING",
     help="Log verbosity",
 )
 # START of Library_operations
@@ -53,13 +52,22 @@ from ytmasc.utility import (
     help="Delete library page files after it's contents are imported",
 )
 @click.option(
-    "--refetch-metadata", is_flag=True, default=False, help="Fetches & overwrites all metadata from YouTube"
+    "--refetch-metadata",
+    is_flag=True,
+    default=False,
+    help="Fetches metadata from YouTube if there are any empty fields",
 )  # an option to lock metadata
+@click.option(
+    "--force-refetch", is_flag=True, default=False, help="Forcefully fetches & overwrites all metadata from YouTube"
+)
 # START of Tasks
 @click.option("--download", is_flag=True, default=False, help="Download all keys found in library")
 @click.option("--continue-download", is_flag=True, default=False, help="Watch ID to continue from")
-@click.option("--convert", is_flag=True, help="Convert all files")  # mp3, m4a, webm
+@click.option(
+    "--convert", type=click.Choice(["opus", "mp3"]), default="opus", help="Convert all files to specified format"
+)
 @click.option("--tag", is_flag=True, default=False, help="Tag all files")
+@click.option("--generate-m3u", type=str, help="Generate an M3U playlist")
 # START of Library_tools
 @click.option("--lib-compare", nargs=2, help="[WIP] Compares 2 directories lets you operate on files")
 @click.option(
@@ -67,6 +75,11 @@ from ytmasc.utility import (
 )
 @click.option(
     "--lib-find-unpaired", is_flag=True, default=False, help="Find files that doesn't have an audio or image pair"
+)
+@click.option(
+    "--lib-find-unpaired-del",
+    type=click.Choice(["audio", "image"]),
+    help="Find files that doesn't have an audio or image pair",
 )
 @click.option(
     "--lib-replace-fails", is_flag=True, default=False, help="[WIP] Find replacements for files that have failed"
@@ -89,13 +102,16 @@ def cli(
     import_library_page,
     delete_library_page_files_afterwards,
     refetch_metadata,
+    force_refetch,
     download,
     continue_download,
     convert,
     tag,
+    generate_m3u,
     lib_compare,
     lib_find_same,
     lib_find_unpaired,
+    lib_find_unpaired_del,
     lib_replace_fails,
     resend_amount,
     inbetween_delay,
@@ -133,7 +149,7 @@ def cli(
         import_operations(import_from, overwrite_state_file)
 
     if refetch_metadata:
-        _refetch_metadata()
+        _refetch_metadata(force=force_refetch)
 
     if export_to:
         convert_json_to_csv(library_data_path, export_to)
@@ -154,16 +170,22 @@ def cli(
             Tasks.download_bulk(library_data_path)
 
     if convert:
-        Tasks.convert_bulk(library_data_path)
+        Tasks.convert_bulk(library_data_path, convert)
 
     if tag:
         Tasks.tag_bulk(library_data_path)
+
+    if generate_m3u:
+        lib_tools.generate_playlist(generate_m3u)
 
     if lib_find_same:
         lib_tools.find_same_metadata()
 
     if lib_find_unpaired:
-        lib_tools.find_unpaired()
+        if lib_find_unpaired_del:
+            lib_tools.find_unpaired(lib_find_unpaired_del)
+        else:
+            lib_tools.find_unpaired()
 
     if lib_replace_fails:
         lib_tools.replace_fails()

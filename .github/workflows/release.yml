@@ -11,7 +11,10 @@ permissions:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest]
 
     steps:
       - uses: actions/checkout@v4
@@ -21,22 +24,42 @@ jobs:
           python-version: "3.11"
 
       - name: Install dependencies
+        shell: pwsh
         run: |
           echo "RELEASE_NAME=$(Get-Date -Format 'yyyy-MM-dd').alpha" | Out-File -FilePath $Env:GITHUB_ENV -Append
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Build executable with PyInstaller
+      - name: Build executable with PyInstaller (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
         run: |
           pyinstaller --name=ytmasc --icon=".\assets\icon.ico" --onefile .\ytmasc\__main__.py
-          move .\dist\ytmasc.exe .
+          Move-Item -Path .\dist\ytmasc.exe -Destination .
+      - name: Build executable with PyInstaller (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        shell: pwsh
+        run: |
+          pyinstaller --name=ytmasc --icon=".\assets\icon.ico" --onefile .\ytmasc\__main__.py
+          Move-Item -Path .\dist\ytmasc -Destination .
 
-      - name: Create Release
+      - name: Create Release (Windows)
+        if: matrix.os == 'windows-latest'
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ env.RELEASE_NAME }}
           prerelease: true
           body: Alpha stage release
           files: ytmasc.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create Release (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ env.RELEASE_NAME }}
+          prerelease: true
+          body: Alpha stage release
+          files: ytmasc
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

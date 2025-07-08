@@ -16,10 +16,10 @@ csv_library_data = r"library.csv"
 fail_log = r"fails.txt"
 library_data = r"library.json"
 library_page = r"libraryPage.htm"
-log = r"log.txt"
+log = r"logs.log"
 
-audio_conversion_ext = r".mp3"
-possible_audio_ext = [r".webm", r".m4a", r".mp3"]
+audio_conversion_ext = [r".opus", r".mp3"]
+possible_audio_ext = [r".opus", r".webm", r".m4a", r".mp3"]
 source_audio_ext = [r".webm", r".m4a"]
 source_cover_ext = r".jpg"
 

@@ -152,38 +152,23 @@ verbosity-->Library_operations
 [FFmpeg](https://ffmpeg.org/) - Required for the conversion of files. Licensed under LGPLv2.1 license.
 
 ### Python packages
-
-[beautifulsoup4](https://www.crummy.com/software/BeautifulSoup/) - Used in parsing the user's likes page HTML. Licensed under MIT license.
-
-[click](https://github.com/pallets/click) - Used in CLI, Licensed under BSD-3-Clause license.
-
-[eyed3](https://github.com/nicfit/eyeD3) - Used in tagging the files. Licensed under GPL-3.0 license.
-
-[fire](https://github.com/google/python-fire) - Used in exposing some base functions for a basic CLI. Licensed under Apache-2.0 license.
-
-[ffmpeg-python](https://github.com/kkroening/ffmpeg-python) - Used in converting files to desired format(s) as a wrapper. Licensed under Apache-2.0 license.
-
-[mutagen](https://github.com/quodlibet/mutagen)* - Subdependency, planned to replace eyed3. Licensed under GPL-2.0 license.
-
-[pandas](https://github.com/pandas-dev/pandas) - Used in CSV/JSON helper utilities. Licensed under BSD-3-Clause license.
-
-[pillow](https://github.com/python-pillow/Pillow) - Used in modification of covers. Licensed under MIT-CMU license.
-
-[pyautogui](https://github.com/asweigart/pyautogui) - Used in fetcher to get the user's likes page. Licensed under BSD-3-Clause license.
-
-[pyinstaller](https://github.com/pyinstaller/pyinstaller) - Used in compilation. Licensed under a GPLv2 license.
-
-[yt-dlp](https://github.com/yt-dlp/yt-dlp) - Used in downloading user's library. Licensed under Unlicense license.
-
-[ytmusicapi](https://github.com/sigma67/ytmusicapi) - Used in metadata fetching. Licensed under MIT license.
-
-[fuzzywuzzy](https://github.com/seatgeek/fuzzywuzzy) - Used in comparison utilities for migration for fuzzy matching. Licensed under GPLv2 license.
-
-[python-levenshtein](https://github.com/rapidfuzz/python-Levenshtein)* - Subdependency for fuzzywuzzy. Licensed under GPL-2.0 license.
-
-[keyboard](https://github.com/boppreh/keyboard) - Used in comparison utilities for migration to handle keypresses. Licensed under MIT license.
-
-[prettytable](https://github.com/prettytable/prettytable) - Used in comparison utilities as a part of UX. Licensed under a custom license.
+Package                                                                | Usage                                                                                        | License
+-----------------------------------------------------------------------|----------------------------------------------------------------------------------------------|-------------
+[beautifulsoup4](https://www.crummy.com/software/BeautifulSoup/)       | Parsing user's [library page from YouTube Music](https://music.youtube.com/playlist?list=LM) | MIT
+[click](https://github.com/pallets/click)                              | CLI interface                                                                                | BSD-3-Clause
+[fire](https://github.com/google/python-fire)                          | Exposing some base functions for a basic CLI                                                 | Apache-2.0
+[ffmpeg-python](https://github.com/kkroening/ffmpeg-python)            | Converting files to desired format(s)                                                        | Apache-2.0
+[mutagen](https://github.com/quodlibet/mutagen)                        | Tagging files                                                                                | GPL-2.0
+[pandas](https://github.com/pandas-dev/pandas)                         | CSV/JSON helper utilities                                                                    | BSD-3-Clause
+[pillow](https://github.com/python-pillow/Pillow)                      | Manipulation of cover images                                                                 | MIT-CMU
+[pyautogui](https://github.com/asweigart/pyautogui)                    | Input emulation                                                                              | BSD-3-Clause
+[pyinstaller](https://github.com/pyinstaller/pyinstaller)              | Compilation                                                                                  | GPLv2
+[yt-dlp](https://github.com/yt-dlp/yt-dlp)                             | Downloading files off of YouTube                                                             | Unlicense
+[ytmusicapi](https://github.com/sigma67/ytmusicapi)                    | Metadata fetching                                                                            | MIT
+[fuzzywuzzy](https://github.com/seatgeek/fuzzywuzzy)                   | Fuzzy string matching                                                                        | GPLv2
+[python-levenshtein](https://github.com/rapidfuzz/python-Levenshtein)* | Subdependency for fuzzywuzzy                                                                 | GPL-2.0
+[keyboard](https://github.com/boppreh/keyboard)                        | Keypress handling                                                                            | MIT
+[prettytable](https://github.com/prettytable/prettytable)              | Pretty tables for utilities                                                                  | Custom
 
 ## Disclaimer
 
