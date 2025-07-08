@@ -35,13 +35,11 @@ jobs:
         shell: pwsh
         run: |
           pyinstaller --name=ytmasc --icon=".\assets\icon.ico" --onefile .\ytmasc\__main__.py
-          Move-Item -Path .\dist\ytmasc.exe -Destination .
       - name: Build executable with PyInstaller (Linux)
         if: matrix.os == 'ubuntu-latest'
         shell: pwsh
         run: |
-          pyinstaller --name=ytmasc --icon=".\assets\icon.ico" --onefile .\ytmasc\__main__.py
-          Move-Item -Path .\dist\ytmasc -Destination .
+          pyinstaller --name=ytmasc --icon="./assets/icon.ico" --onefile ./ytmasc/__main__.py
 
       - name: Create Release (Windows)
         if: matrix.os == 'windows-latest'
@@ -50,7 +48,7 @@ jobs:
           tag_name: ${{ env.RELEASE_NAME }}
           prerelease: true
           body: Alpha stage release
-          files: ytmasc.exe
+          files: ./dist/ytmasc.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Create Release (Linux)
@@ -60,6 +58,6 @@ jobs:
           tag_name: ${{ env.RELEASE_NAME }}
           prerelease: true
           body: Alpha stage release
-          files: ytmasc
+          files: ./dist/ytmasc
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
