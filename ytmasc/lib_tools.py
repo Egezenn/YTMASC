@@ -7,6 +7,7 @@ import time
 
 import fuzzywuzzy
 import keyboard
+import mutagen
 import requests.exceptions
 
 from ytmasc.intermediates import update_library_for_watch_id
@@ -239,10 +240,17 @@ def refetch_metadata(skip_until=-1, force=False):
 
 
 def generate_playlist(file_dir):
-    with open(file_dir + ".m3u", "w") as m3u:
+    with open(file_dir + ".m3u", "w", encoding="utf-8") as m3u:
         m3u.write("#EXTM3U\n")
         for file in os.listdir(download_path):
             for ext in [*source_audio_ext, *audio_conversion_ext]:
                 if file.endswith(ext):
-                    m3u.write(os.path.join(current_path, download_path, file) + "\n")
+                    path = os.path.join(current_path, download_path, file)
+                    audio = mutagen.File(path, easy=True)
+                    artist = audio.get("artist", [""])[0]
+                    title = audio.get("title", [""])[0]
+                    if artist and title:
+                        m3u.write(f"#EXTINF:-1,{artist} - {title}\n" + path + "\n")
+                    else:
+                        m3u.write(path + "\n")
                     break
