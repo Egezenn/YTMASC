@@ -1,6 +1,8 @@
 import logging
 import os
 import platform
+
+systemInfo = platform.system()
 import shutil
 import sqlite3
 import time
@@ -9,7 +11,9 @@ import webbrowser
 import bs4
 import pandas
 import pyautogui
-import pygetwindow
+
+if systemInfo == "Windows":
+    import pygetwindow
 
 from ytmasc.tasks import Tasks
 from ytmasc.utility import (
@@ -36,19 +40,6 @@ def delete_library_page_files(fetcher_is_going_to_run=False):
     except FileNotFoundError:
         if fetcher_is_going_to_run:
             pass
-
-
-def run_tasks(download: bool, convert: bool, tag: bool):
-    json = read_json(library_data_path)
-
-    if download:
-        Tasks.download_bulk(json)
-
-    if convert:
-        Tasks.convert_bulk(json)
-
-    if tag:
-        Tasks.tag_bulk(json)
 
 
 def import_operations(args: list[str], overwrite=True):
@@ -82,6 +73,7 @@ def import_operations(args: list[str], overwrite=True):
             write_json(library_data_path, json_data)
 
         elif os.path.isfile(arg):
+            name = get_filename(arg)
             ext = get_file_extension(arg)
 
             if ext == "csv":
@@ -101,21 +93,32 @@ def import_operations(args: list[str], overwrite=True):
                 connection = sqlite3.connect(arg)
                 cursor = connection.cursor()
 
-                cursor.execute("SELECT id, title, artistsText, likedAt FROM Song WHERE likedAt IS NOT NULL")
+                # Only extract id because Metrolist artists jumble up
+                # TODO test if it works
+                # TODO extract from .backup zip
+                if name.startswith("rimusic_"):
+                    cursor.execute("SELECT id FROM Song WHERE likedAt IS NOT NULL")
+                elif name.startswith("Metrolist_") or name == "song":
+                    cursor.execute("SELECT id FROM song WHERE likedDate IS NOT NULL")
                 rows = cursor.fetchall()
                 cursor.close()
                 connection.close()
 
                 for row in rows:
-                    watch_id, title, artist, liked_at = row
-
-                    json_data = update_library_for_watch_id(json_data, watch_id, artist, title, overwrite)
+                    try:
+                        watch_id = row[0]
+                    except IndexError:
+                        watch_id = row
+                    json_data = update_library_for_watch_id(json_data, watch_id, "", "", overwrite)
 
                 write_json(library_data_path, json_data)
 
 
 def import_library_page(
-    run_fetcher: bool, fetcher_params: list, delete_library_page_files_afterwards: bool, overwrite: False
+    run_fetcher: bool,
+    fetcher_params: list,
+    delete_library_page_files_afterwards: bool,
+    overwrite: False,
 ):
     if run_fetcher:
         delete_library_page_files(True)
@@ -182,7 +185,7 @@ def fetch_lib_page(
     closing_delay=3,
     save_page_as_index_on_right_click=5,
 ):
-    systemInfo = platform.system()
+    global systemInfo
     if systemInfo == "Windows":
         # initializing the browser
         webbrowser.open_new_tab("https://music.youtube.com/playlist?list=LM")

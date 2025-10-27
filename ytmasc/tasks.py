@@ -128,6 +128,9 @@ class Tasks:
                         ]:
                             # TODO arg to sleep
                             break_loop = True
+                logger.info(f"Download failed with {exception_name}:\n{exception_string}")
+            else:
+                logger.info(f"Successfully downloaded {watch_id}")
 
             if break_loop:
                 break

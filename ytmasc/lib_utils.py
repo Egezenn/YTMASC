@@ -20,7 +20,7 @@ class ComparisonUtilities:
     # TODO check function get_filename
 
     @staticmethod
-    def list_mp3(self, dir: str) -> list[list[dict], int]:
+    def list_mp3(dir: str) -> list[list[dict], int]:
         filtered = [
             f for f in os.listdir(dir) if (f.endswith(audio_conversion_ext[0]) or f.endswith(audio_conversion_ext[1]))
         ]
@@ -29,8 +29,8 @@ class ComparisonUtilities:
 
     # will fail without the fallback
     @staticmethod
-    def create_old_database(self, title_filename_fallback=False):
-        old_files = self.list_mp3(old_music_library)
+    def create_old_database(title_filename_fallback=False):
+        old_files = ComparisonUtilities.list_mp3(old_music_library)
         old_database = []
         for old_song in old_files:
             data = mutagen.easyid3.EasyID3(os.path.join(old_music_library, old_song))
@@ -48,8 +48,8 @@ class ComparisonUtilities:
         return old_database, old_file_amt
 
     @staticmethod
-    def create_new_database(self) -> list[dict]:
-        new_files = self.list_mp3(new_music_library)
+    def create_new_database() -> list[dict]:
+        new_files = ComparisonUtilities.list_mp3(new_music_library)
         new_database = []
         for new_song in new_files:
             data = mutagen.easyid3.EasyID3(os.path.join(new_music_library, new_song))
@@ -63,7 +63,7 @@ class ComparisonUtilities:
         return new_database
 
     @staticmethod
-    def sort_based_on_score(self, scores, by_which) -> list:
+    def sort_based_on_score(scores, by_which) -> list:
         if by_which == "title_score":
             sorted_data = sorted(
                 scores,
@@ -81,7 +81,7 @@ class ComparisonUtilities:
             return sorted_data
 
     @staticmethod
-    def init_table(self) -> classmethod:
+    def init_table() -> classmethod:
         table = prettytable.PrettyTable()
         table.border = False
         table.hrules = False
@@ -95,7 +95,7 @@ class ComparisonUtilities:
         return table
 
     @staticmethod
-    def insert_rows(self, data, table, amount_to_insert=8, truncate_at=40):
+    def insert_rows(data, table, amount_to_insert=8, truncate_at=40):
         for i, item in enumerate(data):
             if i == amount_to_insert:
                 break
@@ -117,7 +117,7 @@ class ComparisonUtilities:
             )
 
     @staticmethod
-    def insert_old_file_data(self, table, title, artist, column_to_mark=0):
+    def insert_old_file_data(table, title, artist, column_to_mark=0):
         if column_to_mark == 1:
             table.add_row(
                 [
@@ -149,7 +149,7 @@ class ComparisonUtilities:
 
 class FailReplacementUtilities:
     @staticmethod
-    def init_table(self) -> classmethod:
+    def init_table() -> classmethod:
         table = prettytable.PrettyTable()
         table.border = False
         table.hrules = False

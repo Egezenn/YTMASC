@@ -62,7 +62,7 @@ from ytmasc.utility import (
 )
 # START of Tasks
 @click.option("--download", is_flag=True, default=False, help="Download all keys found in library")
-@click.option("--continue-download", is_flag=True, default=False, help="Watch ID to continue from")
+@click.option("--continue-download", is_flag=True, default=False, help="Continue from last download")
 @click.option(
     "--convert", type=click.Choice(["opus", "mp3"]), default="opus", help="Convert all files to specified format"
 )

@@ -225,10 +225,13 @@ def refetch_metadata(skip_until=-1, force=False):
                 artist, title = get_metadata_from_watch_id(watch_id)
                 logger.info(f"\n{watch_id} is empty, pulled data:\n{artist} - {title}")
                 json_data = update_library_for_watch_id(json_data, watch_id, artist, title, overwrite=True)
-            else:
+            elif force:
                 artist, title = get_metadata_from_watch_id(watch_id)
                 logger.info(f"\nForcefully repulled data for {watch_id}:\n{artist} - {title}")
                 json_data = update_library_for_watch_id(json_data, watch_id, artist, title, overwrite=True)
+            else:
+                logger.info(f"\nSkipped fetch for {watch_id}:\n{artist} - {title}")
+
             if not i % 10:
                 logger.debug(f"Saved")
                 write_json(library_data_path, json_data)
@@ -242,7 +245,7 @@ def refetch_metadata(skip_until=-1, force=False):
 def generate_playlist(file_dir):
     with open(file_dir + ".m3u", "w", encoding="utf-8") as m3u:
         m3u.write("#EXTM3U\n")
-        for file in os.listdir(download_path):
+        for file in sorted(os.listdir(download_path)):
             for ext in [*source_audio_ext, *audio_conversion_ext]:
                 if file.endswith(ext):
                     path = os.path.join(current_path, download_path, file)
