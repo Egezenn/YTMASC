@@ -1,27 +1,26 @@
 "Stores all the values required, provides base functions that does NOT use these values."
 
+import csv
 import glob
 import json
 import logging
 import os
 
-import pandas
-
 current_path = os.getcwd()
 
-data_path = r"data"
-download_path = r"downloads"
+data_path = "data"
+download_path = "downloads"
 
-csv_library_data = r"library.csv"
-fail_log = r"fails.txt"
-library_data = r"library.json"
-library_page = r"libraryPage.htm"
-log = r"logs.log"
+csv_library_data = "library.csv"
+fail_log = "fails.txt"
+library_data = "library.json"
+library_page = "libraryPage.htm"
+log = "logs.log"
 
-audio_conversion_ext = [r".opus", r".mp3"]
-possible_audio_ext = [r".opus", r".webm", r".m4a", r".mp3"]
-source_audio_ext = [r".webm", r".m4a"]
-source_cover_ext = r".jpg"
+audio_conversion_ext = [".opus", ".mp3"]
+possible_audio_ext = [".opus", ".webm", ".m4a", ".mp3"]
+source_audio_ext = [".webm", ".m4a"]
+source_cover_ext = ".jpg"
 
 csv_library_data_path = os.path.join(data_path, csv_library_data)
 fail_log_path = os.path.join(data_path, fail_log)
@@ -67,18 +66,29 @@ def sort_nested(
 
 
 def convert_json_to_csv(json_file: str, csv_file: str):
-    df = pandas.read_json(json_file)
-    df_transposed = df.transpose().reset_index()
-    df_transposed.to_csv(csv_file, index=False)
+    with open(json_file, "r") as f:
+        data = json.load(f)
+
+    with open(csv_file, "w", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerow(["index", "artist", "title"])
+        for watch_id, details in data.items():
+            writer.writerow([watch_id, details.get("artist", ""), details.get("title", "")])
 
 
 def convert_csv_to_json(csv_file: str, json_file: str):
-    df = pandas.read_json(csv_file)
-    df.set_index("index", inplace=True)
-    df.fillna("", inplace=True)
-    json_data = df.to_dict(orient="index")
+    data = {}
+    with open(csv_file, "r", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            index = row.pop("index")
+            for key, value in row.items():
+                if value is None:
+                    row[key] = ""
+            data[index] = row
+
     with open(json_file, "w") as f:
-        json.dump(json_data, f, indent=2)
+        json.dump(data, f, indent=2)
 
 
 def read_json(file_path: str) -> dict:

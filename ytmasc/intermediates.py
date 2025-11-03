@@ -1,41 +1,32 @@
+import csv
 import logging
 import os
 import platform
-
-systemInfo = platform.system()
 import shutil
 import sqlite3
 import time
 import webbrowser
 
 import bs4
-import pandas
+import mutagen
 import pyautogui
+
+import utility
+
+systemInfo = platform.system()
+
 
 if systemInfo == "Windows":
     import pygetwindow
 
-from ytmasc.tasks import Tasks
-from ytmasc.utility import (
-    audio_conversion_ext,
-    current_path,
-    get_file_extension,
-    get_filename,
-    library_data_path,
-    library_page_path,
-    read_json,
-    update_library_for_watch_id,
-    write_json,
-)
 
 logger = logging.getLogger(__name__)
 
 
 def delete_library_page_files(fetcher_is_going_to_run=False):
     try:
-        os.remove(library_page_path)
-        # TODO check function get_filename
-        shutil.rmtree(f"{get_filename(library_page_path)}_files")
+        os.remove(utility.library_page_path)
+        shutil.rmtree(f"{utility.get_filename(utility.library_page_path)}_files")
 
     except FileNotFoundError:
         if fetcher_is_going_to_run:
@@ -43,13 +34,12 @@ def delete_library_page_files(fetcher_is_going_to_run=False):
 
 
 def import_operations(args: list[str], overwrite=True):
-    # TODO Metrolist exports, check if method for Kreate which got forked from RiMusic still works
-    json_data = read_json(library_data_path)
+    json_data = utility.read_json(utility.library_data_path)
 
     for arg in args:
         if arg == "files":
             for watch_id in json_data:
-                for ext in audio_conversion_ext:
+                for ext in utility.audio_conversion_ext:
                     try:
                         audio_file = mutagen.File(audio_file_path)
                     except Exception as e:
@@ -68,33 +58,32 @@ def import_operations(args: list[str], overwrite=True):
                     else:
                         raise Exception
 
-                json_data = update_library_for_watch_id(json_data, watch_id, artist_text, title_text, overwrite)
+                json_data = utility.update_library_for_watch_id(json_data, watch_id, artist, title, overwrite)
 
-            write_json(library_data_path, json_data)
+            utility.write_json(utility.library_data_path, json_data)
 
         elif os.path.isfile(arg):
-            name = get_filename(arg)
-            ext = get_file_extension(arg)
+            name = utility.get_filename(arg)
+            ext = utility.get_file_extension(arg)
 
             if ext == "csv":
-                df = pandas.read_csv(arg)
-                df.fillna("", inplace=True)
-
-                for _, row in df.iterrows():
-                    watch_id = row.iloc[0]
-                    artist = row.iloc[1]
-                    title = row.iloc[2]
-
-                    json_data = update_library_for_watch_id(json_data, watch_id, artist, title, overwrite)
-
-                write_json(library_data_path, json_data)
+                with open(arg, "r", encoding="utf-8") as f:
+                    reader = csv.reader(f)
+                    next(reader)  # skip header
+                    for row in reader:
+                        if not row:
+                            continue
+                        watch_id = row[0]
+                        artist = row[1] if len(row) > 1 else ""
+                        title = row[2] if len(row) > 2 else ""
+                        json_data = utility.update_library_for_watch_id(json_data, watch_id, artist, title, overwrite)
+                utility.write_json(utility.library_data_path, json_data)
 
             elif ext == ".db":
                 connection = sqlite3.connect(arg)
                 cursor = connection.cursor()
 
                 # Only extract id because Metrolist artists jumble up
-                # TODO test if it works
                 # TODO extract from .backup zip
                 if name.startswith("rimusic_"):
                     cursor.execute("SELECT id FROM Song WHERE likedAt IS NOT NULL")
@@ -109,9 +98,9 @@ def import_operations(args: list[str], overwrite=True):
                         watch_id = row[0]
                     except IndexError:
                         watch_id = row
-                    json_data = update_library_for_watch_id(json_data, watch_id, "", "", overwrite)
+                    json_data = utility.update_library_for_watch_id(json_data, watch_id, "", "", overwrite)
 
-                write_json(library_data_path, json_data)
+                utility.write_json(utility.library_data_path, json_data)
 
 
 def import_library_page(
@@ -125,13 +114,13 @@ def import_library_page(
 
         fetch_lib_page(*fetcher_params)
 
-        while not os.path.isfile(library_page_path):
+        while not os.path.isfile(utility.library_page_path):
             time.sleep(1)
         time.sleep(5)
 
-    if os.path.exists(library_page_path):
-        with open(library_page_path, encoding="utf-8") as file:
-            json_data = read_json(library_data_path)
+    if os.path.exists(utility.library_page_path):
+        with open(utility.library_page_path, encoding="utf-8") as file:
+            json_data = utility.read_json(utility.library_data_path)
 
             soup = bs4.BeautifulSoup(file, "html.parser")
 
@@ -161,7 +150,7 @@ def import_library_page(
                         #     }
                         # else:
 
-                        update_library_for_watch_id(
+                        utility.update_library_for_watch_id(
                             json_data,
                             data[title_element["href"][34:-8]],
                             artist_element.text,
@@ -207,7 +196,7 @@ def fetch_lib_page(
         pyautogui.sleep(dialog_wait_delay)
         pyautogui.hotkey("ctrl", "a")
         pyautogui.sleep(dialog_wait_delay)
-        pyautogui.typewrite(os.path.join(current_path, library_page_path))
+        pyautogui.typewrite(os.path.join(utility.current_path, utility.library_page_path))
         pyautogui.sleep(dialog_wait_delay)
         pyautogui.press("enter")
         pyautogui.sleep(closing_delay)

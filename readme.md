@@ -11,7 +11,7 @@ It's features are:
 - Downloading, converting and tagging
 - CLI (shipped as a binary for Windows!)
 - Import a CSV of your own (columns are: *`watch_id`, `artist`, `title`)
-- Importing favorites from [Kreate](https://github.com/knighthat/Kreate) databases
+- Importing favorites from [Metrolist](https://github.com/mostafaalagamy/Metrolist), [Kreate](https://github.com/knighthat/Kreate) databases
 - Maintaining a data file for your music for an easily reproducible collection
 - Scraping your [library page from YouTube Music](https://music.youtube.com/playlist?list=LM)
 - Some helper functions to modify your data file easier and for easy migration
@@ -55,7 +55,7 @@ It's features are:
 > You can chain all these commands in a meaningful manner, see the [flowchart](#flowchart-of-the-cli).
 >
 > ```shell
-> ytmasc --import-library-page fetch-soft --delete-library-page-files-afterwards --refetch-metadata --import-from rimusic_xxxxxxxxxxxxxx.db --import-from data/x.csv --download --convert --tag --lib-find-same
+> ytmasc --import-library-page fetch-soft --delete-library-page-files-afterwards --refetch-metadata --import-from song.db --import-from data/x.csv --download --convert opus --tag --lib-find-same
 > ```
 
 
@@ -93,10 +93,9 @@ The rest is fine if you don't have a really old computer.
 
 - `~=python3.13`
 - `ffmpeg`
+- `uv`
 
-## Flowchart of the CLI
-
-In the monstrosity of a flowchart below, you can find the chaining logic for all the arguments. This is in an effort for the user to run seperate commands and do the whole shebang in one fell swoop. Strange results may occur, it's completely up to the user's usage.
+## Flowchart of operations
 
 ```mermaid
 graph TD;
@@ -152,23 +151,19 @@ verbosity-->Library_operations
 [FFmpeg](https://ffmpeg.org/) - Required for the conversion of files. Licensed under LGPLv2.1 license.
 
 ### Python packages
-Package                                                                | Usage                                                                                        | License
------------------------------------------------------------------------|----------------------------------------------------------------------------------------------|-------------
-[beautifulsoup4](https://www.crummy.com/software/BeautifulSoup/)       | Parsing user's [library page from YouTube Music](https://music.youtube.com/playlist?list=LM) | MIT
-[click](https://github.com/pallets/click)                              | CLI interface                                                                                | BSD-3-Clause
-[fire](https://github.com/google/python-fire)                          | Exposing some base functions for a basic CLI                                                 | Apache-2.0
-[ffmpeg-python](https://github.com/kkroening/ffmpeg-python)            | Converting files to desired format(s)                                                        | Apache-2.0
-[mutagen](https://github.com/quodlibet/mutagen)                        | Tagging files                                                                                | GPL-2.0
-[pandas](https://github.com/pandas-dev/pandas)                         | CSV/JSON helper utilities                                                                    | BSD-3-Clause
-[pillow](https://github.com/python-pillow/Pillow)                      | Manipulation of cover images                                                                 | MIT-CMU
-[pyautogui](https://github.com/asweigart/pyautogui)                    | Input emulation                                                                              | BSD-3-Clause
-[pyinstaller](https://github.com/pyinstaller/pyinstaller)              | Compilation                                                                                  | GPLv2
-[yt-dlp](https://github.com/yt-dlp/yt-dlp)                             | Downloading files off of YouTube                                                             | Unlicense
-[ytmusicapi](https://github.com/sigma67/ytmusicapi)                    | Metadata fetching                                                                            | MIT
-[fuzzywuzzy](https://github.com/seatgeek/fuzzywuzzy)                   | Fuzzy string matching                                                                        | GPLv2
-[python-levenshtein](https://github.com/rapidfuzz/python-Levenshtein)* | Subdependency for fuzzywuzzy                                                                 | GPL-2.0
-[keyboard](https://github.com/boppreh/keyboard)                        | Keypress handling                                                                            | MIT
-[prettytable](https://github.com/prettytable/prettytable)              | Pretty tables for utilities                                                                  | Custom
+| Package                                                          | Usage                                                                                        | License      |
+| ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | ------------ |
+| [beautifulsoup4](https://www.crummy.com/software/BeautifulSoup/) | Parsing user's [library page from YouTube Music](https://music.youtube.com/playlist?list=LM) | MIT          |
+| [click](https://github.com/pallets/click)                        | CLI interface                                                                                | BSD-3-Clause |
+| [fire](https://github.com/google/python-fire)                    | Exposing some base functions for a basic CLI                                                 | Apache-2.0   |
+| [keyboard](https://github.com/boppreh/keyboard)                  | Keypress handling                                                                            | MIT          |
+| [mutagen](https://github.com/quodlibet/mutagen)                  | Tagging files                                                                                | GPL-2.0      |
+| [pillow](https://github.com/python-pillow/Pillow)                | Manipulation of cover images                                                                 | MIT-CMU      |
+| [prettytable](https://github.com/prettytable/prettytable)        | Pretty tables for utilities                                                                  | Custom       |
+| [pyautogui](https://github.com/asweigart/pyautogui)              | Input emulation                                                                              | BSD-3-Clause |
+| [pyinstaller](https://github.com/pyinstaller/pyinstaller)        | Compilation                                                                                  | GPLv2        |
+| [yt-dlp](https://github.com/yt-dlp/yt-dlp)                       | Downloading files off of YouTube                                                             | Unlicense    |
+| [ytmusicapi](https://github.com/sigma67/ytmusicapi)              | Metadata fetching                                                                            | MIT          |
 
 ## Disclaimer
 

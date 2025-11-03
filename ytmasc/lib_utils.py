@@ -5,7 +5,7 @@ import mutagen.easyid3
 import prettytable
 import ytmusicapi
 
-from ytmasc.utility import audio_conversion_ext, get_filename
+import utility
 
 # refactor to not use these
 old_music_library = r"old"
@@ -17,12 +17,14 @@ logger = logging.getLogger(__name__)
 
 
 class ComparisonUtilities:
-    # TODO check function get_filename
+    # TODO check function utility.get_filename
 
     @staticmethod
     def list_mp3(dir: str) -> list[list[dict], int]:
         filtered = [
-            f for f in os.listdir(dir) if (f.endswith(audio_conversion_ext[0]) or f.endswith(audio_conversion_ext[1]))
+            f
+            for f in os.listdir(dir)
+            if (f.endswith(utility.audio_conversion_ext[0]) or f.endswith(utility.audio_conversion_ext[1]))
         ]
 
         return filtered
@@ -35,11 +37,11 @@ class ComparisonUtilities:
         for old_song in old_files:
             data = mutagen.easyid3.EasyID3(os.path.join(old_music_library, old_song))
             if title_filename_fallback:
-                title = get_filename(old_song)  # make a switch based on an user input
+                title = utility.get_filename(old_song)  # make a switch based on an user input
             else:
                 title = data.get("Title")[0]
             artist = data.get("Artist")[0]
-            old_database.append({get_filename(old_song): {"artist": artist, "title": title}})
+            old_database.append({utility.get_filename(old_song): {"artist": artist, "title": title}})
 
         old_file_amt = 0
         for _ in old_files:
@@ -58,7 +60,7 @@ class ComparisonUtilities:
                 artist = data.get("Artist")[0]
             else:
                 artist = "░"  # so that there's no unpacking errors or something xd
-            new_database.append({get_filename(new_song): {"artist": artist, "title": title}})
+            new_database.append({utility.get_filename(new_song): {"artist": artist, "title": title}})
 
         return new_database
 

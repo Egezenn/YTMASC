@@ -4,20 +4,10 @@ import sys
 import click
 import fire
 
-from ytmasc import lib_tools, utility
-from ytmasc.intermediates import import_library_page as _import_library_page
-from ytmasc.intermediates import import_operations
-from ytmasc.lib_tools import refetch_metadata as _refetch_metadata
-from ytmasc.tasks import Tasks
-from ytmasc.utility import (
-    check_if_directories_exist_and_make_if_not,
-    convert_json_to_csv,
-    data_path,
-    download_path,
-    get_filename,
-    library_data_path,
-    setup_logging,
-)
+import intermediates
+import lib_tools
+import tasks
+import utility
 
 
 # TODO rename library modification options
@@ -42,7 +32,7 @@ from ytmasc.utility import (
 @click.option("--export-to", help="Export path")
 @click.option(
     "--import-library-page",
-    type=click.Choice(["fetch-soft", "fetch-soft-no-overwrite", "no-fetch-soft" "no-fetch-soft-no-overwrite"]),
+    type=click.Choice(["fetch-soft", "fetch-soft-no-overwrite", "no-fetch-softno-fetch-soft-no-overwrite"]),
     help="Whether to import the library page & option to run fetcher and specification of import level",
 )
 @click.option(
@@ -60,7 +50,7 @@ from ytmasc.utility import (
 @click.option(
     "--force-refetch", is_flag=True, default=False, help="Forcefully fetches & overwrites all metadata from YouTube"
 )
-# START of Tasks
+# START of tasks.Tasks
 @click.option("--download", is_flag=True, default=False, help="Download all keys found in library")
 @click.option("--continue-download", is_flag=True, default=False, help="Continue from last download")
 @click.option(
@@ -120,9 +110,7 @@ def cli(
     closing_delay,
     save_page_as_index_on_right_click,
 ):
-    check_if_directories_exist_and_make_if_not(download_path, data_path)
-    setup_logging(verbosity)
-
+    utility.check_if_directories_exist_and_make_if_not(utility.download_path, utility.data_path)
     if import_library_page:
         fetch_state = (
             True if import_library_page == "fetch-soft-no-overwrite" or import_library_page == "fetch-soft" else False
@@ -130,7 +118,7 @@ def cli(
         overwrite_state_lib = (
             True if import_library_page == "fetch-soft" or import_library_page == "no-fetch-soft" else False
         )
-        _import_library_page(
+        intermediates.import_library_page(
             fetch_state,
             [
                 resend_amount,
@@ -146,13 +134,13 @@ def cli(
 
     if import_from:
         overwrite_state_file = False if import_level == "soft-no-overwrite" else True
-        import_operations(import_from, overwrite_state_file)
+        intermediates.import_operations(import_from, overwrite_state_file)
 
     if refetch_metadata:
-        _refetch_metadata(force=force_refetch)
+        lib_tools.refetch_metadata(force=force_refetch)
 
     if export_to:
-        convert_json_to_csv(library_data_path, export_to)
+        utility.convert_json_to_csv(utility.library_data_path, export_to)
 
     if download:
         files = [
@@ -163,17 +151,17 @@ def cli(
 
         # TODO conversion will mess this up, retain creation dates or switch to modification?
         if continue_download and files:
-            last_created_file = get_filename(max(files, key=os.path.getctime))
-            Tasks.download_bulk(library_data_path, last_created_file)
+            last_created_file = utility.get_filename(max(files, key=os.path.getctime))
+            tasks.Tasks.download_bulk(utility.library_data_path, last_created_file)
 
         else:
-            Tasks.download_bulk(library_data_path)
+            tasks.Tasks.download_bulk(utility.library_data_path)
 
     if convert:
-        Tasks.convert_bulk(library_data_path, convert)
+        tasks.Tasks.convert_bulk(utility.library_data_path, convert)
 
     if tag:
-        Tasks.tag_bulk(library_data_path)
+        tasks.Tasks.tag_bulk(utility.library_data_path)
 
     if generate_m3u:
         lib_tools.generate_playlist(generate_m3u)
@@ -196,9 +184,9 @@ def cli(
 
 if __name__ == "__main__":
     if "--fire" in sys.argv:
-        check_if_directories_exist_and_make_if_not(download_path, data_path)
+        utility.check_if_directories_exist_and_make_if_not(utility.download_path, utility.data_path)
         sys.argv.remove("--fire")
-        fire.Fire(Tasks)
+        fire.Fire(tasks.Tasks)
 
     else:
         cli()

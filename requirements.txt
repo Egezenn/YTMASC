@@ -1,17 +1,11 @@
 beautifulsoup4
 click
-ffmpeg-python # just use subprocess
 fire
-fuzzywuzzy #
 keyboard
 mutagen
-pandas
 pillow
 prettytable
 pyautogui
 pyinstaller
-python-Levenshtein
 yt-dlp
 ytmusicapi
-
-# opencv-python

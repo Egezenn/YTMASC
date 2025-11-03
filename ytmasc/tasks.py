@@ -3,30 +3,18 @@
 import base64
 import logging
 import os
+import subprocess
 import urllib.request
 
-import ffmpeg
 import PIL
-import yt_dlp
-import yt_dlp.utils
 from mutagen.easyid3 import EasyID3
 from mutagen.flac import Picture
 from mutagen.id3 import APIC, ID3, error
 from mutagen.oggopus import OggOpus
+import yt_dlp
+import yt_dlp.utils
 
-from ytmasc.utility import (
-    append_txt,
-    audio_conversion_ext,
-    count_key_in_json,
-    download_path,
-    fail_log_path,
-    library_data_path,
-    possible_audio_ext,
-    read_json,
-    source_audio_ext,
-    source_cover_ext,
-    write_txt,
-)
+import utility
 
 logger = logging.getLogger(__name__)
 
@@ -44,17 +32,17 @@ class Tasks:
             "ignore-errors": True,
             "no-abort-on-error": True,
             "quiet": True,
-            "outtmpl": f"{os.path.join(download_path, watch_id)}.%(audio_ext)s",
+            "outtmpl": f"{os.path.join(utility.download_path, watch_id)}.%(audio_ext)s",
             "compat_opts": {"filename-sanitization"},
         }
         audio_file_found = False
         cover_file_found = False
 
-        for ext in possible_audio_ext:
-            if os.path.isfile(os.path.join(download_path, watch_id + ext)):
+        for ext in utility.possible_audio_ext:
+            if os.path.isfile(os.path.join(utility.download_path, watch_id + ext)):
                 audio_file_found = True
                 break
-        if os.path.isfile(os.path.join(download_path, watch_id + source_cover_ext)):
+        if os.path.isfile(os.path.join(utility.download_path, watch_id + utility.source_cover_ext)):
             cover_file_found = True
 
         if not audio_file_found:
@@ -73,7 +61,7 @@ class Tasks:
                     cover = f"https://img.youtube.com/vi/{watch_id}/maxresdefault.jpg"
                     urllib.request.urlretrieve(
                         cover,
-                        os.path.join(download_path, f"{watch_id + source_cover_ext}"),
+                        os.path.join(utility.download_path, f"{watch_id + utility.source_cover_ext}"),
                     )
 
                 # caused mostly by files generated from non-youtube music id's
@@ -84,19 +72,19 @@ class Tasks:
                         cover = f"https://img.youtube.com/vi/{watch_id}/hqdefault.jpg"
                         urllib.request.urlretrieve(
                             cover,
-                            os.path.join(download_path, f"{watch_id + source_cover_ext}"),
+                            os.path.join(utility.download_path, f"{watch_id + utility.source_cover_ext}"),
                         )
                     except Exception as e:
                         exceptions.append({type(e).__name__: str(e)})
 
                 # TODO find images that are actually 16:9 and keep its ratio (i.e files generated from non-youtube music id's)
                 # need to solve color similarity from jpeg compression
-                img = PIL.Image.open(os.path.join(download_path, watch_id + source_cover_ext))
+                img = PIL.Image.open(os.path.join(utility.download_path, watch_id + utility.source_cover_ext))
                 width, height = img.size
                 if width % 16 == 0 and height % 9 == 0:
                     area_to_be_cut = (width - height) / 2
                     cropped_img = img.crop((area_to_be_cut, 0, width - area_to_be_cut, height))
-                    cropped_img.save(os.path.join(download_path, watch_id + source_cover_ext))
+                    cropped_img.save(os.path.join(utility.download_path, watch_id + utility.source_cover_ext))
             except:
                 pass
 
@@ -104,8 +92,8 @@ class Tasks:
 
     @staticmethod
     def download_bulk(json_path: str, skip=None):
-        json = read_json(json_path)
-        write_txt(fail_log_path, "")
+        json = utility.read_json(json_path)
+        utility.write_txt(utility.fail_log_path, "")
         break_loop = False
 
         for watch_id in json.keys():
@@ -121,7 +109,7 @@ class Tasks:
             if exceptions:
                 for exception in exceptions:
                     for exception_name, exception_string in exception.items():
-                        append_txt(fail_log_path, f"{exception_name}: {exception_string} \n")
+                        utility.append_txt(utility.fail_log_path, f"{exception_name}: {exception_string} \n")
                         if exception_string in [
                             r"Sign in to confirm you're not a bot",
                             r"Failed to extract any player response",
@@ -140,37 +128,35 @@ class Tasks:
     def convert(watch_id: str, filetype: str):
         file_name = watch_id
         output_audio_file = os.path.join(file_name + "." + filetype)
-        output_audio_file_path = os.path.join(download_path, output_audio_file)
+        output_audio_file_path = os.path.join(utility.download_path, output_audio_file)
 
         source_audio_file = None
-        for ext in source_audio_ext:
-            if os.path.isfile(os.path.join(download_path, file_name + ext)):
+        for ext in utility.source_audio_ext:
+            if os.path.isfile(os.path.join(utility.download_path, file_name + ext)):
                 source_audio_file = file_name + ext
-                source_audio_file_path = os.path.join(download_path, source_audio_file)
+                source_audio_file_path = os.path.join(utility.download_path, source_audio_file)
                 break
 
         if not os.path.isfile(output_audio_file_path) and source_audio_file is not None:
+            command = ["ffmpeg", "-i", source_audio_file_path]
             if filetype == "opus":
-                ffmpeg.output(
-                    ffmpeg.input(source_audio_file_path).audio,
-                    output_audio_file_path,
-                    loglevel="error",
-                    **{"c:a": "copy"},
-                ).run()
+                command.extend(["-c:a", "copy"])
             else:
-                # the max bitrate is 64kbps webm (with no logins etc.)
-                # which roughly translates to 2x+~ rate to mitigate conversion losses
-                ffmpeg.input(source_audio_file_path).output(
-                    output_audio_file_path,
-                    acodec="libmp3lame",
-                    audio_bitrate="192k",
-                    loglevel="error",
-                ).run()
-            os.remove(source_audio_file_path)
+                command.extend(["-acodec", "libmp3lame", "-b:a", "192k"])
+
+            command.extend(["-loglevel", "error", output_audio_file_path])
+
+            result = subprocess.run(command, capture_output=True, text=True)
+            if result.returncode == 0:
+                os.remove(source_audio_file_path)
+            else:
+                logger.error(f"Failed to convert {source_audio_file_path} to {filetype}.")
+                logger.error(f"ffmpeg stdout: {result.stdout}")
+                logger.error(f"ffmpeg stderr: {result.stderr}")
 
     @staticmethod
     def convert_bulk(json_path: str, filetype: str):
-        json = read_json(json_path)
+        json = utility.read_json(json_path)
         for watch_id in json.keys():
             Tasks.convert(watch_id, filetype)
 
@@ -181,16 +167,16 @@ class Tasks:
         title = value["title"]
         artist = value["artist"]
         audio_file_fullname = None
-        for ext in audio_conversion_ext:
-            if os.path.isfile(os.path.join(download_path, watch_id + ext)):
+        for ext in utility.audio_conversion_ext:
+            if os.path.isfile(os.path.join(utility.download_path, watch_id + ext)):
                 audio_file_fullname = watch_id + ext
                 break
 
         if audio_file_fullname:
-            audio_file_path = os.path.join(download_path, audio_file_fullname)
+            audio_file_path = os.path.join(utility.download_path, audio_file_fullname)
             order_number = str(num).zfill(digit_amount)
-            cover_file = watch_id + source_cover_ext
-            cover_file_path = os.path.join(download_path, cover_file)
+            cover_file = watch_id + utility.source_cover_ext
+            cover_file_path = os.path.join(utility.download_path, cover_file)
 
             if ext == ".mp3":
                 audio_file_id3 = ID3(audio_file_path)
@@ -242,10 +228,10 @@ class Tasks:
 
     @staticmethod
     def tag_bulk(json_path: str):
-        json = read_json(json_path)
+        json = utility.read_json(json_path)
         "Tag files in bulk"
         fail_amount = 0
-        total_operations = count_key_in_json(library_data_path)
+        total_operations = utility.count_key_in_json(utility.library_data_path)
         num_digits = len(str(total_operations))
         for i, (watch_id, value) in enumerate(json.items(), start=1):
             fail_status = Tasks.tag(watch_id, value, num_digits, i - fail_amount)
