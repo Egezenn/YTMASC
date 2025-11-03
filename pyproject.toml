@@ -2,8 +2,8 @@
 name = "ytmasc"
 version = "0.1"
 description = "Your offline music library with YouTube as it's backend!"
-readme = "README.md"
-requires-python = ">=3.13"
+readme = "readme.md"
+requires-python = ">=3.12"
 dependencies = [
     "beautifulsoup4>=4.14.2",
     "click>=8.3.0",
