@@ -4,13 +4,13 @@ from difflib import SequenceMatcher
 import logging
 import os
 import re
+import sys
 import time
 
 import keyboard
 import mutagen
 import requests.exceptions
 
-import intermediates
 import lib_utils
 import utility
 
@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 def compare():
     if not os.path.isdir(lib_utils.old_music_library):
         os.mkdir(lib_utils.old_music_library)
-        exit()
+        sys.exit()
 
     for directory in [
         lib_utils.new_music_library,
@@ -119,7 +119,7 @@ def compare():
                     os.system("clear")
                     print(f"{utility.zfill_progress(i, old_file_amt)}/{old_file_amt}\nignore: {file}\n")
                 else:
-                    quit()
+                    sys.exit()
                     # keyboard doesn't care about terminal focus and i don't know which package would do handle that easily
                     # so, don't multi task? yet?
                 # wait for key up
@@ -218,13 +218,13 @@ def refetch_metadata(skip_until=-1, force=False):
                 logger.info(f"\nForcefully repulled data for {watch_id}:\n{artist} - {title}")
                 json_data = utility.update_library_for_watch_id(json_data, watch_id, artist, title, overwrite=True)
             else:
-                logger.info(f"\nSkipped fetch for {watch_id}:\n{artist} - {title}")
+                logger.info(f"\nSkipped fetch for {watch_id}")
 
             if not i % 10:
                 logger.debug(f"Saved")
                 utility.write_json(utility.library_data_path, json_data)
         except requests.exceptions.ConnectionError:
-            # TODO arg to sleep
+            logger.info(f"Couldn't fetch metadata for {watch_id}!")
             break
 
     utility.write_json(utility.library_data_path, json_data)

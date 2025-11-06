@@ -8,10 +8,10 @@ import ytmusicapi
 import utility
 
 # refactor to not use these
-old_music_library = r"old"
-new_music_library = r"downloads"
-files_to_keep = r"!keep"
-files_to_remove = r"!remove"
+old_music_library = "old"
+new_music_library = "downloads"
+files_to_keep = "!keep"
+files_to_remove = "!remove"
 
 logger = logging.getLogger(__name__)
 

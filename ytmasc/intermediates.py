@@ -6,6 +6,7 @@ import shutil
 import sqlite3
 import time
 import webbrowser
+import zipfile
 
 import bs4
 import mutagen
@@ -72,19 +73,32 @@ def import_operations(args: list[str], overwrite=True):
                         json_data = utility.update_library_for_watch_id(json_data, watch_id, artist, title, overwrite)
                 utility.write_json(utility.library_data_path, json_data)
 
-            elif ext == ".db":
-                connection = sqlite3.connect(arg)
+            if ext == ".db" or (ext in [".zip", ".backup"]):
+                is_metrolist_backup = True if name.startswith("Metrolist") else False
+                temp_dir = os.path.join(utility.current_path, "temp_db_extraction")
+
+                if is_metrolist_backup:
+                    if not os.path.exists(temp_dir):
+                        os.makedirs(temp_dir)
+
+                    with zipfile.ZipFile(arg, "r") as zip_ref:
+                        if "song.db" in zip_ref.namelist():
+                            zip_ref.extract("song.db", temp_dir)
+                            db_path = os.path.join(temp_dir, "song.db")
+
+                connection = sqlite3.connect(arg) if not is_metrolist_backup else sqlite3.connect(db_path)
                 cursor = connection.cursor()
 
-                # Only extract id because Metrolist artists jumble up
-                # TODO extract from .backup zip
-                if name.startswith("rimusic_"):
+                (
                     cursor.execute("SELECT id FROM Song WHERE likedAt IS NOT NULL")
-                elif name.startswith("Metrolist_") or name == "song":
-                    cursor.execute("SELECT id FROM song WHERE likedDate IS NOT NULL")
+                    if not is_metrolist_backup
+                    else cursor.execute("SELECT id FROM song WHERE likedDate IS NOT NULL")
+                )
                 rows = cursor.fetchall()
                 cursor.close()
                 connection.close()
+                if os.path.exists(temp_dir):
+                    shutil.rmtree(temp_dir)
 
                 for row in rows:
                     try:
@@ -92,8 +106,7 @@ def import_operations(args: list[str], overwrite=True):
                     except IndexError:
                         watch_id = row
                     json_data = utility.update_library_for_watch_id(json_data, watch_id, "", "", overwrite)
-
-                utility.write_json(utility.library_data_path, json_data)
+                    utility.write_json(utility.library_data_path, json_data)
 
 
 def import_library_page(

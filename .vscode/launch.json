@@ -2,74 +2,18 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "YTMASC: replace-current-metadata-with-youtube",
+      "name": "YTMASC: --refetch-metadata",
       "type": "debugpy",
       "request": "launch",
-      "module": "ytmasc",
-      "args": ["--replace-current-metadata-with-youtube", "-v", "INFO"]
-    },
-    {
-      "name": "YTMASC: update-library-with-manual-changes-on-files",
-      "type": "debugpy",
-      "request": "launch",
-      "module": "ytmasc",
-      "args": ["update-library-with-manual-changes-on-files", "-v", "INFO"]
+      "program": "ytmasc/__main__.py",
+      "args": ["--refetch-metadata", "--verbosity", "DEBUG"]
     },
     {
       "name": "YTMASC: export-library-as-csv",
       "type": "debugpy",
       "request": "launch",
-      "module": "ytmasc",
-      "args": ["export-library-as-csv", "-v", "INFO"]
-    },
-    {
-      "name": "YTMASC: import-csv-to-library",
-      "type": "debugpy",
-      "request": "launch",
-      "module": "ytmasc",
-      "args": ["import-csv-to-library", "-v", "INFO"]
-    },
-    {
-      "name": "YTMASC: import-csv-to-library-no-overwrite",
-      "type": "debugpy",
-      "request": "launch",
-      "module": "ytmasc",
-      "args": ["import-csv-to-library-no-overwrite", "-v", "INFO"]
-    },
-    {
-      "name": "YTMASC: direct-import",
-      "type": "debugpy",
-      "request": "launch",
-      "module": "ytmasc",
-      "args": ["direct-import", "-v", "INFO"]
-    },
-    {
-      "name": "YTMASC: db-compare",
-      "type": "debugpy",
-      "request": "launch",
-      "module": "ytmasc",
-      "args": ["db-compare", "-v", "INFO"]
-    },
-    {
-      "name": "YTMASC: db-find-unpaired",
-      "type": "debugpy",
-      "request": "launch",
-      "module": "ytmasc",
-      "args": ["db-find-unpaired", "-v", "INFO"]
-    },
-    {
-      "name": "YTMASC: db-replace-fails",
-      "type": "debugpy",
-      "request": "launch",
-      "module": "ytmasc",
-      "args": ["db-replace-fails", "-v", "INFO"]
-    },
-    {
-      "name": "YTMASC: db-find-same",
-      "type": "debugpy",
-      "request": "launch",
-      "module": "ytmasc",
-      "args": ["db-find-same", "-v", "INFO"]
+      "program": "ytmasc/__main__.py",
+      "args": ["--export-to", "csv", "--verbosity", "DEBUG"]
     }
   ]
 }
