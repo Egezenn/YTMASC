@@ -52,12 +52,11 @@ It's features are:
 > ```
 
 > [!TIP]
-> You can chain all these commands in a meaningful manner, see the [flowchart](#flowchart-of-the-cli).
+> You can chain all these commands in a meaningful manner, see the [flowchart](#flowchart-of-operations).
 >
 > ```shell
 > ytmasc --import-library-page fetch-soft --delete-library-page-files-afterwards --refetch-metadata --import-from song.db --import-from data/x.csv --download --convert opus --tag --lib-find-same
 > ```
-
 
 ## Side notes
 
@@ -151,6 +150,7 @@ verbosity-->Library_operations
 [FFmpeg](https://ffmpeg.org/) - Required for the conversion of files. Licensed under LGPLv2.1 license.
 
 ### Python packages
+
 | Package                                                          | Usage                                                                                        | License      |
 | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | ------------ |
 | [beautifulsoup4](https://www.crummy.com/software/BeautifulSoup/) | Parsing user's [library page from YouTube Music](https://music.youtube.com/playlist?list=LM) | MIT          |
