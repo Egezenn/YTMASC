@@ -1,23 +1,25 @@
 .git
 .venv
 __pycache__
+.*_cache
+data/*.csv
+data/*.sqlite
+data/*.7z
+data/*.zip
+data/*.tar.*
 
 # project files
 data
 downloads
-logs.log
-# db folders
-!keep
-!remove
-old
-.temp
+logs
+tests/test_downloads
+ytmasc/_version.py
+
 
 # misc
-todo.md
-Ξtestfile.ipynb
-
-# PyInstaller directories & files
+.temp
 build
 dist
 *.spec
 *.exe
+*.egg-info

@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=61.0", "setuptools_scm>=8.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ytmasc"
+dynamic = ["version"]
+description = "Your offline music library with YouTube as it's backend!"
+readme = "readme.md"
+requires-python = ">=3.12"
+dependencies = [
+    "click>=8.3.1",
+    "mutagen>=1.47.0",
+    "requests>=2.32.5",
+    "ytmusicapi>=1.11.3",
+    "rich-click>=1.8.5",
+]
+
+[project.scripts]
+ytmasc = "ytmasc.__main__:cli"
+
+[dependency-groups]
+dev = [
+    "ruff>=0.14.8",
+    "pytest>=9.0.1",
+    "pyinstaller>=6.11.1",
+    "setuptools_scm>=8.0",
+]
+
+[tool.setuptools_scm]
+version_file = "ytmasc/_version.py"
+
+[tool.ruff]
+line-length = 120
+[tool.black]
+line-length = 120
+
+[tool.setuptools.packages.find]
+include = ["ytmasc*"]
