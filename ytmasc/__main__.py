@@ -57,7 +57,6 @@ click.rich_click.OPTION_GROUPS = {
 
 # Setup logging
 utils.setup_logging()
-utils.check_dependencies()
 logger = logging.getLogger(__name__)
 
 
@@ -73,7 +72,7 @@ except (ImportError, PackageNotFoundError):
 @click.version_option(__version__, "-v", "--version")
 def cli():
     """YTMASC: YouTube Music Audio Scraper & Synchronizer"""
-    pass
+    utils.check_dependencies()
 
 
 @cli.command()

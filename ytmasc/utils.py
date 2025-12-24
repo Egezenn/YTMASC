@@ -105,8 +105,8 @@ def check_dependencies():
     if not shutil.which("ffmpeg"):
         missing.append("ffmpeg")
 
-    if not shutil.which("magick"):
-        missing.append("magick")
+    if not (shutil.which("magick") or shutil.which("convert")):
+        missing.append("magick (or convert)")
 
     if not shutil.which("yt-dlp"):
         missing.append("yt-dlp")

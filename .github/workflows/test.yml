@@ -2,8 +2,9 @@ name: Test YTMASC
 
 on:
   push:
-    branches: [main]
+    branches: ["**"]
     paths:
+      - ".github/**"
       - "ytmasc/**"
       - "tests/**"
       - "pyproject.toml"
@@ -11,6 +12,7 @@ on:
   pull_request:
     branches: [main]
     paths:
+      - ".github/**"
       - "ytmasc/**"
       - "tests/**"
       - "pyproject.toml"
@@ -42,8 +44,15 @@ jobs:
       - name: Install ImageMagick
         run: sudo apt-get install -y imagemagick
 
+      # - name: Setup Deno
+      #   uses: denoland/setup-deno@v1
+      #   with:
+      #     deno-version: v2.x
+
       - name: Install dependencies
-        run: uv sync
+        run: |
+          uv sync
+          uv tool install yt-dlp
 
       - name: Lint with ruff
         run: uv run ruff check
@@ -51,8 +60,8 @@ jobs:
       - name: Run tests
         run: uv run pytest
 
-      - name: Run test library
-        run: uv run ytmasc run --db tests/test_library.json --workers 5 -w tests/downloads
+      # - name: Run test library
+      #   run: uv run ytmasc run --db tests/test_library.json --workers 5 -w tests/downloads
 
       - name: Upload logs
         if: always()

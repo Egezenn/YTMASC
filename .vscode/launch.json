@@ -1,0 +1,44 @@
+{
+  "configurations": [
+    {
+      "name": "YTMASC help",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/ytmasc.py",
+      "console": "integratedTerminal",
+      "args": "-h"
+    },
+    {
+      "name": "YTMASC run",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/ytmasc.py",
+      "console": "integratedTerminal",
+      "args": "run"
+    },
+    {
+      "name": "YTMASC download",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/ytmasc.py",
+      "console": "integratedTerminal",
+      "args": "download"
+    },
+    {
+      "name": "YTMASC convert",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/ytmasc.py",
+      "console": "integratedTerminal",
+      "args": "convert"
+    },
+    {
+      "name": "YTMASC tag",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/ytmasc.py",
+      "console": "integratedTerminal",
+      "args": "tag"
+    }
+  ]
+}

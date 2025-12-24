@@ -34,5 +34,4 @@ def test_check_dependencies(capsys):
         # Check output
         captured = capsys.readouterr()
         assert "ERROR: Required dependencies not found" in captured.out
-        # Verify that yt-dlp is one of the checked dependencies
         assert "yt-dlp" in captured.out
